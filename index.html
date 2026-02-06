@@ -2,265 +2,123 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Μετεωρολογικός Σταθμός Γηλόφου (1050m)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GHILOFOS APP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;900&display=swap');
         
-        :root {
-            --gold: #d4af37;
-            --dark-bg: #0a0c10;
-            --card-bg: rgba(20, 25, 35, 0.85);
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: #f1f5f9;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 20%);
-            min-height: 100vh;
-        }
-
-        .gold-text { 
-            color: var(--gold); 
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3); 
-        }
+        body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
         
-        .digital { font-family: 'Orbitron', sans-serif; }
-        
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 2rem;
-            transition: all 0.3s ease;
+        .main-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('ailias.jpg') no-repeat center center;
+            background-size: cover;
+            filter: brightness(0.5);
+            z-index: -1;
         }
 
-        .glass-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        .status-pulse {
-            width: 12px;
-            height: 12px;
-            background: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 12px #10b981;
-            animation: pulse 2.5s infinite;
+        .temp-text {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .status-dot {
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        .badge-premium {
-            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-            color: black;
-            font-weight: 800;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.65rem;
-            text-transform: uppercase;
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col justify-between">
+    <div class="main-bg"></div>
 
-    <div class="max-w-6xl mx-auto">
-        <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-            <div class="flex items-center gap-5">
-                <div class="p-4 bg-black border border-yellow-600/30 rounded-2xl shadow-2xl">
-                    <i class="fas fa-mountain-sun text-yellow-500 text-4xl"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-3 mb-1">
-                        <span class="status-pulse"></span>
-                        <span class="text-[10px] uppercase font-black tracking-widest text-yellow-500/80">Σταθμός Σε Λειτουργία</span>
-                    </div>
-                    <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter gold-text uppercase leading-none">
-                        ΓΗΛΟΦΟΣ ΓΡΕΒΕΝΩΝ
-                    </h1>
-                </div>
-            </div>
-
-            <div class="glass-card px-8 py-5 text-center min-w-[200px]">
-                <div id="clock" class="text-3xl font-bold digital text-white mb-1">00:00:00</div>
-                <div id="date" class="text-[10px] font-bold opacity-50 uppercase tracking-[0.2em]">-- / -- / ----</div>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <!-- Main Temperature Card -->
-            <div class="lg:col-span-2 glass-card p-10 flex flex-col justify-between relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-8 opacity-10">
-                    <i id="bg-weather-icon" class="fas fa-sun text-[15rem]"></i>
-                </div>
-                
-                <div class="relative z-10 flex flex-col md:flex-row justify-between items-center md:items-start gap-10">
-                    <div>
-                        <div class="badge-premium mb-4 inline-block">Τρέχουσες Συνθήκες</div>
-                        <div class="flex items-baseline">
-                            <span id="temp" class="text-9xl font-black digital text-white tracking-tighter">--</span>
-                            <span class="text-5xl font-bold gold-text ml-2">°C</span>
-                        </div>
-                        <p id="description" class="text-2xl font-semibold text-slate-300 mt-2 uppercase tracking-widest">Φόρτωση...</p>
-                    </div>
-                    
-                    <div class="flex flex-col gap-4 text-right">
-                        <div class="bg-black/40 p-5 rounded-2xl border border-white/5 backdrop-blur-sm">
-                            <p class="text-[10px] uppercase font-bold text-yellow-500/60 tracking-widest mb-1">Αίσθηση</p>
-                            <p id="feels_like" class="text-3xl font-bold digital">--°C</p>
-                        </div>
-                        <div class="bg-black/40 p-5 rounded-2xl border border-white/5 backdrop-blur-sm">
-                            <p class="text-[10px] uppercase font-bold text-yellow-500/60 tracking-widest mb-1">Σημείο Δρόσου</p>
-                            <p id="dew_point" class="text-3xl font-bold digital">--°C</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 relative z-10">
-                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <i class="fas fa-droplet text-blue-400 mb-2"></i>
-                        <p class="text-[10px] uppercase font-black opacity-40">Υγρασία</p>
-                        <p id="humidity" class="text-xl font-bold digital">--%</p>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <i class="fas fa-wind text-teal-400 mb-2"></i>
-                        <p class="text-[10px] uppercase font-black opacity-40">Άνεμος</p>
-                        <p id="wind" class="text-xl font-bold digital">-- <span class="text-xs">km/h</span></p>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <i class="fas fa-gauge-high text-purple-400 mb-2"></i>
-                        <p class="text-[10px] uppercase font-black opacity-40">Πίεση</p>
-                        <p id="pressure" class="text-xl font-bold digital">-- <span class="text-xs">hPa</span></p>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <i class="fas fa-sun text-orange-400 mb-2"></i>
-                        <p class="text-[10px] uppercase font-black opacity-40">UV Δείκτης</p>
-                        <p id="uv" class="text-xl font-bold digital">--</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Station Info Card -->
-            <div class="glass-card p-8 flex flex-col justify-between bg-gradient-to-br from-slate-900 to-black">
-                <div>
-                    <h3 class="text-sm font-black uppercase tracking-[0.3em] gold-text mb-8">Στοιχεία Σταθμού</h3>
-                    <ul class="space-y-6">
-                        <li class="flex items-center justify-between border-b border-white/5 pb-4">
-                            <span class="text-sm font-semibold opacity-60">Τοποθεσία</span>
-                            <span class="font-bold">Γήλοφος, Γρεβενά</span>
-                        </li>
-                        <li class="flex items-center justify-between border-b border-white/5 pb-4">
-                            <span class="text-sm font-semibold opacity-60">Υψόμετρο</span>
-                            <span class="text-xl font-bold gold-text digital">1050 m</span>
-                        </li>
-                        <li class="flex items-center justify-between border-b border-white/5 pb-4">
-                            <span class="text-sm font-semibold opacity-60">Συντεταγμένες</span>
-                            <span class="text-xs font-mono">39.87°N / 21.78°E</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-sm font-semibold opacity-60">Ιδιοκτήτης</span>
-                            <span class="font-bold">Αχιλλέας</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="mt-8 p-4 bg-yellow-500/5 rounded-2xl border border-yellow-500/20">
-                    <p class="text-[10px] font-bold text-yellow-500 italic">"Ορεινός σταθμός υψηλής ακριβείας. Τα δεδομένα ανανεώνονται κάθε 10 λεπτά."</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="glass-card p-8">
-            <div class="flex items-center justify-between mb-8">
-                <h4 class="text-xs font-black uppercase tracking-[0.4em] text-white/70">Πρόγνωση Επόμενων Ωρών</h4>
-                <div class="flex gap-2">
-                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                    <span class="w-3 h-3 rounded-full bg-white/10"></span>
-                </div>
-            </div>
-            <div class="h-[250px] w-full">
-                <canvas id="tempChart"></canvas>
-            </div>
+    <div class="p-8 pt-12 text-center">
+        <h1 class="text-3xl font-black tracking-tighter uppercase italic text-blue-400">ΓΗΛΟΦΟΣ</h1>
+        <div class="flex items-center justify-center gap-2 mt-1">
+            <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>
+            <span id="update-time" class="text-[10px] font-bold uppercase tracking-widest opacity-60">ΑΝΑΖΗΤΗΣΗ ΣΤΑΘΜΟΥ...</span>
         </div>
     </div>
 
+    <div class="flex flex-col items-center">
+        <div id="temp-val" class="temp-text text-8xl font-bold tracking-tighter">--°</div>
+        <div id="weather-desc" class="text-sm uppercase tracking-[0.4em] opacity-80 mt-2 font-light">ΦΟΡΤΩΝΕΙ...</div>
+    </div>
+
+    <div class="glass-panel p-6 pb-12 rounded-t-[40px]">
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="window.location.href='https://gilofos.github.io/weather-gilofos/'" class="bg-white/5 py-6 rounded-3xl flex flex-col items-center border border-white/10 active:scale-95 transition-all">
+                <span class="text-2xl">📊</span>
+                <span class="text-[10px] font-bold mt-2 uppercase tracking-widest text-blue-300">Πλήρη Στοιχεία</span>
+            </button>
+            <button onclick="window.location.href='http://gilofos.com'" class="bg-white/5 py-6 rounded-3xl flex flex-col items-center border border-white/10 active:scale-95 transition-all">
+                <span class="text-2xl">🏠</span>
+                <span class="text-[10px] font-bold mt-2 uppercase tracking-widest text-blue-300">Ghilofos.com</span>
+            </button>
+        </div>
+        <p class="text-[9px] text-center mt-6 opacity-30 uppercase tracking-[0.2em]">Live Data by Achilleas Station</p>
+    </div>
+
     <script>
-        // Fake data generation for demonstration
-        function updateWeather() {
-            const temp = (Math.random() * (12 - (-2)) + (-2)).toFixed(1);
-            document.getElementById('temp').innerText = temp;
-            document.getElementById('feels_like').innerText = (temp - 2).toFixed(1) + '°';
-            document.getElementById('dew_point').innerText = (temp - 4).toFixed(1) + '°';
-            document.getElementById('humidity').innerText = Math.floor(Math.random() * (90 - 40) + 40) + '%';
-            document.getElementById('wind').innerText = (Math.random() * 25).toFixed(1);
-            document.getElementById('pressure').innerText = Math.floor(Math.random() * (1025 - 1005) + 1005);
-            document.getElementById('uv').innerText = (Math.random() * 5).toFixed(1);
-            document.getElementById('description').innerText = temp > 5 ? 'ΚΑΘΑΡΟΣ ΟΥΡΑΝΟΣ' : 'ΠΙΘΑΝΗ ΧΙΟΝΟΠΤΩΣΗ';
-        }
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2yD6-4R9x_H6Xm0m-rL-y1-pL-Bf-q_E-W8-Y-9-Y/pub?output=csv';
+        let lastKnownTemp = null;
 
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('el-GR', { hour12: false });
-            const date = now.toLocaleDateString('el-GR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('clock').innerText = time;
-            document.getElementById('date').innerText = date;
-        }
+        async function updateData() {
+            try {
+                // Fetch με timestamp για να μην παίρνει παλιά δεδομένα (cache)
+                const res = await fetch(sheetUrl + '&t=' + Date.now());
+                const csv = await res.text();
+                const lines = csv.trim().split('\n');
+                
+                if (lines.length > 1) {
+                    const latest = lines[lines.length - 1];
+                    // Χωρίζουμε τη γραμμή με βάση το κόμμα
+                    const parts = latest.split(',');
+                    
+                    if (parts.length >= 2) {
+                        const timeStr = parts[0].replace(/"/g, '');
+                        const weatherData = parts[1].replace(/"/g, '').split('|');
+                        
+                        if (weatherData.length >= 2) {
+                            const rawTemp = weatherData[0].trim().replace(/[°Cc]/g, '');
+                            const currentTemp = parseFloat(rawTemp);
+                            const description = weatherData[1].trim();
 
-        // Initialize Chart
-        const ctx = document.getElementById('tempChart').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(212, 175, 55, 0.4)');
-        gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
-                datasets: [{
-                    label: 'Θερμοκρασία (°C)',
-                    data: [-1, -2, -2.5, 0, 4, 6, 3, 1],
-                    borderColor: '#d4af37',
-                    borderWidth: 4,
-                    fill: true,
-                    backgroundColor: gradient,
-                    tension: 0.4,
-                    pointBackgroundColor: '#d4af37',
-                    pointBorderColor: '#000',
-                    pointBorderWidth: 2,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Orbitron' } } },
-                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Orbitron' } } }
+                            // ΕΛΕΓΧΟΣ ΕΓΚΥΡΟΤΗΤΑΣ (ΦΙΛΤΡΟ)
+                            // Αν η διαφορά είναι πάνω από 8 βαθμούς απότομα, είναι λάθος μέτρηση
+                            if (lastKnownTemp !== null && Math.abs(currentTemp - lastKnownTemp) > 8) {
+                                console.log("Απόρριψη λάθος μέτρησης: " + currentTemp);
+                            } else {
+                                lastKnownTemp = currentTemp;
+                                document.getElementById('temp-val').innerText = currentTemp.toFixed(1) + '°';
+                                document.getElementById('weather-desc').innerText = description;
+                                document.getElementById('update-time').innerText = "LIVE: " + timeStr;
+                            }
+                        }
+                    }
                 }
+            } catch (err) {
+                console.log("Error fetching data");
+                document.getElementById('weather-desc').innerText = "ΣΦΑΛΜΑ ΣΥΝΔΕΣΗΣ";
             }
-        });
+        }
 
-        setInterval(updateClock, 1000);
-        setInterval(updateWeather, 10000);
-        updateClock();
-        updateWeather();
+        // Τρέχει αμέσως και μετά κάθε 15 δευτερόλεπτα
+        updateData();
+        setInterval(updateData, 15000);
     </script>
 </body>
 </html>
