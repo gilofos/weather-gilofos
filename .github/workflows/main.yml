@@ -1,0 +1,32 @@
+name: Update Weather Data
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Τρέχει κάθε 1 ώρα
+  workflow_dispatch: # Σου επιτρέπει να το τρέχεις και χειροκίνητα
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run weather script
+        run: python kairos.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Update weather data" || exit 0
+          git push
