@@ -1,31 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>Σταθμός Γήλοφος</title>
+    <title>Καιρός Γήλοφος</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #1a1a1a; color: white; text-align: center; font-family: sans-serif; padding-top: 80px; }
-        .data { font-size: 50px; font-weight: bold; color: #ffcc00; margin: 20px; }
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .card { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; backdrop-filter: blur(10px); }
     </style>
 </head>
-<body>
-    <h1>Καιρός Γήλοφος</h1>
-    <div id="content">Φόρτωση...</div>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <h1 class="text-4xl font-bold mb-10 text-yellow-500 shadow-sm text-center">Μετεωρολογικός Σταθμός Γήλοφος</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
+        <div class="card p-10 rounded-3xl text-center shadow-2xl">
+            <p class="text-xl text-blue-300 uppercase tracking-widest mb-2">Θερμοκρασία</p>
+            <p id="temp" class="text-7xl font-black text-white">--°C</p>
+        </div>
+        
+        <div class="card p-10 rounded-3xl text-center shadow-2xl">
+            <p class="text-xl text-blue-300 uppercase tracking-widest mb-2">Υγρασία</p>
+            <p id="hum" class="text-7xl font-black text-white">--%</p>
+        </div>
+    </div>
+
     <script>
-        async function update() {
-            const res = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.csv');
-            const text = await res.text();
-            const rows = text.trim().split('\n');
-            const last = rows[rows.length - 1].split(',');
-            document.getElementById('content').innerHTML = `
-                <div class="data">Θερμοκρασία: ${last[2]}°C</div>
-                <div class="data">Υγρασία: ${last[3]}%</div>
-            `;
+        async function getData() {
+            try {
+                // Εδώ το αλλάξαμε για να διαβάζει το JSON αρχείο σου
+                const r = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json');
+                const data = await r.json();
+                
+                // Παίρνουμε την τελευταία καταγραφή
+                document.getElementById('temp').innerText = data.temperature + '°C';
+                document.getElementById('hum').innerText = data.humidity + '%';
+            } catch (e) {
+                console.log("Σφάλμα στη φόρτωση δεδομένων");
+            }
         }
-        update();
+        getData();
+        setInterval(getData, 60000);
     </script>
 </body>
 </html>
-
-
+            
 
