@@ -1,124 +1,31 @@
 <!DOCTYPE html>
-<html lang="el">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GHILOFOS APP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Σταθμός Γήλοφος</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;900&display=swap');
-        
-        body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
-        
-        .main-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('ailias.jpg') no-repeat center center;
-            background-size: cover;
-            filter: brightness(0.5);
-            z-index: -1;
-        }
-
-        .glass-panel {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .temp-text {
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 20px rgba(255,255,255,0.3);
-        }
-
-        .status-dot {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        body { background: #1a1a1a; color: white; text-align: center; font-family: sans-serif; padding-top: 80px; }
+        .data { font-size: 50px; font-weight: bold; color: #ffcc00; margin: 20px; }
     </style>
 </head>
-<body class="h-screen flex flex-col justify-between">
-    <div class="main-bg"></div>
-
-    <div class="p-8 pt-12 text-center">
-        <h1 class="text-3xl font-black tracking-tighter uppercase italic text-blue-400">ΓΗΛΟΦΟΣ</h1>
-        <div class="flex items-center justify-center gap-2 mt-1">
-            <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>
-            <span id="update-time" class="text-[10px] font-bold uppercase tracking-widest opacity-60">ΑΝΑΖΗΤΗΣΗ ΣΤΑΘΜΟΥ...</span>
-        </div>
-    </div>
-
-    <div class="flex flex-col items-center">
-        <div id="temp-val" class="temp-text text-8xl font-bold tracking-tighter">--°</div>
-        <div id="weather-desc" class="text-sm uppercase tracking-[0.4em] opacity-80 mt-2 font-light">ΦΟΡΤΩΝΕΙ...</div>
-    </div>
-
-    <div class="glass-panel p-6 pb-12 rounded-t-[40px]">
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="window.location.href='https://gilofos.github.io/weather-gilofos/'" class="bg-white/5 py-6 rounded-3xl flex flex-col items-center border border-white/10 active:scale-95 transition-all">
-                <span class="text-2xl">📊</span>
-                <span class="text-[10px] font-bold mt-2 uppercase tracking-widest text-blue-300">Πλήρη Στοιχεία</span>
-            </button>
-            <button onclick="window.location.href='http://gilofos.com'" class="bg-white/5 py-6 rounded-3xl flex flex-col items-center border border-white/10 active:scale-95 transition-all">
-                <span class="text-2xl">🏠</span>
-                <span class="text-[10px] font-bold mt-2 uppercase tracking-widest text-blue-300">Ghilofos.com</span>
-            </button>
-        </div>
-        <p class="text-[9px] text-center mt-6 opacity-30 uppercase tracking-[0.2em]">Live Data by Achilleas Station</p>
-    </div>
-
+<body>
+    <h1>Καιρός Γήλοφος</h1>
+    <div id="content">Φόρτωση...</div>
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2yD6-4R9x_H6Xm0m-rL-y1-pL-Bf-q_E-W8-Y-9-Y/pub?output=csv';
-        let lastKnownTemp = null;
-
-        async function updateData() {
-            try {
-                // Fetch με timestamp για να μην παίρνει παλιά δεδομένα (cache)
-                const res = await fetch(sheetUrl + '&t=' + Date.now());
-                const csv = await res.text();
-                const lines = csv.trim().split('\n');
-                
-                if (lines.length > 1) {
-                    const latest = lines[lines.length - 1];
-                    // Χωρίζουμε τη γραμμή με βάση το κόμμα
-                    const parts = latest.split(',');
-                    
-                    if (parts.length >= 2) {
-                        const timeStr = parts[0].replace(/"/g, '');
-                        const weatherData = parts[1].replace(/"/g, '').split('|');
-                        
-                        if (weatherData.length >= 2) {
-                            const rawTemp = weatherData[0].trim().replace(/[°Cc]/g, '');
-                            const currentTemp = parseFloat(rawTemp);
-                            const description = weatherData[1].trim();
-
-                            // ΕΛΕΓΧΟΣ ΕΓΚΥΡΟΤΗΤΑΣ (ΦΙΛΤΡΟ)
-                            // Αν η διαφορά είναι πάνω από 8 βαθμούς απότομα, είναι λάθος μέτρηση
-                            if (lastKnownTemp !== null && Math.abs(currentTemp - lastKnownTemp) > 8) {
-                                console.log("Απόρριψη λάθος μέτρησης: " + currentTemp);
-                            } else {
-                                lastKnownTemp = currentTemp;
-                                document.getElementById('temp-val').innerText = currentTemp.toFixed(1) + '°';
-                                document.getElementById('weather-desc').innerText = description;
-                                document.getElementById('update-time').innerText = "LIVE: " + timeStr;
-                            }
-                        }
-                    }
-                }
-            } catch (err) {
-                console.log("Error fetching data");
-                document.getElementById('weather-desc').innerText = "ΣΦΑΛΜΑ ΣΥΝΔΕΣΗΣ";
-            }
+        async function update() {
+            const res = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.csv');
+            const text = await res.text();
+            const rows = text.trim().split('\n');
+            const last = rows[rows.length - 1].split(',');
+            document.getElementById('content').innerHTML = `
+                <div class="data">Θερμοκρασία: ${last[2]}°C</div>
+                <div class="data">Υγρασία: ${last[3]}%</div>
+            `;
         }
-
-        // Τρέχει αμέσως και μετά κάθε 15 δευτερόλεπτα
-        updateData();
-        setInterval(updateData, 15000);
+        update();
     </script>
 </body>
 </html>
+
+
+
