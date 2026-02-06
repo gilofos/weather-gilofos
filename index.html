@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Γήλοφος</title>
+    <title>ΓΗΛΟΦΟΣ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0f172a; color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; }
-        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 2rem; padding: 2.5rem; width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { background-color: #000000; color: white; font-family: sans-serif; }
+        .data-card { background: #111111; border: 2px solid #222222; border-radius: 1.5rem; padding: 2rem; }
     </style>
 </head>
-<body class="p-6">
-    <h1 class="text-3xl font-black mb-10 tracking-widest uppercase text-center">
-        ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ<br><span class="text-blue-500">ΓΗΛΟΦΟΥ</span>
-    </h1>
-    
-    <div class="flex flex-col md:flex-row gap-8">
-        <div class="card">
-            <p class="text-blue-400 font-bold uppercase text-xs mb-4">Θερμοκρασία</p>
-            <h3 id="temp" class="text-7xl font-light">--°C</h3>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <h1 class="text-5xl font-black tracking-tighter mb-12 uppercase text-blue-500">ΓΗΛΟΦΟΣ</h1>
+
+    <div class="grid grid-cols-1 gap-6 w-full max-w-sm">
+        <div class="data-card text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Θερμοκρασία</p>
+            <div id="temp" class="text-7xl font-bold">--°C</div>
         </div>
-        <div class="card">
-            <p class="text-blue-400 font-bold uppercase text-xs mb-4">Υγρασία</p>
-            <h3 id="hum" class="text-7xl font-light">--%</h3>
+
+        <div class="data-card text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Υγρασία</p>
+            <div id="hum" class="text-7xl font-bold">--%</div>
         </div>
     </div>
 
@@ -33,10 +33,9 @@
                 const d = await r.json();
                 document.getElementById('temp').innerText = d.temp + '°C';
                 document.getElementById('hum').innerText = d.humidity + '%';
-            } catch (e) { console.log("Loading..."); }
+            } catch (e) { console.log("..."); }
         }
         update(); setInterval(update, 30000);
     </script>
 </body>
 </html>
-       
