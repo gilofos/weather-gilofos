@@ -3,88 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΓΗΛΟΦΟΣ ELITE STATION</title>
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body { 
-            background: #f8fafc; 
-            color: #1e293b; 
-            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            min-height: 100vh;
         }
         .glass { 
-            background: white; 
-            border: 1px solid #e2e8f0; 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
             border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .header-bg {
-            background: linear-gradient(to right, #ffffff, #f1f5f9);
-            border-bottom: 3px solid #3b82f6;
         }
         .map-container { 
             width: 100%; 
-            height: 380px; 
+            height: 400px; 
             border-radius: 1rem; 
             overflow: hidden; 
-            border: 1px solid #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         iframe { width: 100%; height: 100%; border: none; }
-        .logo-container { position: relative; display: inline-block; }
-        .custom-logo { height: 50px; width: auto; vertical-align: middle; }
+        .logo-img { height: 65px; width: auto; border-radius: 8px; }
     </style>
 </head>
 <body class="p-4 md:p-6">
 
     <div class="max-w-5xl mx-auto">
-        
-        <header class="glass header-bg p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="logo-container">
-                    <h1 class="text-xl font-black tracking-tighter text-slate-800 uppercase italic leading-none">
-                        ΓΗΛΟΦΟΣ <span class="text-blue-600 text-sm not-italic font-bold">ELITE</span>
+        <header class="glass p-5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4 text-left w-full md:w-auto">
+                <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/65?text=GHILOFOS'">
+                <div>
+                    <h1 class="text-xl font-black uppercase italic tracking-tighter leading-tight text-blue-200">
+                        ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ<br>ΓΗΛΟΦΟΥ
                     </h1>
-                    <img src="logo.png" class="custom-logo mt-1" alt="Καλημέρα Logo" onerror="this.style.display='none'">
+                    <p class="text-[10px] font-bold text-blue-400 mt-1 uppercase">Υψόμετρο: 1050m</p>
                 </div>
             </div>
             
             <div class="text-center md:text-right">
-                <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-bold inline-block mb-2 uppercase">
-                    Υψόμετρο: 1050m
-                </div>
-                <div id="live-clock" class="text-2xl font-mono font-bold text-slate-700 tracking-tight">00:00:00</div>
-                <div id="live-date" class="text-[10px] font-bold text-slate-400 uppercase mt-1">-- --- ----</div>
+                <div id="live-clock" class="text-3xl font-mono font-bold text-white tracking-tight">00:00:00</div>
+                <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-1">-- --- ----</div>
             </div>
         </header>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="glass p-5 text-center bg-blue-50/50">
-                <p class="text-[10px] font-bold text-blue-600 uppercase mb-1">ΘΕΡΜΟΚΡΑΣΙΑ</p>
-                <div id="temp" class="text-4xl font-black text-slate-800">--°C</div>
+            <div class="glass p-5 text-center border-t-4 border-blue-400">
+                <p class="text-[10px] font-bold text-blue-300 uppercase mb-1 italic">Τώρα</p>
+                <div id="temp" class="text-4xl font-black text-white">--°C</div>
             </div>
-            <div class="glass p-5 text-center">
-                <p class="text-[10px] font-bold text-red-500 uppercase mb-1">ΜΕΓΙΣΤΗ</p>
+            <div class="glass p-5 text-center border-t-4 border-red-500">
+                <p class="text-[10px] font-bold text-red-400 uppercase mb-1 italic">Μέγιστη</p>
                 <div id="temp-max" class="text-3xl font-bold">--°</div>
             </div>
-            <div class="glass p-5 text-center">
-                <p class="text-[10px] font-bold text-cyan-600 uppercase mb-1">ΕΛΑΧΙΣΤΗ</p>
+            <div class="glass p-5 text-center border-t-4 border-cyan-400">
+                <p class="text-[10px] font-bold text-cyan-400 uppercase mb-1 italic">Ελάχιστη</p>
                 <div id="temp-min" class="text-3xl font-bold">--°</div>
             </div>
-            <div class="glass p-5 text-center">
-                <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">ΥΓΡΑΣΙΑ</p>
+            <div class="glass p-5 text-center border-t-4 border-indigo-400">
+                <p class="text-[10px] font-bold text-indigo-300 uppercase mb-1 italic">Υγρασία</p>
                 <div id="hum" class="text-3xl font-bold">--%</div>
             </div>
         </div>
 
-        <div class="map-container glass mb-6 shadow-inner">
-             <iframe src="https://www.meteoblue.com/en/weather/maps/daynightvisualiser?coords=39.88/21.82/3" scrolling="no"></iframe>
+        <div class="map-container mb-6 shadow-2xl">
+            <iframe src="https://www.meteoblue.com/en/weather/maps/daynightvisualiser?coords=39.88/21.82/4" scrolling="no"></iframe>
         </div>
 
-        <div class="glass p-5">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 border-b pb-2 italic">Πρόβλεψη Εβδομάδας</h2>
-            <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center"></div>
+        <div class="glass p-5 mb-6">
+            <h3 class="text-[10px] font-bold text-blue-300 uppercase tracking-widest mb-4 border-b border-white/10 pb-2 italic text-center md:text-left">Πρόβλεψη Επόμενων Ημερών</h3>
+            <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
         </div>
-
     </div>
 
     <script>
@@ -116,18 +108,17 @@
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
                     dHtml += `
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <p class="text-[10px] font-bold text-blue-500 uppercase mb-1">${days[d.getDay()]}</p>
-                            <div class="text-sm font-black text-slate-700">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
-                            <div class="text-[9px] text-slate-400 font-bold">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
+                        <div class="bg-white/10 p-3 rounded-xl border border-white/5 text-center">
+                            <p class="text-[10px] font-bold text-blue-300 uppercase mb-1">${days[d.getDay()]}</p>
+                            <div class="text-sm font-black text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
+                            <div class="text-[9px] text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
                         </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dHtml;
-            } catch(e) { console.log("Error loading"); }
+            } catch(e) { console.log("Update Error"); }
         }
         updateWeather();
         setInterval(updateWeather, 60000);
     </script>
 </body>
 </html>
-                    
