@@ -1,8 +1,8 @@
 {
-    "temp": 0,
-    "humidity": 0,
-    "pressure": 0,
-    "description": "Αναμονή",
+    "temp": 6.0,
+    "humidity": 92,
+    "pressure": 1001,
+    "description": "Ελαφρές νεφώσεις",
     "city": "Γηλόφος",
-    "timestamp": 0
+    "timestamp": 1770404965
 }
