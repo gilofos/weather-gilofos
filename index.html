@@ -11,21 +11,27 @@
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
         .map-container { width: 100%; height: 350px; border-radius: 1rem; overflow: hidden; border: 1px solid #333; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
+        /* Ρύθμιση για την εικόνα σου */
+        .custom-logo { height: 60px; width: auto; object-fit: contain; }
     </style>
 </head>
 <body class="p-4 md:p-6">
 
     <div class="max-w-5xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-4 border-b-2 border-blue-600">
-            <div class="text-left">
-                <h1 class="text-xl font-black tracking-tighter text-blue-500 uppercase italic">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-                <div class="flex items-center gap-2 mt-1">
-                    <span class="bg-blue-900/50 px-2 py-0.5 rounded text-[10px] font-bold">ΥΨΟΜΕΤΡΟ: 1050m</span>
-                    <span id="live-date" class="text-slate-400 font-bold text-[10px] uppercase">-- --- ----</span>
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-4 border-b-2 border-blue-600 gap-4">
+            <div class="flex items-center gap-4">
+                <div class="text-left">
+                    <h1 class="text-xl font-black tracking-tighter text-blue-500 uppercase italic leading-none">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ<br>ΓΗΛΟΦΟΥ</h1>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="bg-blue-900/50 px-2 py-0.5 rounded text-[10px] font-bold">ΥΨΟΜΕΤΡΟ: 1050m</span>
+                    </div>
                 </div>
+                <img src="https://raw.githubusercontent.com/gilofos/weather-gilofos/main/441958606_3693457807568757_2332829212337179586_n-removebg-preview.png" alt="Logo" class="custom-logo">
             </div>
-            <div class="mt-4 md:mt-0">
+            
+            <div class="text-right">
                 <div id="live-clock" class="text-2xl font-mono font-bold text-white bg-white/5 px-4 py-1 rounded-lg border border-white/10">00:00:00</div>
+                <div id="live-date" class="text-slate-400 font-bold text-[10px] uppercase mt-1 text-center md:text-right">-- --- ----</div>
             </div>
         </header>
 
@@ -56,7 +62,7 @@
         </div>
 
         <div class="glass p-5 mb-6">
-            <h3 class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Πρόβλεψη Εβδομάδας</h3>
+            <h3 class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2 italic text-center md:text-left">Πρόβλεψη Εβδομάδας</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
         </div>
 
@@ -76,7 +82,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -128,7 +133,6 @@
                         </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dHtml;
-
             } catch(e) { console.log("Error loading weather"); }
         }
         updateWeather();
