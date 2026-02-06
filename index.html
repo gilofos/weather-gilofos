@@ -3,58 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GILOFOS PRO STATION</title>
+    <title>GILOFOS STATION PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { background: radial-gradient(circle at top, #0f172a, #000); color: white; font-family: sans-serif; min-height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+        body { background: #000; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
     </style>
 </head>
 <body class="p-4 md:p-10 flex flex-col items-center">
 
     <header class="text-center mb-8">
-        <h1 class="text-2xl md:text-4xl font-black text-blue-500 uppercase italic">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-        <div class="mt-2 bg-blue-600 px-6 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest inline-block border border-white/20">ΥΨΟΜΕΤΡΟ: 1050M</div>
+        <h1 class="text-2xl font-black text-blue-500 uppercase italic">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+        <div class="mt-2 bg-blue-600 px-4 py-1 rounded-full text-[10px] font-bold uppercase inline-block">ΥΨΟΜΕΤΡΟ: 1050M</div>
     </header>
 
     <div class="w-full max-w-4xl space-y-4">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="glass p-5 text-center">
-                <p class="text-[9px] text-blue-400 font-bold uppercase mb-1">ΘΕΡΜΟΚΡΑΣΙΑ</p>
+            <div class="glass p-4 text-center border-t-2 border-blue-500">
+                <p class="text-[9px] text-blue-400 font-bold mb-1 uppercase">ΘΕΡΜΟΚΡΑΣΙΑ</p>
                 <div id="temp" class="text-3xl font-bold">--°C</div>
-                <p class="text-[7px] text-slate-500 mt-1 uppercase">ΑΚΡΙΒΗΣ</p>
             </div>
-            <div class="glass p-5 text-center">
-                <p class="text-[9px] text-cyan-400 font-bold uppercase mb-1">ΥΓΡΑΣΙΑ</p>
+            <div class="glass p-4 text-center border-t-2 border-cyan-500">
+                <p class="text-[9px] text-cyan-400 font-bold mb-1 uppercase">ΥΓΡΑΣΙΑ</p>
                 <div id="hum" class="text-3xl font-bold">--%</div>
-                <p class="text-[7px] text-slate-500 mt-1 uppercase">ΕΓΚΥΡΗ</p>
             </div>
-            <div class="glass p-5 text-center">
-                <p class="text-[9px] text-indigo-400 font-bold uppercase mb-1">ΠΙΕΣΗ</p>
+            <div class="glass p-4 text-center border-t-2 border-indigo-500">
+                <p class="text-[9px] text-indigo-400 font-bold mb-1 uppercase">ΠΙΕΣΗ</p>
                 <div id="press" class="text-3xl font-bold">--</div>
-                <p class="text-[7px] text-slate-500 mt-1 uppercase">HPA</p>
             </div>
-            <div class="glass p-5 text-center">
-                <div id="moon-icon" class="text-2xl mb-1"></div>
-                <p id="moon-phase" class="text-[8px] uppercase font-bold text-slate-400">ΦΑΣΗ ΣΕΛΗΝΗΣ</p>
+            <div class="glass p-4 text-center border-t-2 border-yellow-500">
+                <div id="moon-icon" class="text-2xl mb-1 text-white"></div>
+                <p id="moon-phase" class="text-[8px] font-bold text-slate-400 uppercase">ΣΕΛΗΝΗ</p>
             </div>
         </div>
 
-        <div class="glass p-5">
-            <p class="text-[10px] font-bold text-blue-500 mb-4 uppercase border-b border-white/10 pb-1 italic">Ωριαία Πρόγνωση</p>
+        <div class="glass p-4">
+            <p class="text-[10px] font-bold text-blue-500 mb-4 uppercase border-b border-white/10 pb-1">Επόμενες Ώρες</p>
             <div id="hourly-forecast" class="flex overflow-x-auto gap-6 pb-2"></div>
         </div>
 
-        <div class="glass p-5">
-            <p class="text-[10px] font-bold text-blue-500 mb-4 uppercase border-b border-white/10 pb-1 italic">Πρόβλεψη 4 Ημερών</p>
-            <div id="daily-forecast" class="space-y-3"></div>
+        <div class="glass p-4">
+            <p class="text-[10px] font-bold text-blue-500 mb-4 uppercase border-b border-white/10 pb-1">Πρόβλεψη 4 Ημερών</p>
+            <div id="daily-forecast" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                </div>
         </div>
     </div>
 
-    <footer class="mt-10 text-center opacity-40">
-        <div id="time" class="text-[9px] font-mono tracking-widest">ΣΥΓΧΡΟΝΙΣΜΟΣ...</div>
-        <div class="text-[8px] mt-1 font-bold text-blue-500 uppercase">DIGITAL STATION GILOFOS v2.6</div>
+    <footer class="mt-8 text-center opacity-30">
+        <div id="time" class="text-[9px] font-mono tracking-widest uppercase">ΣΥΓΧΡΟΝΙΣΜΟΣ...</div>
+        <div class="text-[8px] mt-1 font-bold text-blue-500">DIGITAL STATION GILOFOS v2.6</div>
     </footer>
 
     <script>
@@ -71,45 +69,39 @@
 
         async function update() {
             try {
-                // 1. Δεδομένα Σταθμού
+                // 1. Δικά σου δεδομένα
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 document.getElementById('temp').innerText = d1.temp + '°C';
                 document.getElementById('hum').innerText = d1.humidity + '%';
-                document.getElementById('time').innerText = "ΤΕΛΕΥΤΑΙΑ ΛΗΨΗ: " + new Date().toLocaleTimeString('el-GR');
 
-                // 2. Πρόγνωση και Πίεση
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=surface_pressure&hourly=temperature_2m,weathercode,precipitation_probability&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
+                // 2. Καιρός, Πίεση, Πρόγνωση
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=surface_pressure&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
                 const d2 = await r2.json();
                 
-                document.getElementById('press').innerText = Math.round(d2.current.surface_pressure);
+                document.getElementById('press').innerText = Math.round(d2.current.surface_pressure) + " hPa";
 
                 // Ωριαία
                 let hHtml = '';
                 for(let i=0; i<15; i++) {
-                    const hour = new Date(d2.hourly.time[i]).getHours() + ":00";
-                    hHtml += `
-                        <div class="text-center min-w-[55px]">
-                            <p class="text-[8px] mb-1 text-slate-500 font-bold">${hour}</p>
-                            <i class="fa-solid ${getIcon(d2.hourly.weathercode[i])} text-xl mb-1"></i>
-                            <p class="text-xs font-bold">${Math.round(d2.hourly.temperature_2m[i])}°</p>
-                        </div>`;
+                    const h = new Date(d2.hourly.time[i]).getHours() + ":00";
+                    hHtml += `<div class="text-center min-w-[50px]"><p class="text-[8px] text-slate-500 mb-1">${h}</p><i class="fa-solid ${getIcon(d2.hourly.weathercode[i])} text-lg mb-1"></i><p class="text-xs font-bold">${Math.round(d2.hourly.temperature_2m[i])}°</p></div>`;
                 }
                 document.getElementById('hourly-forecast').innerHTML = hHtml;
 
-                // Ημέρες (Διορθωμένο "Φάντασμα")
+                // Ημέρες (ΤΟ ΔΙΟΡΘΩΣΑ)
                 let dHtml = '';
-                const formatter = new Intl.DateTimeFormat('el-GR', { weekday: 'Long' });
+                const dayNames = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
                 for(let i=1; i<5; i++) {
-                    const date = new Date(d2.daily.time[i]);
-                    const dayLabel = formatter.format(date);
+                    const dateObj = new Date(d2.daily.time[i]);
+                    const dayLabel = dayNames[dateObj.getDay()];
                     dHtml += `
                         <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                            <span class="text-[10px] font-bold uppercase w-20 text-slate-300">${dayLabel}</span>
-                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-xl"></i>
+                            <span class="text-[10px] font-bold uppercase w-20">${dayLabel}</span>
+                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-lg"></i>
                             <div class="flex gap-4 text-xs font-bold">
-                                <span class="text-red-400">${Math.round(d2.daily.temperature_2m_max[i])}°</span>
-                                <span class="text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</span>
+                                <span class="text-red-500">${Math.round(d2.daily.temperature_2m_max[i])}°</span>
+                                <span class="text-blue-500">${Math.round(d2.daily.temperature_2m_min[i])}°</span>
                             </div>
                         </div>`;
                 }
@@ -122,8 +114,13 @@
                 else if(age < 15) { mIcon='fa-circle text-white shadow-[0_0_10px_white]'; mText='Πανσέληνος'; }
                 document.getElementById('moon-icon').innerHTML = `<i class="fa-solid ${mIcon}"></i>`;
                 document.getElementById('moon-phase').innerText = mText;
+                
+                document.getElementById('time').innerText = "LIVE: " + new Date().toLocaleTimeString('el-GR');
 
-            } catch(e) { console.log("Update failed"); }
+            } catch(e) { 
+                console.log(e);
+                document.getElementById('time').innerText = "ΣΦΑΛΜΑ ΣΥΝΔΕΣΗΣ";
+            }
         }
 
         update();
@@ -131,3 +128,5 @@
     </script>
 </body>
 </html>
+            
+                               
