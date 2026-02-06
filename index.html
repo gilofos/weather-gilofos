@@ -3,100 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STATION GHILOFOS 1050m</title>
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ - 1050m</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        
-        body { 
-            background: radial-gradient(circle at center, #020617 0%, #000000 100%); 
-            color: white; 
-            min-height: 100vh; 
-            font-family: 'Orbitron', sans-serif; 
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .data-card { 
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid #1e293b;
-            border-radius: 2rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(30, 58, 138, 0.3);
-            transition: all 0.5s ease;
-        }
-
-        .data-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-        }
-
-        .neon-text {
-            text-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.4);
-        }
-
-        .alt-tag {
-            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
-            letter-spacing: 0.3em;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-        }
+        body { background: #020617; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+        .forecast-scroll { overflow-x: auto; white-space: nowrap; }
+        .forecast-card { min-width: 80px; text-align: center; padding: 10px; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4 md:p-8 min-h-screen">
 
-    <header class="text-center mb-16">
-        <p class="text-blue-500 text-xs font-bold tracking-[0.5em] mb-2">SYSTEM ONLINE</p>
-        <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter italic border-b-4 border-blue-900 pb-2">
-            ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ
-        </h1>
-        <h2 class="text-5xl md:text-7xl font-black text-blue-600 mt-2">ΓΗΛΟΦΟΥ</h2>
-        
-        <div class="alt-tag inline-block text-white text-[10px] md:text-xs font-bold px-8 py-2 rounded-full mt-8 uppercase">
-            ALTITUDE: 1050m
-        </div>
+    <header class="text-center mb-8">
+        <h1 class="text-2xl md:text-4xl font-black tracking-widest uppercase italic text-blue-500">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+        <div class="mt-2 inline-block bg-blue-600 px-4 py-1 rounded-full text-[10px] font-bold tracking-[0.2em]">ΥΨΟΜΕΤΡΟ: 1050M</div>
     </header>
 
-    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-        
-        <div class="data-card p-12 text-center group">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-6">Temperature</p>
-            <h2 id="temp" class="text-8xl md:text-9xl font-black neon-text text-white">--°C</h2>
-            <div class="mt-4 w-12 h-1 bg-blue-600 mx-auto rounded-full"></div>
+    <div class="max-w-4xl mx-auto grid grid-cols-2 gap-4 mb-8">
+        <div class="glass p-6 text-center">
+            <p class="text-slate-400 text-[10px] uppercase font-bold mb-2 tracking-widest">Θερμοκρασία</p>
+            <h2 id="temp" class="text-5xl font-bold">--°C</h2>
         </div>
-
-        <div class="data-card p-12 text-center group">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-6">Humidity</p>
-            <h2 id="hum" class="text-8xl md:text-9xl font-black neon-text text-blue-500">--%</h2>
-            <div class="mt-4 w-12 h-1 bg-blue-600 mx-auto rounded-full"></div>
+        <div class="glass p-6 text-center">
+            <p class="text-slate-400 text-[10px] uppercase font-bold mb-2 tracking-widest">Υγρασία</p>
+            <h2 id="hum" class="text-5xl font-bold">--%</h2>
         </div>
-
     </div>
 
-    <footer class="mt-20 w-full max-w-4xl flex flex-col md:flex-row justify-between items-center opacity-40 text-[9px] font-bold tracking-[0.4em]">
-        <div class="flex items-center gap-3 mb-4 md:mb-0">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
-            <span>LIVE DATA FEED FROM LOCAL SERVER</span>
+    <div class="max-w-4xl mx-auto glass p-6">
+        <p class="text-blue-400 text-xs font-bold uppercase mb-4 tracking-widest border-b border-white/10 pb-2">
+            <i class="fa-solid fa-clock-rotate-left mr-2"></i>Πρόγνωση ανά ώρα (Γήλοφος)
+        </p>
+        <div id="hourly-forecast" class="forecast-scroll flex gap-4 pb-2">
+            <p class="text-slate-500 text-xs uppercase animate-pulse">Φόρτωση πρόγνωσης...</p>
         </div>
-        <div id="time">LAST UPDATE: --:--:--</div>
+    </div>
+
+    <footer class="mt-8 text-center opacity-30">
+        <div id="time" class="text-[9px] font-mono tracking-widest uppercase">ΣΥΝΔΕΣΗ...</div>
     </footer>
 
     <script>
-        async function update() {
+        // 1. ΑΝΑΝΕΩΣΗ ΔΙΚΩΝ ΣΟΥ ΔΕΔΟΜΕΝΩΝ (ΑΠΟ ΤΟ DATA.JSON)
+        async function updateStation() {
             try {
                 const r = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d = await r.json();
                 document.getElementById('temp').innerText = d.temp + '°C';
                 document.getElementById('hum').innerText = d.humidity + '%';
-                document.getElementById('time').innerText = "LAST UPDATE: " + new Date().toLocaleTimeString('el-GR');
-            } catch (e) { }
+                document.getElementById('time').innerText = "ΤΕΛΕΥΤΑΙΑ ΛΗΨΗ: " + new Date().toLocaleTimeString('el-GR');
+            } catch (e) { console.log("Station Error"); }
         }
-        update(); setInterval(update, 20000);
+
+        // 2. ΛΗΨΗ ΠΡΟΓΝΩΣΗΣ ΑΠΟ OPEN-METEO (ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΓΗΛΟΦΟΥ)
+        async function getForecast() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&hourly=temperature_2m,weathercode&forecast_days=1&timezone=auto');
+                const data = await res.json();
+                const container = document.getElementById('hourly-forecast');
+                container.innerHTML = '';
+
+                // Παίρνουμε τις επόμενες 12 ώρες
+                for (let i = 0; i < 12; i++) {
+                    const hour = new Date(data.hourly.time[i]).getHours() + ":00";
+                    const temp = Math.round(data.hourly.temperature_2m[i]);
+                    const code = data.hourly.weathercode[i];
+                    let icon = 'fa-sun'; // default
+
+                    // Κωδικοί καιρού (WMO)
+                    if (code == 0) icon = 'fa-sun text-yellow-400';
+                    else if (code <= 3) icon = 'fa-cloud-sun text-gray-300';
+                    else if (code <= 48) icon = 'fa-smog text-gray-500';
+                    else if (code <= 65) icon = 'fa-cloud-showers-heavy text-blue-400';
+                    else if (code <= 77) icon = 'fa-snowflake text-white';
+                    else icon = 'fa-cloud-bolt text-yellow-600';
+
+                    container.innerHTML += `
+                        <div class="forecast-card">
+                            <p class="text-[10px] text-slate-500 mb-2">${hour}</p>
+                            <i class="fa-solid ${icon} text-xl mb-2"></i>
+                            <p class="text-sm font-bold">${temp}°C</p>
+                        </div>
+                    `;
+                }
+            } catch (e) { console.log("Forecast Error"); }
+        }
+
+        updateStation();
+        getForecast();
+        setInterval(updateStation, 30000);
+        setInterval(getForecast, 300000); // Πρόγνωση κάθε 5 λεπτά
     </script>
 </body>
 </html>
