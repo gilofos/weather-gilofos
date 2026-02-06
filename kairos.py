@@ -1,36 +1,40 @@
 import requests
 import json
+from datetime import datetime
 
-# Ρυθμίσεις για Γηλόφο
-API_KEY = "154abadcd6dbf332847ef2f672a9793c"
-LAT = 40.0632 
-LON = 21.8025
+# Ρυθμίσεις
+API_KEY = "ΣΥΜΠΛΗΡΩΣΕ_ΤΟ_ΔΙΚΟ_ΣΟΥ_KEY" 
+CITY = "Gilofos,GR"
+URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
-def get_weather():
-    try:
-        # Κλήση στο OpenWeather για τον Γηλόφο
-        url = f"https://api.openweathermap.org/data/2.5/weather?lat={LAT}&lon={LON}&appid={API_KEY}&units=metric&lang=el"
-        response = requests.get(url)
-        data = response.json()
-        
-        # Οργάνωση των δεδομένων που θα στείλουμε στο site
-        weather_data = {
-            "temp": round(data["main"]["temp"], 1),
-            "humidity": data["main"]["humidity"],
-            "pressure": data["main"]["pressure"],
-            "description": data["weather"][0]["description"].capitalize(),
-            "city": "Γηλόφος",
-            "timestamp": data["dt"]
-        }
-        
-        # Δημιουργία/Ενημέρωση του αρχείου data.json
-        with open("data.json", "w", encoding="utf-8") as f:
-            json.dump(weather_data, f, ensure_ascii=False, indent=4)
-            
-        print("Επιτυχία! Το data.json ενημερώθηκε με τα νέα στοιχεία.")
-        
-    except Exception as e:
-        print(f"Κάτι πήγε στραβά: {e}")
+try:
+    response = requests.get(URL)
+    data = response.json()
 
-if __name__ == "__main__":
-    get_weather()
+    weather_data = {
+        "temperature": round(data["main"]["temp"]),
+        "humidity": data["main"]["humidity"],
+        "last_update": datetime.now().strftime("%d/%m/%Y %H:%M")
+    }
+
+    # Αποθήκευση σε JSON (για το ιστορικό)
+    with open("data.json", "w") as f:
+        json.dump(weather_data, f)
+
+    # ΦΤΙΑΧΝΟΥΜΕ ΜΙΑ ΜΙΚΡΗ ΣΕΛΙΔΑ (Widget)
+    html_content = f"""
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="margin:0; padding:0; font-family:sans-serif; text-align:center; background:white;">
+        <div style="color:#d9534f; font-size:28px; font-weight:bold;">{weather_data['temperature']}°C</div>
+        <div style="color:#555; font-size:16px;">💧 {weather_data['humidity']}%</div>
+        <div style="color:#888; font-size:11px; margin-top:5px;">{weather_data['last_update']}</div>
+    </body>
+    </html>
+    """
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+except Exception as e:
+    print(f"Error: {e}")
+       
