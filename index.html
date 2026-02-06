@@ -3,70 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { background: #0a0a0a; color: white; font-family: 'Segoe UI', sans-serif; }
+        body { background: #050505; color: white; font-family: 'Segoe UI', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
-        .map-container { width: 100%; height: 400px; border-radius: 1rem; overflow: hidden; border: 1px solid #333; }
+        .map-container { width: 100%; height: 350px; border-radius: 1rem; overflow: hidden; border: 1px solid #333; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body class="p-4 md:p-6">
 
     <div class="max-w-5xl mx-auto">
-        <header class="text-center mb-6">
-            <h1 class="text-2xl md:text-3xl font-black tracking-widest text-blue-500 uppercase italic">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-            <p class="text-[10px] text-slate-500 font-bold tracking-[0.3em]">LIVE DATA & SATELLITE</p>
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-4 border-b-2 border-blue-600">
+            <div class="text-left">
+                <h1 class="text-xl font-black tracking-tighter text-blue-500 uppercase italic">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="bg-blue-900/50 px-2 py-0.5 rounded text-[10px] font-bold">ΥΨΟΜΕΤΡΟ: 1050m</span>
+                    <span id="live-date" class="text-slate-400 font-bold text-[10px] uppercase">-- --- ----</span>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <div id="live-clock" class="text-2xl font-mono font-bold text-white bg-white/5 px-4 py-1 rounded-lg border border-white/10">00:00:00</div>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center md:text-left">
-            <div class="glass p-5 border-l-4 border-blue-600">
-                <div id="live-clock" class="text-4xl md:text-5xl font-black tracking-tighter">00:00:00</div>
-                <div id="live-date" class="text-blue-400 font-bold uppercase text-xs mt-1 tracking-widest">-- --- ----</div>
-            </div>
-            <div class="glass p-5 flex justify-around items-center">
-                <div class="text-center">
-                    <i class="fa-solid fa-sunrise text-yellow-500 mb-1"></i>
-                    <p class="text-[9px] uppercase text-slate-400">ΑΝΑΤΟΛΗ</p>
-                    <p id="sunrise" class="text-sm font-bold">--:--</p>
-                </div>
-                <div class="text-center">
-                    <i class="fa-solid fa-sunset text-orange-500 mb-1"></i>
-                    <p class="text-[9px] uppercase text-slate-400">ΔΥΣΗ</p>
-                    <p id="sunset" class="text-sm font-bold">--:--</p>
-                </div>
-            </div>
-        </div>
-
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            <div class="glass p-4 text-center">
-                <p class="text-[10px] text-blue-400 font-bold mb-1">ΤΩΡΑ</p>
+            <div class="glass p-4 text-center border-t-2 border-blue-500">
+                <p class="text-[9px] text-blue-400 font-bold mb-1 uppercase">ΤΩΡΑ</p>
                 <div id="temp" class="text-3xl font-black">--°C</div>
             </div>
-            <div class="glass p-4 text-center border-t border-red-900/50">
-                <p class="text-[10px] text-red-500 font-bold mb-1 uppercase">Max</p>
+            <div class="glass p-4 text-center border-t-2 border-red-600">
+                <p class="text-[9px] text-red-500 font-bold mb-1 uppercase">MAX</p>
                 <div id="temp-max" class="text-2xl font-bold">--°</div>
             </div>
-            <div class="glass p-4 text-center border-t border-cyan-900/50">
-                <p class="text-[10px] text-cyan-400 font-bold mb-1 uppercase">Min</p>
+            <div class="glass p-4 text-center border-t-2 border-cyan-500">
+                <p class="text-[9px] text-cyan-400 font-bold mb-1 uppercase">MIN</p>
                 <div id="temp-min" class="text-2xl font-bold">--°</div>
             </div>
-            <div class="glass p-4 text-center">
-                <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase">ΥΓΡΑΣΙΑ</p>
+            <div class="glass p-4 text-center border-t-2 border-slate-500">
+                <p class="text-[9px] text-slate-400 font-bold mb-1 uppercase">ΥΓΡΑΣΙΑ</p>
                 <div id="hum" class="text-2xl font-bold">--%</div>
             </div>
         </div>
 
         <div class="map-container mb-6">
-            <iframe src="https://embed.windy.com/embed2.html?lat=39.88&lon=21.82&zoom=5&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=&metricTemp=&radarRange="></iframe>
+            <div class="absolute top-2 left-2 z-10 bg-black/70 px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest border border-white/10">
+                LIVE ΗΛΙΟΣ - ΝΥΧΤΑ - ΣΕΛΗΝΗ
+            </div>
+            <iframe src="https://www.meteoblue.com/en/weather/maps/daynightvisualiser?coords=39.88/21.82/3" scrolling="no"></iframe>
         </div>
 
         <div class="glass p-5 mb-6">
-            <h3 class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2 italic">Πρόβλεψη Εβδομάδας</h3>
+            <h3 class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Πρόβλεψη Εβδομάδας</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
         </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="glass p-3 flex items-center justify-center gap-4">
+                <i class="fa-solid fa-sunrise text-yellow-500"></i>
+                <div>
+                    <p class="text-[8px] text-slate-500 uppercase font-bold">ΑΝΑΤΟΛΗ</p>
+                    <p id="sunrise" class="text-xs font-bold">--:--</p>
+                </div>
+            </div>
+            <div class="glass p-3 flex items-center justify-center gap-4">
+                <i class="fa-solid fa-sunset text-orange-500"></i>
+                <div>
+                    <p class="text-[8px] text-slate-500 uppercase font-bold">ΔΥΣΗ</p>
+                    <p id="sunset" class="text-xs font-bold">--:--</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -109,9 +119,9 @@
                     const d = new Date(d2.daily.time[i]);
                     dHtml += `
                         <div class="bg-white/5 p-3 rounded-xl text-center border border-white/5">
-                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-2">${days[d.getDay()]}</p>
-                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-xl mb-2"></i>
-                            <div class="text-xs font-bold">
+                            <p class="text-[9px] font-bold text-blue-400 uppercase mb-1">${days[d.getDay()]}</p>
+                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-lg mb-1"></i>
+                            <div class="text-[10px] font-bold">
                                 <span class="text-red-500">${Math.round(d2.daily.temperature_2m_max[i])}°</span>
                                 <span class="text-cyan-500 ml-1">${Math.round(d2.daily.temperature_2m_min[i])}°</span>
                             </div>
@@ -119,7 +129,7 @@
                 }
                 document.getElementById('daily-forecast').innerHTML = dHtml;
 
-            } catch(e) { console.log("Error"); }
+            } catch(e) { console.log("Error loading weather"); }
         }
         updateWeather();
         setInterval(updateWeather, 60000);
