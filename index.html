@@ -1,17 +1,138 @@
-  <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                            <p class="text-[10px] font-bold text-blue-300 uppercase mb-2">${days[d.getDay()]}</p>
-                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-xl mb-2"></i>
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; font-family: sans-serif; min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 1rem; }
+        .map-container { width: 100%; height: 400px; border-radius: 1rem; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.1); }
+        iframe { width: 100%; height: 100%; border: none; }
+        /* ΜΕΓΑΛΥΤΕΡΗ LOGO */
+        .logo-img { height: 120px; width: auto; border-radius: 12px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="glass p-6 mb-6 flex flex-col md:flex-row justify-between items-center gap-6 text-center">
+            
+            <div class="md:text-left order-2 md:order-1">
+                <h1 class="text-2xl font-black uppercase italic text-blue-300 leading-none tracking-tighter">
+                    ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ<br>ΓΗΛΟΦΟΥ
+                </h1>
+                <p class="text-[10px] font-bold text-blue-400 mt-2 tracking-[0.3em] uppercase">ΥΨΟΜΕΤΡΟ: 1050m</p>
+            </div>
+
+            <div class="order-1 md:order-2">
+                <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/120?text=GHILOFOS'">
+            </div>
+            
+            <div class="flex flex-col items-center md:items-end order-3">
+                <div id="live-clock" class="text-4xl font-mono font-bold text-white tracking-widest bg-black/20 px-4 py-2 rounded-lg">00:00:00</div>
+                <div id="live-date" class="text-[11px] font-bold text-blue-300 uppercase mt-2 italic">-- --- ----</div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="glass p-5 text-center border-b-4 border-blue-400">
+                <p class="text-[10px] font-bold text-blue-300 mb-2 uppercase tracking-widest">Τώρα</p>
+                <div id="temp" class="text-4xl font-black text-white">--°C</div>
+            </div>
+            <div class="glass p-5 text-center border-b-4 border-red-500">
+                <p class="text-[10px] font-bold text-red-400 mb-2 uppercase italic tracking-widest">MAX</p>
+                <div id="temp-max" class="text-3xl font-bold text-white">--°</div>
+            </div>
+            <div class="glass p-5 text-center border-b-4 border-cyan-400">
+                <p class="text-[10px] font-bold text-cyan-400 mb-2 uppercase italic tracking-widest">MIN</p>
+                <div id="temp-min" class="text-3xl font-bold text-white">--°</div>
+            </div>
+            <div class="glass p-5 text-center border-b-4 border-indigo-400">
+                <p class="text-[10px] font-bold text-indigo-300 mb-2 uppercase tracking-widest">Υγρασία</p>
+                <div id="hum" class="text-3xl font-bold text-white">--%</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+            <div class="glass p-4 flex items-center justify-center gap-6">
+                <i class="fa-solid fa-sun text-yellow-500 text-3xl animate-pulse"></i>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">ΑΝΑΤΟΛΗ</p>
+                    <p id="sunrise" class="font-bold text-lg text-white">--:--</p>
+                </div>
+            </div>
+            <div class="glass p-4 flex items-center justify-center gap-6">
+                <i class="fa-solid fa-moon text-blue-300 text-3xl"></i>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">ΔΥΣΗ</p>
+                    <p id="sunset" class="font-bold text-lg text-white">--:--</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container mb-6 shadow-2xl">
+            <iframe src="https://embed.windy.com/embed2.html?lat=39.88&lon=21.82&zoom=6&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C"></iframe>
+        </div>
+
+        <div class="glass p-6">
+            <p class="text-[12px] font-black text-blue-300 uppercase mb-4 border-b border-white/10 pb-2 italic tracking-widest">Πρόβλεψη Εβδομάδας</p>
+            <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const lat = 39.88, lon = 21.82;
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString('el-GR');
+            document.getElementById('live-date').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function getIcon(code) {
+            if (code == 0) return 'fa-sun text-yellow-400';
+            if (code <= 3) return 'fa-cloud-sun text-slate-300';
+            if (code >= 51 && code <= 67) return 'fa-cloud-showers-heavy text-blue-400';
+            if (code >= 71 && code <= 77) return 'fa-snowflake text-white';
+            return 'fa-cloud-bolt text-indigo-400';
+        }
+
+        async function updateWeather() {
+            try {
+                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
+                const d1 = await r1.json();
+                document.getElementById('temp').innerText = d1.temp + '°C';
+                document.getElementById('hum').innerText = d1.humidity + '%';
+
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
+                const d2 = await r2.json();
+
+                if(d2.daily.sunrise[0]) document.getElementById('sunrise').innerText = d2.daily.sunrise[0].split('T')[1];
+                if(d2.daily.sunset[0]) document.getElementById('sunset').innerText = d2.daily.sunset[0].split('T')[1];
+                
+                document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
+                document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
+
+                let dHtml = '';
+                const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
+                for(let i=0; i<5; i++) {
+                    const d = new Date(d2.daily.time[i]);
+                    dHtml += `
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                            <p class="text-[11px] font-bold text-blue-300 uppercase mb-2">${days[d.getDay()]}</p>
+                            <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-2xl mb-2"></i>
                             <div class="text-xs font-black text-white">${Math.round(d2.daily.temperature_2m_max[i])}° / <span class="text-blue-400 font-normal">${Math.round(d2.daily.temperature_2m_min[i])}°</span></div>
                         </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dHtml;
-            } catch(e) { console.error("Error loading weather data"); }
+            } catch(e) { console.error("Update error"); }
         }
         updateWeather();
         setInterval(updateWeather, 60000);
     </script>
 </body>
-</html>
-
-                
-
+</html> 
