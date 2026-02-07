@@ -129,16 +129,20 @@
 
         async function loadWeather() {
             try {
+                // ΦΟΡΤΩΣΗ ΔΕΔΟΜΕΝΩΝ ΑΠΟ ΤΟ DATA.JSON ΤΟΥ GITHUB
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
-                document.getElementById('temp-hero').innerText = (d1.temperature || d1.temp || "--") + "°";
+                
+                // ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: Διαβάζουμε τα πάντα από το d1 (data.json)
+                document.getElementById('temp-hero').innerText = (d1.temperature !== undefined ? d1.temperature.toFixed(1) : "--") + "°";
                 document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
-                document.getElementById('wind').innerText = (d1.wind_speed || "0") + " km/h";
+                document.getElementById('wind').innerText = (d1.wind_speed !== undefined ? d1.wind_speed.toFixed(1) : "0") + " km/h";
+                document.getElementById('pres').innerText = (d1.pressure !== undefined ? d1.pressure.toFixed(1) : "--") + " hPa";
                 document.getElementById('moon').innerText = getMoon();
                 
+                // Δεδομένα για το Chart και την Πρόγνωση από το Open-Meteo API
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
-                document.getElementById('pres').innerText = Math.round(d2.hourly.surface_pressure[0] + 116) + " hPa";
 
                 const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
                 const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
@@ -155,8 +159,8 @@
 
                 const ctx = document.getElementById('myChart').getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Πράσινο πάνω
-                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)'); // Μπλε κάτω
+                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); 
+                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)'); 
 
                 new Chart(ctx, {
                     type: 'line',
