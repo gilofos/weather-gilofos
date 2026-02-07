@@ -3,151 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Μετεωρολογικός Σταθμός Γηλόφου</title>
     <style>
-        body { background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
-        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; }
-        .hero-section { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-radius: 30px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
+        .container { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 1.5em; }
+        h2 { color: #555; font-size: 1.1em; margin-bottom: 20px; }
+        .temp { font-size: 4em; font-weight: bold; color: #e67e22; margin: 10px 0; }
+        .details { display: flex; justify-content: space-around; margin-top: 20px; }
+        .data-box { background: #ecf0f1; padding: 10px; border-radius: 10px; width: 45%; }
+        .label { font-size: 0.8em; color: #7f8c8d; text-transform: uppercase; }
+        .value { font-size: 1.2em; font-weight: bold; color: #2980b9; }
+        .footer { margin-top: 20px; font-size: 0.8em; color: #95a5a6; }
     </style>
 </head>
-<body class="p-2 md:p-6">
+<body>
 
-    <div class="max-w-6xl mx-auto">
-        <div class="hero-section mb-8 p-6 md:p-10 flex flex-col justify-between">
-            <div class="flex justify-between items-start">
-                <div class="flex flex-col gap-3">
-                    <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30 shadow-xl">
-                        <h1 class="text-xl md:text-3xl font-black uppercase tracking-tight text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-                    </div>
-                    <div class="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-full shadow-lg w-fit mt-1 border border-red-400">
-                        <span class="relative flex h-3 w-3">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                        </span>
-                        <span class="text-xs font-black uppercase tracking-widest italic text-white text-[10px] md:text-xs">ΖΩΝΤΑΝΗ ΜΕΤΡΗΣΗ</span>
-                    </div>
-                </div>
-                <div class="bg-white p-3 rounded-3xl shadow-2xl border-4 border-blue-400/30">
-                    <img src="logo.png" alt="Logo" class="h-24 md:h-36 w-auto" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
-                </div>
-            </div>
-
-            <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6">
-                <div class="flex items-center gap-6">
-                    <div class="bg-white/10 p-5 rounded-full border border-white/20"><i class="fa-solid fa-temperature-high text-5xl md:text-7xl text-orange-400"></i></div>
-                    <div>
-                        <h2 id="temp-hero" class="text-8xl md:text-[10rem] font-black tracking-tighter leading-none">--°</h2>
-                        <p id="date-hero" class="text-blue-200 font-bold uppercase text-sm md:text-lg mt-2 tracking-widest bg-blue-900/40 px-3 py-1 rounded-lg w-fit"></p>
-                    </div>
-                </div>
-                <div class="bg-blue-950/80 backdrop-blur-xl px-10 py-6 rounded-[2rem] border-2 border-white/20 shadow-2xl">
-                    <div id="clock-hero" class="text-6xl md:text-8xl font-mono font-black tracking-tighter text-blue-100">00:00</div>
-                </div>
-            </div>
+<div class="container">
+    <h1>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+    <h2>ΖΩΝΤΑΝΗ ΜΕΤΡΗΣΗ <span style="font-size: 0.8em; color: #3498db;">(1050μ)</span></h2>
+    
+    <div class="temp" id="temp">--°C</div>
+    
+    <div class="details">
+        <div class="data-box">
+            <div class="label">Υγρασία</div>
+            <div class="value" id="humidity">--%</div>
         </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center font-black italic uppercase">
-            <div class="card border-b-8 border-cyan-400"><p class="text-xs text-cyan-300 mb-2">ΥΓΡΑΣΙΑ</p><h2 id="hum" class="text-5xl">--%</h2></div>
-            <div class="card border-b-8 border-emerald-400"><p class="text-xs text-emerald-300 mb-2">ΠΙΕΣΗ</p><h2 id="pres" class="text-3xl mt-2">-- hPa</h2></div>
-            <div class="card border-b-8 border-yellow-400"><p class="text-xs text-yellow-300 mb-2">ΣΕΛΗΝΗ</p><i id="moon-icon" class="fa-solid fa-moon text-4xl text-yellow-100 mt-1"></i><p id="moon" class="text-xs font-bold italic mt-2 normal-case">--</p></div>
-            <div class="card border-b-8 border-orange-400"><p class="text-xs text-orange-300 mb-2">ΑΝΕΜΟΣ</p><i class="fa-solid fa-wind text-4xl text-orange-200 mt-1"></i><h2 id="wind" class="text-2xl mt-1">-- km/h</h2></div>
+        <div class="data-box">
+            <div class="label">Πίεση</div>
+            <div class="value" id="pressure">-- hPa</div>
         </div>
-
-        <div class="card p-0 overflow-hidden h-[550px] relative border-2 border-blue-500/20 shadow-2xl mb-8">
-            <div class="absolute top-4 left-4 z-10 bg-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase shadow-xl flex items-center">
-                <i class="fa-solid fa-satellite-dish mr-2"></i> ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ (ΓΗΛΟΦΟΣ)
-            </div>
-            <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,8&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
-        </div>
-
-        <div class="card mb-8">
-            <h3 class="text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest text-center">Τάση Θερμοκρασίας (24ωρο)</h3>
-            <div id="icons-row" class="flex justify-between px-6 mb-4 text-2xl"></div>
-            <div style="height: 300px;"><canvas id="myChart"></canvas></div>
-        </div>
-
-        <div id="forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
     </div>
 
-    <script>
-        function startClock() {
-            const update = () => {
-                const now = new Date();
-                document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit'});
-                document.getElementById('date-hero').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
-            }
-            setInterval(update, 1000); update();
+    <div class="footer">
+        Κατάσταση: <span id="desc">--</span><br>
+        Τελευταία ενημέρωση: <span id="time">--:--:--</span>
+    </div>
+</div>
+
+<script>
+    async function updateWeather() {
+        try {
+            // Προσθέτουμε τυχαίο αριθμό στο τέλος για να μην "κολλάει" ο browser στα παλιά δεδομένα
+            const response = await fetch('data.json?v=' + Math.random());
+            const data = await response.json();
+            
+            document.getElementById('temp').innerText = data.temperature + '°C';
+            document.getElementById('humidity').innerText = data.humidity + '%';
+            document.getElementById('pressure').innerText = data.pressure + ' hPa';
+            document.getElementById('desc').innerText = data.description;
+            document.getElementById('time').innerText = data.last_update;
+        } catch (error) {
+            console.error('Σφάλμα στη λήψη δεδομένων:', error);
         }
+    }
 
-        function getMoon() {
-            const now = new Date(); const lp = 2551443; 
-            const new_moon = new Date('1970-01-07T20:35:00Z');
-            const phase = ((now.getTime() - new_moon.getTime()) / 1000) % lp;
-            const res = Math.floor((phase / lp) * 8);
-            const names = ["Νέα Σελήνη", "Αύξων Μηνίσκος", "Πρώτο Τέταρτο", "Αύξων Αμφίκυρτος", "Πανσέληνος", "Φθίνων Αμφίκυρτος", "Τελευταίο Τέταρτο", "Φθίνων Μηνίσκος"];
-            return names[res];
-        }
+    // Ενημέρωση αμέσως και μετά κάθε 1 λεπτό
+    updateWeather();
+    setInterval(updateWeather, 60000);
+</script>
 
-        function getIcon(code, hour, sr, ss) {
-            const isNight = hour < sr || hour > ss;
-            if (code <= 1) return isNight ? 'fa-moon text-blue-200' : 'fa-sun text-yellow-400';
-            if (code <= 3) return isNight ? 'fa-cloud-moon text-gray-400' : 'fa-cloud-sun text-gray-300';
-            if (code <= 65) return 'fa-cloud-showers-heavy text-blue-400';
-            return 'fa-cloud text-gray-300';
-        }
-
-        async function loadWeather() {
-            try {
-                // Φόρτωση από το data.json σου
-                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
-                const d1 = await r1.json();
-                document.getElementById('temp-hero').innerText = (d1.temperature || "--") + "°";
-                document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
-                document.getElementById('wind').innerText = (d1.wind_speed || "0") + " km/h";
-                document.getElementById('moon').innerText = getMoon();
-                
-                // Φόρτωση από Open-Meteo για τα υπόλοιπα
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
-                const d2 = await r2.json();
-                document.getElementById('pres').innerText = Math.round(d2.hourly.surface_pressure[0] + 116) + " hPa";
-
-                const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
-                const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
-
-                // ΔΗΜΙΟΥΡΓΙΑ ΓΡΑΦΗΜΑΤΟΣ
-                const labels = []; const temps = []; const iconsHtml = [];
-                for(let i=0; i<24; i+=3) {
-                    const timeStr = d2.hourly.time[i].split('T')[1].split(':')[0] + ":00";
-                    labels.push(timeStr); temps.push(d2.hourly.temperature_2m[i]);
-                    iconsHtml.push(`<div class="flex flex-col items-center"><span class="text-[10px] opacity-50 mb-1">${timeStr}</span><i class="fa-solid ${getIcon(d2.hourly.weathercode[i], parseInt(timeStr), sr, ss)}"></i></div>`);
-                }
-                document.getElementById('icons-row').innerHTML = iconsHtml.join('');
-
-                const ctx = document.getElementById('myChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: temps, borderColor: '#4ade80', borderWidth: 4, pointBackgroundColor: '#ffffff', tension: 0.4, fill: true, backgroundColor: 'rgba(74, 222, 128, 0.1)'
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } } }
-                });
-
-                // ΦΟΡΤΩΣΗ ΠΡΟΓΝΩΣΗΣ
-                let fHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
-                for(let i=0; i<5; i++) {
-                    const d = new Date(d2.daily.time[i]);
-                    fHtml += `<div class="card text-center"><p class="text-sm font-bold text-blue-300 mb-2">${days[d.getDay()]}</p><i class="fa-solid ${getIcon(d2.daily.weathercode[i], 12, 0, 24)} text-2xl my-2"></i><p class="font-black text-xl">${Math.round(d2.daily.temperature_2m_max[i])}°</p><p class="text-blue-500 text-xs">${Math.round(d2.daily.temperature_2m_min[i])}°</p></div>`;
-                }
-                document.getElementById('forecast').innerHTML = fHtml;
-            } catch(e) { console.error("Error loading weather:", e); }
-        }
-        startClock(); loadWeather(); setInterval(loadWeather, 60000);
-    </script>
 </body>
 </html>
