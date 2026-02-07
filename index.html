@@ -11,7 +11,8 @@
         body { background: #0f172a; color: white; font-family: sans-serif; margin: 0; padding: 0; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
         .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .chart-container { position: relative; height: 400px; width: 100%; }
+        .chart-container { position: relative; height: 350px; width: 100%; }
+        .icon-container { display: flex; justify-content: space-between; padding: 0 40px; margin-bottom: -10px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -25,11 +26,9 @@
                 </h1>
                 <p class="text-xs font-bold text-blue-500 mt-1 uppercase tracking-[0.2em]">Υψόμετρο: 1050m</p>
             </div>
-
             <div class="flex-1 flex justify-center order-first md:order-none">
                 <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/110?text=GHILOFOS'">
             </div>
-
             <div class="text-center md:text-right flex-1">
                 <div id="live-clock" class="text-2xl font-mono font-bold text-white bg-black/30 px-4 py-1 rounded-lg inline-block border border-white/10">00:00:00</div>
                 <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-2 block tracking-widest text-right">-- --- ----</div>
@@ -38,46 +37,36 @@
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="glass p-6 text-center border-b-4 border-blue-500">
-                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ΤΩΡΑ</span>
+                <span class="text-[10px] text-blue-400 font-bold uppercase">ΤΩΡΑ</span>
                 <div id="temp" class="text-4xl font-black mt-2">--°C</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-red-500">
-                <span class="text-[10px] text-red-400 font-bold uppercase italic tracking-widest">MAX</span>
+                <span class="text-[10px] text-red-400 font-bold uppercase italic">MAX</span>
                 <div id="temp-max" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-cyan-500">
-                <span class="text-[10px] text-cyan-400 font-bold uppercase italic tracking-widest">MIN</span>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase italic">MIN</span>
                 <div id="temp-min" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-indigo-500">
-                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">ΥΓΡΑΣΙΑ</span>
+                <span class="text-[10px] text-indigo-400 font-bold uppercase">ΥΓΡΑΣΙΑ</span>
                 <div id="hum" class="text-3xl font-bold mt-2 text-white">--%</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div class="glass p-6 flex flex-col justify-center items-center gap-8">
-                <div class="text-center">
-                    <i class="fa-solid fa-sun text-yellow-500 text-3xl mb-2 animate-pulse"></i>
-                    <p class="text-[10px] text-gray-400 uppercase font-bold">Ανατολή</p>
-                    <p id="sunrise" class="font-bold text-xl text-white">--:--</p>
+        <div class="glass p-6 mb-8 shadow-2xl">
+            <p class="text-[10px] text-blue-300 font-bold uppercase mb-6 tracking-widest italic text-center">Πρόγνωση Επόμενων Ωρών</p>
+            
+            <div id="hourly-icons" class="flex justify-between px-10 mb-2">
                 </div>
-                <div class="text-center">
-                    <i class="fa-solid fa-moon text-blue-300 text-3xl mb-2"></i>
-                    <p class="text-[10px] text-gray-400 uppercase font-bold">Δύση</p>
-                    <p id="sunset" class="font-bold text-xl text-white">--:--</p>
-                </div>
-            </div>
-            <div class="lg:col-span-2 glass p-6 shadow-2xl">
-                <p class="text-[10px] text-blue-300 font-bold uppercase mb-4 tracking-widest italic">Τάση Θερμοκρασίας (24h)</p>
-                <div class="chart-container">
-                    <canvas id="tempChart"></canvas>
-                </div>
+
+            <div class="chart-container">
+                <canvas id="tempChart"></canvas>
             </div>
         </div>
 
         <div class="glass p-8">
-            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη Επομένων Ημερών</h3>
+            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη Εβδομάδας</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
@@ -91,22 +80,21 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Δημιουργία Γραφήματος
         const ctx = document.getElementById('tempChart').getContext('2d');
         const tempChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Τώρα'],
+                labels: [], 
                 datasets: [{
                     label: 'Θερμοκρασία °C',
-                    data: [0, 0, 0, 0, 0, 0, 0], // Θα γεμίσει από την API
+                    data: [],
                     borderColor: '#60a5fa',
-                    backgroundColor: 'rgba(96, 165, 250, 0.2)',
-                    borderWidth: 3,
+                    backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                    borderWidth: 4,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff'
+                    pointRadius: 6,
+                    pointBackgroundColor: '#60a5fa'
                 }]
             },
             options: {
@@ -114,48 +102,68 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: value => value + '°' } },
+                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: 'bold' } } }
                 }
             }
         });
 
+        function getWeatherIcon(code) {
+            if (code == 0) return 'fa-sun text-yellow-400';
+            if (code <= 3) return 'fa-cloud-sun text-gray-300';
+            if (code >= 51 && code <= 67) return 'fa-cloud-showers-heavy text-blue-400';
+            if (code >= 71 && code <= 77) return 'fa-snowflake text-white';
+            return 'fa-cloud text-gray-400';
+        }
+
         async function updateWeather() {
             try {
-                // Δεδομένα από το data.json σου
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 document.getElementById('temp').innerText = d1.temp + '°C';
                 document.getElementById('hum').innerText = d1.humidity + '%';
 
-                // Δεδομένα από Open-Meteo για πρόβλεψη και γράφημα
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m&timezone=auto`);
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
+                // Επεξεργασία Ωριαίων (κάθε 3 ώρες για να χωράνε)
+                const labels = [];
+                const temps = [];
+                const iconsHtml = [];
+                
+                for(let i=0; i<24; i+=3) {
+                    const time = d2.hourly.time[i].split('T')[1];
+                    labels.push(time);
+                    temps.push(d2.hourly.temperature_2m[i]);
+                    const iconClass = getWeatherIcon(d2.hourly.weathercode[i]);
+                    iconsHtml.push(`<div class="text-center"><i class="fa-solid ${iconClass} text-xl"></i><br><span class="text-[9px] text-gray-400">${Math.round(d2.hourly.temperature_2m[i])}°</span></div>`);
+                }
+
+                tempChart.data.labels = labels;
+                tempChart.data.datasets[0].data = temps;
+                tempChart.update();
+                document.getElementById('hourly-icons').innerHTML = iconsHtml.join('');
+
+                // 5 Days
+                let dailyHtml = '';
+                const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
+                for(let i=0; i<5; i++) {
+                    const d = new Date(d2.daily.time[i]);
+                    dailyHtml += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
+                        <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
+                        <i class="fa-solid ${getWeatherIcon(d2.daily.weathercode[i])} text-xl mb-2"></i>
+                        <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
+                        <div class="text-[10px] text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
+                    </div>`;
+                }
+                document.getElementById('daily-forecast').innerHTML = dailyHtml;
+                
                 document.getElementById('sunrise').innerText = d2.daily.sunrise[0].split('T')[1];
                 document.getElementById('sunset').innerText = d2.daily.sunset[0].split('T')[1];
                 document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
                 document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
 
-                // Ενημέρωση Γραφήματος με πραγματικά δεδομένα 24ώρου
-                const hourlyTemps = d2.hourly.temperature_2m.slice(0, 24).filter((_, i) => i % 4 === 0);
-                hourlyTemps.push(parseFloat(d1.temp)); // Προσθήκη της τωρινής μέτρησης του σταθμού
-                tempChart.data.datasets[0].data = hourlyTemps;
-                tempChart.update();
-
-                // Πρόβλεψη 5 ημερών
-                let html = '';
-                const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
-                for(let i=0; i<5; i++) {
-                    const d = new Date(d2.daily.time[i]);
-                    html += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
-                        <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
-                        <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
-                        <div class="text-[10px] text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
-                    </div>`;
-                }
-                document.getElementById('daily-forecast').innerHTML = html;
-            } catch(e) { console.log("Error loading data"); }
+            } catch(e) { console.log(e); }
         }
         updateWeather();
         setInterval(updateWeather, 60000);
