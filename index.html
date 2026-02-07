@@ -83,19 +83,38 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="card p-0 overflow-hidden h-[500px] relative border-2 border-orange-500/40 bg-slate-900 flex flex-col items-center justify-center text-center shadow-2xl">
+                <div class="absolute top-4 left-4 z-10 bg-orange-600 px-4 py-2 rounded-xl text-xs font-black uppercase shadow-xl flex items-center text-white">
+                    <i class="fa-solid fa-video animate-pulse mr-2"></i> LIVE ΚΑΜΕΡΑ
+                </div>
+                <div class="p-8">
+                    <div class="bg-orange-500/10 p-8 rounded-full mb-6 inline-block border border-orange-500/20">
+                        <i class="fa-solid fa-camera-rotate text-7xl text-orange-500"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-3 text-white italic tracking-tighter uppercase">Ζωντανη Εικονα</h3>
+                    <p class="text-gray-400 mb-8 max-w-sm mx-auto font-medium">Πατήστε το κουμπί για να συνδεθείτε με την περιστρεφόμενη κάμερα του σταθμού.</p>
+                    <a href="https://share.yoosee.com/share/index.html?Type=2&InviteCode=e9bd9a6bb2a58f7a49f49f47fb8f559e&SharerName=092934495&AppVersion=3014729&DeviceID=4645803138&Permission=117&ExpireTime=1770565553" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white font-black py-5 px-12 rounded-2xl transition-all transform hover:scale-105 shadow-[0_10px_20px_rgba(234,88,12,0.4)] inline-flex items-center text-lg uppercase">
+                        <i class="fa-solid fa-play-circle mr-3 text-2xl"></i> Προβολη Καμερας
+                    </a>
+                </div>
+            </div>
+            <div class="card p-0 overflow-hidden h-[500px] relative border-2 border-blue-500/20 shadow-2xl">
+                <div class="absolute top-4 left-4 z-10 bg-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase shadow-xl flex items-center text-white">
+                    <i class="fa-solid fa-satellite-dish mr-2"></i> Κινηση Νεφων
+                </div>
+                <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,7&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
+            </div>
+        </div>
+
         <div class="card mb-8">
             <h3 class="text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest text-center">Τάση Θερμοκρασίας (24ωρο)</h3>
             <div id="icons-row" class="flex justify-between px-6 mb-4 text-2xl"></div>
             <div style="height: 300px;"><canvas id="myChart"></canvas></div>
         </div>
 
-        <div class="card p-0 overflow-hidden h-[600px] relative border-2 border-blue-500/20 mb-8">
-            <div class="absolute top-4 left-4 z-10 bg-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-xl">ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ</div>
-            <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,7&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
-        </div>
-
         <div class="card mb-8">
-            <h3 class="text-center text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest text-white">Πρόγνωση Εβδομάδας</h3>
+            <h3 class="text-center text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest">Πρόγνωση Εβδομάδας</h3>
             <div id="forecast" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
@@ -129,6 +148,7 @@
 
         async function loadWeather() {
             try {
+                // Διάβασμα από data.json
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 document.getElementById('temp-hero').innerText = (d1.temperature || d1.temp || "--") + "°";
@@ -136,6 +156,7 @@
                 document.getElementById('wind').innerText = (d1.wind_speed || "0") + " km/h";
                 document.getElementById('moon').innerText = getMoon();
                 
+                // Διάβασμα από API για διάγραμμα & πρόγνωση
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
                 document.getElementById('pres').innerText = Math.round(d2.hourly.surface_pressure[0] + 116) + " hPa";
@@ -143,7 +164,7 @@
                 const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
                 const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
 
-                // CHART ΜΕ ΣΤΥΛ METEO
+                // ΔΙΑΓΡΑΜΜΑ
                 const labels = []; const temps = []; const iconsHtml = [];
                 for(let i=0; i<24; i+=3) {
                     const timeStr = d2.hourly.time[i].split('T')[1].split(':')[0] + ":00";
@@ -155,8 +176,8 @@
 
                 const ctx = document.getElementById('myChart').getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Πράσινο πάνω
-                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)'); // Μπλε κάτω
+                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
+                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)');
 
                 new Chart(ctx, {
                     type: 'line',
@@ -167,7 +188,6 @@
                             borderColor: '#4ade80',
                             borderWidth: 4,
                             pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#4ade80',
                             pointRadius: 5,
                             tension: 0.4,
                             fill: true,
@@ -179,12 +199,13 @@
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: {
-                            y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
                             x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
                         }
                     }
                 });
 
+                // ΠΡΟΓΝΩΣΗ ΕΒΔΟΜΑΔΑΣ
                 let fHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
