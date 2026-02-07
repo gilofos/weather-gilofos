@@ -10,10 +10,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Εδώ προσθέσαμε το περιβάλλον που ζητούσε το σφάλμα
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -31,10 +29,12 @@ jobs:
           git add data.json
           git commit -m "update data" || exit 0
           git push
-      - name: Upload for Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-      - name: Deploy to Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
