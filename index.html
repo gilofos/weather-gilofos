@@ -1,68 +1,28 @@
 <!DOCTYPE html>
-<html lang="el">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Μετεωρολογικός Σταθμός Γηλόφου</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
-        .container { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; font-size: 1.5em; }
-        h2 { color: #555; font-size: 1.1em; margin-bottom: 20px; }
-        .temp { font-size: 4em; font-weight: bold; color: #e67e22; margin: 10px 0; }
-        .details { display: flex; justify-content: space-around; margin-top: 20px; }
-        .data-box { background: #ecf0f1; padding: 10px; border-radius: 10px; width: 45%; }
-        .label { font-size: 0.8em; color: #7f8c8d; text-transform: uppercase; }
-        .value { font-size: 1.2em; font-weight: bold; color: #2980b9; }
-        .footer { margin-top: 20px; font-size: 0.8em; color: #95a5a6; }
-    </style>
+    <title>Γήλοφος</title>
 </head>
-<body>
-
-<div class="container">
+<body style="text-align:center; font-family:Arial; padding-top:50px;">
     <h1>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-    <h2>ΖΩΝΤΑΝΗ ΜΕΤΡΗΣΗ <span style="font-size: 0.8em; color: #3498db;">(1050μ)</span></h2>
-    
-    <div class="temp" id="temp">--°C</div>
-    
-    <div class="details">
-        <div class="data-box">
-            <div class="label">Υγρασία</div>
-            <div class="value" id="humidity">--%</div>
-        </div>
-        <div class="data-box">
-            <div class="label">Πίεση</div>
-            <div class="value" id="pressure">-- hPa</div>
-        </div>
+    <h2 id="altitude">Υψόμετρο: 1050μ</h2>
+    <div style="font-size:50px; color:orange;" id="temp">Φορτώνει...</div>
+    <div style="margin-top:20px;">
+        Πίεση: <span id="press">--</span> hPa | 
+        Υγρασία: <span id="hum">--</span>%
     </div>
+    <p id="update" style="color:gray;"></p>
 
-    <div class="footer">
-        Κατάσταση: <span id="desc">--</span><br>
-        Τελευταία ενημέρωση: <span id="time">--:--:--</span>
-    </div>
-</div>
-
-<script>
-    async function updateWeather() {
-        try {
-            // Προσθέτουμε τυχαίο αριθμό στο τέλος για να μην "κολλάει" ο browser στα παλιά δεδομένα
-            const response = await fetch('data.json?v=' + Math.random());
-            const data = await response.json();
-            
-            document.getElementById('temp').innerText = data.temperature + '°C';
-            document.getElementById('humidity').innerText = data.humidity + '%';
-            document.getElementById('pressure').innerText = data.pressure + ' hPa';
-            document.getElementById('desc').innerText = data.description;
-            document.getElementById('time').innerText = data.last_update;
-        } catch (error) {
-            console.error('Σφάλμα στη λήψη δεδομένων:', error);
-        }
-    }
-
-    // Ενημέρωση αμέσως και μετά κάθε 1 λεπτό
-    updateWeather();
-    setInterval(updateWeather, 60000);
-</script>
-
+    <script>
+        fetch('data.json?v=' + Date.now())
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('temp').innerText = data.temperature + '°C';
+                document.getElementById('press').innerText = data.pressure;
+                document.getElementById('hum').innerText = data.humidity;
+                document.getElementById('update').innerText = 'Τελευταία ενημέρωση: ' + data.last_update;
+            });
+    </script>
 </body>
 </html>
