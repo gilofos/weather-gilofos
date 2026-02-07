@@ -2,111 +2,61 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAIROS GHILOFOU - LIVE</title>
+    <title>KAIROS GHILOFOU</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
-        body { background: radial-gradient(circle at center, #1e293b, #0f172a); font-family: 'Rajdhani', sans-serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 20px; }
-        .lcd-text { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        body { background: #1a202c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #3182ce; }
     </style>
 </head>
-<body class="text-slate-200">
-
-    <header class="w-full max-w-4xl flex flex-col md:flex-row justify-between items-center mb-6 glass">
-        <div class="flex items-center gap-4">
-            <div class="bg-sky-500/20 p-3 rounded-2xl border border-sky-500/50 text-sky-400 text-3xl">
-                <i class="fa-solid fa-mountain-sun"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-bold uppercase tracking-tighter">ΓΗΛΟΦΟΣ <span class="text-sky-400 text-3xl">1050μ</span></h1>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest">Μετεωρολογικός Σταθμός - LIVE</p>
-            </div>
+<body>
+    <h1 class="text-3xl font-bold mb-6">ΓΗΛΟΦΟΣ 1050μ</h1>
+    
+    <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+        <div class="box">
+            <p class="text-xs">ΘΕΡΜΟΚΡΑΣΙΑ</p>
+            <h2 id="temp" class="text-4xl font-bold">--</h2>
         </div>
-        <div class="text-center md:text-right mt-4 md:mt-0">
-            <p id="date-display" class="text-xs font-medium text-slate-400"></p>
-            <p id="clock-display" class="text-2xl font-bold text-sky-400 lcd-text"></p>
+        <div class="box" style="border-color: #48bb78;">
+            <p class="text-xs">ΠΙΕΣΗ</p>
+            <h2 id="pres" class="text-2xl font-bold">--</h2>
         </div>
-    </header>
-
-    <main class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4">
-        
-        <div class="col-span-2 glass border-t-4 border-sky-500">
-            <p class="text-[10px] text-sky-300 tracking-widest uppercase mb-2">Θερμοκρασία</p>
-            <div class="flex items-center justify-between">
-                <h2 id="temp" class="text-6xl font-bold lcd-text">--°C</h2>
-                <i class="fa-solid fa-temperature-three-quarters text-4xl text-sky-500/20"></i>
-            </div>
+        <div class="box" style="border-color: #ed8936;">
+            <p class="text-xs">ΑΝΕΜΟΣ</p>
+            <h2 id="wind" class="text-2xl font-bold">--</h2>
+            <p id="dir" class="text-sm italic"></p>
         </div>
-
-        <div class="glass border-b-4 border-blue-400 text-center">
-            <p class="text-[10px] text-blue-300 tracking-widest uppercase mb-2">Υγρασία</p>
-            <h2 id="hum" class="text-3xl font-bold">--%</h2>
-            <i class="fa-solid fa-droplet text-blue-400/30 mt-2"></i>
+        <div class="box" style="border-color: #a0aec0;">
+            <p class="text-xs">UPDATE</p>
+            <h2 id="upd" class="text-xl font-bold">--</h2>
         </div>
-
-        <div class="glass border-b-4 border-emerald-400 text-center">
-            <p class="text-[10px] text-emerald-300 tracking-widest uppercase mb-2">Πίεση</p>
-            <h2 id="pres" class="text-2xl font-bold">-- hPa</h2>
-            <i class="fa-solid fa-gauge-high text-emerald-400/30 mt-2"></i>
-        </div>
-
-        <div class="glass border-b-4 border-orange-400 text-center">
-            <p class="text-[10px] text-orange-300 tracking-widest uppercase mb-1">Άνεμος</p>
-            <h2 id="wind" class="text-2xl font-bold">-- km/h</h2>
-            <p id="wind-dir-text" class="text-[11px] font-bold text-orange-100 italic uppercase">--</p>
-        </div>
-
-        <div class="glass border-b-4 border-slate-500 text-center">
-            <p class="text-[10px] text-slate-400 tracking-widest uppercase mb-2">Ενημέρωση</p>
-            <h2 id="update" class="text-lg font-bold">--:--</h2>
-        </div>
-
-    </main>
-
-    <footer class="mt-8 text-slate-500 text-[10px] uppercase tracking-[0.3em]">
-        Ghilofos Grevenon Weather Station
-    </footer>
+    </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock-display').textContent = now.toLocaleTimeString('el-GR');
-            document.getElementById('date-display').textContent = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        async function loadWeather() {
+        async function getData() {
             try {
-                const response = await fetch('data.json?v=' + Date.now());
-                const data = await response.json();
+                const res = await fetch('data.json?v=' + Date.now());
+                const d = await res.json();
+                document.getElementById('temp').innerText = d.temperature + "°C";
+                document.getElementById('pres').innerText = d.pressure + " hPa";
+                document.getElementById('wind').innerText = d.wind_speed + " km/h";
+                document.getElementById('upd').innerText = d.last_update;
                 
-                document.getElementById('temp').innerText = data.temperature + "°C";
-                document.getElementById('hum').innerText = data.humidity + "%";
-                document.getElementById('pres').innerText = data.pressure + " hPa";
-                document.getElementById('wind').innerText = data.wind_speed + " km/h";
-                document.getElementById('update').innerText = data.last_update;
-
-                const degrees = data.wind_dir;
-                let direction = "---";
-                if (degrees !== undefined) {
-                    if (degrees > 337.5 || degrees <= 22.5) direction = "ΒΟΡΕΙΟΣ";
-                    else if (degrees > 22.5 && degrees <= 67.5) direction = "ΒΑΝΑΤΟΛΙΚΟΣ";
-                    else if (degrees > 67.5 && degrees <= 112.5) direction = "ΑΝΑΤΟΛΙΚΟΣ";
-                    else if (degrees > 112.5 && degrees <= 157.5) direction = "ΝΑΝΑΤΟΛΙΚΟΣ";
-                    else if (degrees > 157.5 && degrees <= 202.5) direction = "ΝΟΤΙΟΣ";
-                    else if (degrees > 202.5 && degrees <= 247.5) direction = "ΝΔΥΤΙΚΟΣ";
-                    else if (degrees > 247.5 && degrees <= 292.5) direction = "ΔΥΤΙΚΟΣ";
-                    else if (degrees > 292.5 && degrees <= 337.5) direction = "ΒΔΥΤΙΚΟΣ";
-                }
-                document.getElementById('wind-dir-text').innerText = direction;
-            } catch (e) { console.log(e); }
+                let deg = d.wind_dir;
+                let txt = "";
+                if (deg > 337.5 || deg <= 22.5) txt = "ΒΟΡΕΙΟΣ";
+                else if (deg > 22.5 && deg <= 67.5) txt = "ΒΑΝΑΤΟΛΙΚΟΣ";
+                else if (deg > 67.5 && deg <= 112.5) txt = "ΑΝΑΤΟΛΙΚΟΣ";
+                else if (deg > 112.5 && deg <= 157.5) txt = "ΝΑΝΑΤΟΛΙΚΟΣ";
+                else if (deg > 157.5 && deg <= 202.5) txt = "ΝΟΤΙΟΣ";
+                else if (deg > 202.5 && deg <= 247.5) txt = "ΝΔΥΤΙΚΟΣ";
+                else if (deg > 247.5 && deg <= 292.5) txt = "ΔΥΤΙΚΟΣ";
+                else if (deg > 292.5 && deg <= 337.5) txt = "ΒΔΥΤΙΚΟΣ";
+                document.getElementById('dir').innerText = txt;
+            } catch (e) { console.error(e); }
         }
-        loadWeather();
-        setInterval(loadWeather, 60000);
+        getData();
+        setInterval(getData, 60000);
     </script>
 </body>
 </html>
