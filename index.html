@@ -10,7 +10,7 @@
     <style>
         body { background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
         .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; }
-        .hero-section { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-radius: 30px; border: 2px solid rgba(255, 255, 255, 0.1); shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hero-section { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-radius: 30px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body class="p-2 md:p-6">
@@ -21,6 +21,13 @@
                 <div class="flex flex-col gap-3">
                     <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30 shadow-xl">
                         <h1 class="text-xl md:text-3xl font-black uppercase tracking-tight text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+                    </div>
+                    <div class="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-full shadow-lg w-fit mt-1 border border-red-400">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                        </span>
+                        <span class="text-xs font-black uppercase tracking-widest italic text-white text-[10px] md:text-xs">ΖΩΝΤΑΝΗ ΜΕΤΡΗΣΗ</span>
                     </div>
                 </div>
                 <div class="bg-white p-3 rounded-3xl shadow-2xl border-4 border-blue-400/30">
@@ -49,11 +56,11 @@
             <div class="card border-b-8 border-orange-400"><p class="text-xs text-orange-300 mb-2">ΑΝΕΜΟΣ</p><i class="fa-solid fa-wind text-4xl text-orange-200 mt-1"></i><h2 id="wind" class="text-2xl mt-1">-- km/h</h2></div>
         </div>
 
-        <div class="card p-0 overflow-hidden h-[500px] relative border-2 border-blue-500/20 shadow-2xl mb-8">
+        <div class="card p-0 overflow-hidden h-[550px] relative border-2 border-blue-500/20 shadow-2xl mb-8">
             <div class="absolute top-4 left-4 z-10 bg-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase shadow-xl flex items-center">
-                <i class="fa-solid fa-satellite-dish mr-2"></i> ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ (LIVE)
+                <i class="fa-solid fa-satellite-dish mr-2"></i> ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ (ΓΗΛΟΦΟΣ)
             </div>
-            <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,7&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
+            <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,8&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
         </div>
 
         <div class="card mb-8">
@@ -94,13 +101,15 @@
 
         async function loadWeather() {
             try {
+                // Φόρτωση από το data.json σου
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
-                document.getElementById('temp-hero').innerText = (d1.temperature || d1.temp || "--") + "°";
+                document.getElementById('temp-hero').innerText = (d1.temperature || "--") + "°";
                 document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
                 document.getElementById('wind').innerText = (d1.wind_speed || "0") + " km/h";
                 document.getElementById('moon').innerText = getMoon();
                 
+                // Φόρτωση από Open-Meteo για τα υπόλοιπα
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
                 document.getElementById('pres').innerText = Math.round(d2.hourly.surface_pressure[0] + 116) + " hPa";
@@ -108,7 +117,7 @@
                 const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
                 const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
 
-                // CHART
+                // ΔΗΜΙΟΥΡΓΙΑ ΓΡΑΦΗΜΑΤΟΣ
                 const labels = []; const temps = []; const iconsHtml = [];
                 for(let i=0; i<24; i+=3) {
                     const timeStr = d2.hourly.time[i].split('T')[1].split(':')[0] + ":00";
@@ -129,14 +138,14 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } } }
                 });
 
-                // FORECAST
+                // ΦΟΡΤΩΣΗ ΠΡΟΓΝΩΣΗΣ
                 let fHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
                     fHtml += `<div class="card text-center"><p class="text-sm font-bold text-blue-300 mb-2">${days[d.getDay()]}</p><i class="fa-solid ${getIcon(d2.daily.weathercode[i], 12, 0, 24)} text-2xl my-2"></i><p class="font-black text-xl">${Math.round(d2.daily.temperature_2m_max[i])}°</p><p class="text-blue-500 text-xs">${Math.round(d2.daily.temperature_2m_min[i])}°</p></div>`;
                 }
                 document.getElementById('forecast').innerHTML = fHtml;
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error loading weather:", e); }
         }
         startClock(); loadWeather(); setInterval(loadWeather, 60000);
     </script>
