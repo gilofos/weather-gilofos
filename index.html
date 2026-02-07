@@ -1,28 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>Γήλοφος</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Σταθμός Γηλόφου</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f7f6; }
+        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .temp { font-size: 3em; color: #e67e22; font-weight: bold; }
+        .info { margin-top: 15px; color: #555; }
+    </style>
 </head>
-<body style="text-align:center; font-family:Arial; padding-top:50px;">
-    <h1>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-    <h2 id="altitude">Υψόμετρο: 1050μ</h2>
-    <div style="font-size:50px; color:orange;" id="temp">Φορτώνει...</div>
-    <div style="margin-top:20px;">
-        Πίεση: <span id="press">--</span> hPa | 
-        Υγρασία: <span id="hum">--</span>%
+<body>
+    <div class="card">
+        <h1>ΓΗΛΟΦΟΣ</h1>
+        <h3>ΖΩΝΤΑΝΗ ΜΕΤΡΗΣΗ (1050μ)</h3>
+        <div class="temp" id="temp">--°C</div>
+        <div class="info">
+            Υγρασία: <span id="hum">--</span>% | Πίεση: <span id="press">--</span> hPa
+        </div>
+        <p style="font-size: 0.8em; color: gray; margin-top: 20px;">
+            Τελευταία ενημέρωση: <span id="time">--</span>
+        </p>
     </div>
-    <p id="update" style="color:gray;"></p>
 
     <script>
-        fetch('data.json?v=' + Date.now())
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('temp').innerText = data.temperature + '°C';
-                document.getElementById('press').innerText = data.pressure;
-                document.getElementById('hum').innerText = data.humidity;
-                document.getElementById('update').innerText = 'Τελευταία ενημέρωση: ' + data.last_update;
-            });
+        function loadData() {
+            fetch('data.json?v=' + Date.now())
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('temp').innerText = data.temperature + '°C';
+                    document.getElementById('hum').innerText = data.humidity;
+                    document.getElementById('press').innerText = data.pressure;
+                    document.getElementById('time').innerText = data.last_update;
+                });
+        }
+        loadData();
+        setInterval(loadData, 60000);
     </script>
 </body>
 </html>
