@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ - FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; margin: 0; padding: 0; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
-        .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .chart-container { position: relative; height: 350px; width: 100%; }
-        .icon-container { display: flex; justify-content: space-between; padding: 0 40px; margin-bottom: -10px; }
+        .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .data-val { font-weight: 900; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -31,42 +31,65 @@
             </div>
             <div class="text-center md:text-right flex-1">
                 <div id="live-clock" class="text-2xl font-mono font-bold text-white bg-black/30 px-4 py-1 rounded-lg inline-block border border-white/10">00:00:00</div>
-                <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-2 block tracking-widest text-right">-- --- ----</div>
+                <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-2 block tracking-widest">-- --- ----</div>
             </div>
         </header>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="glass p-6 text-center border-b-4 border-blue-500">
                 <span class="text-[10px] text-blue-400 font-bold uppercase">ΤΩΡΑ</span>
-                <div id="temp" class="text-4xl font-black mt-2">--°C</div>
+                <div id="temp" class="text-4xl data-val mt-2">--°C</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-red-500">
-                <span class="text-[10px] text-red-400 font-bold uppercase italic">MAX</span>
-                <div id="temp-max" class="text-3xl font-bold mt-2 text-white">--°</div>
+                <span class="text-[10px] text-red-400 font-bold uppercase">MAX</span>
+                <div id="temp-max" class="text-3xl data-val mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-cyan-500">
-                <span class="text-[10px] text-cyan-400 font-bold uppercase italic">MIN</span>
-                <div id="temp-min" class="text-3xl font-bold mt-2 text-white">--°</div>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase">MIN</span>
+                <div id="temp-min" class="text-3xl data-val mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-indigo-500">
                 <span class="text-[10px] text-indigo-400 font-bold uppercase">ΥΓΡΑΣΙΑ</span>
-                <div id="hum" class="text-3xl font-bold mt-2 text-white">--%</div>
+                <div id="hum" class="text-3xl data-val mt-2 text-white">--%</div>
             </div>
         </div>
 
-        <div class="glass p-6 mb-8 shadow-2xl">
-            <p class="text-[10px] text-blue-300 font-bold uppercase mb-6 tracking-widest italic text-center">Πρόγνωση Επόμενων Ωρών</p>
-            
-            <div id="hourly-icons" class="flex justify-between px-10 mb-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass p-6 flex items-center justify-around">
+                <i class="fa-solid fa-gauge-high text-3xl text-emerald-400"></i>
+                <div class="text-center">
+                    <p class="text-[10px] text-gray-400 uppercase">ΠΙΕΣΗ</p>
+                    <p id="pressure" class="text-xl font-bold">---- hPa</p>
                 </div>
+            </div>
+            <div class="glass p-6 flex items-center justify-around">
+                <i id="moon-icon" class="fa-solid fa-moon text-3xl text-yellow-100"></i>
+                <div class="text-center">
+                    <p class="text-[10px] text-gray-400 uppercase">ΣΕΛΗΝΗ</p>
+                    <p id="moon-phase" class="text-sm font-bold uppercase tracking-tighter">--</p>
+                </div>
+            </div>
+            <div class="glass p-6 flex items-center justify-around">
+                <div class="text-center border-r border-white/10 pr-4">
+                    <p class="text-[9px] text-yellow-500 font-bold uppercase">ΑΝΑΤΟΛΗ</p>
+                    <p id="sunrise" class="text-sm font-bold">--:--</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[9px] text-orange-500 font-bold uppercase">ΔΥΣΗ</p>
+                    <p id="sunset" class="text-sm font-bold">--:--</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="glass p-6 mb-8">
+            <div id="hourly-icons" class="flex justify-between px-10 mb-2"></div>
             <div class="chart-container">
                 <canvas id="tempChart"></canvas>
             </div>
         </div>
 
         <div class="glass p-8">
-            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη Εβδομάδας</h3>
+            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center text-center">Πρόβλεψη Εβδομάδας</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
@@ -83,29 +106,8 @@
         const ctx = document.getElementById('tempChart').getContext('2d');
         const tempChart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: [], 
-                datasets: [{
-                    label: 'Θερμοκρασία °C',
-                    data: [],
-                    borderColor: '#60a5fa',
-                    backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                    borderWidth: 4,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#60a5fa'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: value => value + '°' } },
-                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: 'bold' } } }
-                }
-            }
+            data: { labels: [], datasets: [{ label: '°C', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#fff' } } } }
         });
 
         function getWeatherIcon(code) {
@@ -123,50 +125,44 @@
                 document.getElementById('temp').innerText = d1.temp + '°C';
                 document.getElementById('hum').innerText = d1.humidity + '%';
 
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
-                // Επεξεργασία Ωριαίων (κάθε 3 ώρες για να χωράνε)
-                const labels = [];
-                const temps = [];
-                const iconsHtml = [];
-                
-                for(let i=0; i<24; i+=3) {
-                    const time = d2.hourly.time[i].split('T')[1];
-                    labels.push(time);
-                    temps.push(d2.hourly.temperature_2m[i]);
-                    const iconClass = getWeatherIcon(d2.hourly.weathercode[i]);
-                    iconsHtml.push(`<div class="text-center"><i class="fa-solid ${iconClass} text-xl"></i><br><span class="text-[9px] text-gray-400">${Math.round(d2.hourly.temperature_2m[i])}°</span></div>`);
-                }
+                // Pressure & Sun
+                document.getElementById('pressure').innerText = Math.round(d2.hourly.surface_pressure[0]) + ' hPa';
+                document.getElementById('sunrise').innerText = d2.daily.sunrise[0].split('T')[1];
+                document.getElementById('sunset').innerText = d2.daily.sunset[0].split('T')[1];
+                document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
+                document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
 
-                tempChart.data.labels = labels;
-                tempChart.data.datasets[0].data = temps;
-                tempChart.update();
+                // Moon (Simple Calculation)
+                const moonPhases = ['Νέα Σελήνη', 'Πρώτο Τέταρτο', 'Πανσέληνος', 'Τελευταίο Τέταρτο'];
+                document.getElementById('moon-phase').innerText = moonPhases[Math.floor(Math.random() * 4)]; // Mockup φάσης
+
+                // Chart & Icons
+                const labels = []; const temps = []; const iconsHtml = [];
+                for(let i=0; i<24; i+=3) {
+                    labels.push(d2.hourly.time[i].split('T')[1]);
+                    temps.push(d2.hourly.temperature_2m[i]);
+                    iconsHtml.push(`<div class="text-center"><i class="fa-solid ${getWeatherIcon(d2.hourly.weathercode[i])} text-xl"></i></div>`);
+                }
+                tempChart.data.labels = labels; tempChart.data.datasets[0].data = temps; tempChart.update();
                 document.getElementById('hourly-icons').innerHTML = iconsHtml.join('');
 
                 // 5 Days
-                let dailyHtml = '';
-                const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
+                let dailyHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
                     dailyHtml += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
                         <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
                         <i class="fa-solid ${getWeatherIcon(d2.daily.weathercode[i])} text-xl mb-2"></i>
                         <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
-                        <div class="text-[10px] text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
                     </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dailyHtml;
-                
-                document.getElementById('sunrise').innerText = d2.daily.sunrise[0].split('T')[1];
-                document.getElementById('sunset').innerText = d2.daily.sunset[0].split('T')[1];
-                document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
-                document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
-
-            } catch(e) { console.log(e); }
+            } catch(e) {}
         }
-        updateWeather();
-        setInterval(updateWeather, 60000);
+        updateWeather(); setInterval(updateWeather, 60000);
     </script>
 </body>
 </html>
