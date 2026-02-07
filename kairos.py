@@ -2,10 +2,10 @@ import requests
 import json
 from datetime import datetime, timedelta, timezone
 
-# Ρυθμίσεις
-API_KEY = "3bc8527a20c786500ccba4652c42c262"
-CITY = "Ghilofos,GR"
-URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=el"
+# Συντεταγμένες για Γήλοφο Γρεβενών
+LAT = 40.06
+LON = 21.80
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure&timezone=auto"
 
 def get_weather():
     try:
@@ -13,24 +13,26 @@ def get_weather():
         data = response.json()
 
         if response.status_code == 200:
-            # Ώρα Ελλάδας (UTC+2)
+            current = data["current"]
+            # Ώρα Ελλάδας
             offset = timezone(timedelta(hours=2))
             current_time = datetime.now(offset).strftime("%H:%M:%S")
 
-            sea_level_pressure = data["main"]["pressure"] + 118
+            # Υπολογισμός πίεσης στη θάλασσα (προσεγγιστικά +118 hPa για το υψόμετρο του Γηλόφου)
+            sea_level_pressure = round(current["surface_pressure"] + 118)
 
             weather_info = {
-                "temperature": round(data["main"]["temp"], 1),
-                "humidity": data["main"]["humidity"],
+                "temperature": round(current["temperature_2m"], 1),
+                "humidity": current["relative_humidity_2m"],
                 "pressure": sea_level_pressure,
-                "description": data["weather"][0]["description"].capitalize(),
+                "description": "Ενημερωμένο",
                 "last_update": current_time
             }
 
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_info, f, ensure_ascii=False, indent=4)
             
-            print(f"Update Done: {current_time}")
+            print(f"Update Done: {current_time} | Temp: {current['temperature_2m']}°C")
         else:
             print("API Error")
     except Exception as e:
