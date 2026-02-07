@@ -1,7 +1,6 @@
 import requests
 import json
-from datetime import datetime
-import pytz
+from datetime import datetime, timedelta, timezone
 
 # Ρυθμίσεις
 API_KEY = "3bc8527a20c786500ccba4652c42c262"
@@ -14,9 +13,9 @@ def get_weather():
         data = response.json()
 
         if response.status_code == 200:
-            # Ρύθμιση ώρας Ελλάδας
-            tz = pytz.timezone('Europe/Athens')
-            current_time = datetime.now(tz).strftime("%H:%M:%S")
+            # Ρύθμιση ώρας Ελλάδας (UTC+2) - Χωρίς έξτρα βιβλιοθήκες
+            offset = timezone(timedelta(hours=2))
+            current_time = datetime.now(offset).strftime("%H:%M:%S")
 
             # Διόρθωση πίεσης για το υψόμετρο του Γηλόφου (1050μ)
             # Προσθέτουμε 118 hPa για αναγωγή στη στάθμη της θάλασσας
