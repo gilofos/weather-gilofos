@@ -9,7 +9,7 @@
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; margin: 0; padding: 0; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
-        .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         iframe { width: 100%; height: 450px; border-radius: 1rem; border: none; }
         .data-card { border-bottom: 4px solid; }
     </style>
@@ -33,25 +33,25 @@
 
             <div class="text-center md:text-right flex-1">
                 <div id="live-clock" class="text-2xl font-mono font-bold text-white bg-black/30 px-4 py-1 rounded-lg inline-block border border-white/10">00:00:00</div>
-                <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-2 block tracking-widest">-- --- ----</div>
+                <div id="live-date" class="text-[10px] font-bold text-blue-300 uppercase mt-2 block tracking-widest text-right">-- --- ----</div>
             </div>
         </header>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="glass p-6 text-center data-card border-blue-500">
-                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Θερμοκρασία</span>
+                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ΤΩΡΑ</span>
                 <div id="temp" class="text-4xl font-black mt-2">--°C</div>
             </div>
             <div class="glass p-6 text-center data-card border-red-500">
-                <span class="text-[10px] text-red-400 font-bold uppercase italic tracking-widest">Μέγιστη (Max)</span>
+                <span class="text-[10px] text-red-400 font-bold uppercase italic tracking-widest">MAX</span>
                 <div id="temp-max" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center data-card border-cyan-500">
-                <span class="text-[10px] text-cyan-400 font-bold uppercase italic tracking-widest">Ελάχιστη (Min)</span>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase italic tracking-widest">MIN</span>
                 <div id="temp-min" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center data-card border-indigo-500">
-                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Υγρασία</span>
+                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">ΥΓΡΑΣΙΑ</span>
                 <div id="hum" class="text-3xl font-bold mt-2 text-white">--%</div>
             </div>
         </div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="lg:col-span-2 shadow-2xl">
-                <iframe src="https://embed.windy.com/embed2.html?lat=39.88&lon=21.82&zoom=8&level=surface&overlay=radar&product=radar&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C"></iframe>
+                <iframe src="https://embed.windy.com/embed2.html?lat=39.88&lon=21.82&zoom=11&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=true&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C"></iframe>
             </div>
         </div>
 
@@ -81,7 +81,6 @@
     </div>
 
     <script>
-        // Ρολόι
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString('el-GR');
@@ -90,7 +89,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Εικονίδια καιρού
         function getIcon(code) {
             if (code == 0) return 'fa-sun text-yellow-400';
             if (code <= 3) return 'fa-cloud-sun text-slate-300';
@@ -99,16 +97,13 @@
             return 'fa-cloud-bolt text-indigo-400';
         }
 
-        // Ενημέρωση Δεδομένων
         async function updateWeather() {
             try {
-                // 1. Από το δικό σου αρχείο data.json στο GitHub
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 document.getElementById('temp').innerText = d1.temp + '°C';
                 document.getElementById('hum').innerText = d1.humidity + '%';
 
-                // 2. Από Open-Meteo για ήλιο και πρόβλεψη
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
@@ -129,11 +124,10 @@
                     </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = html;
-            } catch(e) { console.log("Error loading weather data"); }
+            } catch(e) { console.log("Error loading data"); }
         }
-        
         updateWeather();
-        setInterval(updateWeather, 60000); // Ανανέωση κάθε λεπτό
+        setInterval(updateWeather, 60000);
     </script>
 </body>
 </html>
