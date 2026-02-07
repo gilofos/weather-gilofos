@@ -11,11 +11,11 @@
         body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; }
         .card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; }
         .hero-bg {
-            background: linear-gradient(to bottom, rgba(2,6,23,0.2), rgba(2,6,23,0.9)), 
+            background: linear-gradient(to bottom, rgba(2,6,23,0.3), rgba(2,6,23,0.9)), 
                         url('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/441958606_3693457807568757_2332829212337179586_n.jpg');
             background-size: cover;
             background-position: center;
-            min-height: 480px;
+            min-height: 450px;
         }
     </style>
 </head>
@@ -26,30 +26,30 @@
             <div class="flex justify-between items-start w-full">
                 <div class="flex flex-col gap-2">
                     <div class="bg-blue-600/90 backdrop-blur-md px-5 py-2 rounded-lg border-l-4 border-white shadow-lg">
-                        <h1 class="text-xl md:text-3xl font-black tracking-tighter uppercase text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+                        <h1 class="text-xl md:text-2xl font-black tracking-tighter uppercase text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
                     </div>
                     <div class="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full w-fit border border-white/10">
                         <span class="relative flex h-2 w-2">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                           <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                         </span>
-                        <span class="text-[10px] md:text-xs font-bold tracking-widest text-white uppercase italic">ΜΕΤΡΗΣΗ LIVE</span>
+                        <span class="text-[10px] font-bold text-white uppercase italic">ΜΕΤΡΗΣΗ LIVE</span>
                     </div>
                 </div>
                 <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/10">
-                    <img src="logo.png" alt="Logo" class="h-16 md:h-28 w-auto drop-shadow-xl" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
+                    <img src="logo.png" alt="Logo" class="h-20 md:h-32 w-auto drop-shadow-xl" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
                 </div>
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-end gap-4 w-full">
                 <div class="flex items-center gap-4">
-                    <i class="fa-solid fa-thermometer-half text-5xl md:text-7xl text-red-500 drop-shadow-lg"></i>
+                    <i class="fa-solid fa-thermometer-half text-5xl md:text-6xl text-red-500 drop-shadow-lg animate-pulse"></i>
                     <div>
-                        <h2 id="temp-hero" class="text-7xl md:text-9xl font-black leading-none tracking-tighter text-white">--°</h2>
-                        <p id="date-hero" class="text-blue-200 font-bold uppercase tracking-widest text-xs md:text-sm mt-1"></p>
+                        <h2 id="temp-hero" class="text-6xl md:text-8xl font-black leading-none tracking-tighter text-white">--°</h2>
+                        <p id="date-hero" class="text-blue-200 font-bold uppercase tracking-widest text-[10px] md:text-xs mt-1"></p>
                     </div>
                 </div>
-                <div id="clock-hero" class="text-5xl md:text-7xl font-mono font-bold bg-black/40 backdrop-blur-md px-6 py-2 rounded-2xl border border-white/20">00:00</div>
+                <div id="clock-hero" class="text-5xl md:text-6xl font-mono font-bold bg-black/40 backdrop-blur-md px-6 py-2 rounded-2xl border border-white/20">00:00</div>
             </div>
         </div>
 
@@ -75,13 +75,13 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="card p-0 overflow-hidden h-[400px] relative border border-blue-500/30">
+            <div class="card p-0 overflow-hidden h-[450px] relative border border-blue-500/30">
                 <div class="absolute top-3 left-3 z-10 bg-blue-600 px-3 py-1 rounded text-[10px] font-black uppercase">LIVE ΚΕΡΑΥΝΟΙ</div>
                 <iframe src="https://www.blitzortung.org/en/live_lightning_maps.php?show_controls=0&zoom=7&lat=39.8&lon=21.8" class="w-full h-full border-0 grayscale invert opacity-80"></iframe>
             </div>
-            <div class="card p-0 overflow-hidden h-[400px] relative border border-blue-500/30">
-                <div class="absolute top-3 left-3 z-10 bg-blue-600 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest">ΔΟΡΥΦΟΡΙΚΗ (ΝΕΦΗ)</div>
-                <iframe src="https://www.windy.com/multilayers?clouds,40.060,21.800,7,m:eJpag9N" class="w-full h-full border-0"></iframe>
+            <div class="card p-0 overflow-hidden h-[450px] relative border border-blue-500/30">
+                <div class="absolute top-3 left-3 z-10 bg-red-600 px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest shadow-lg">ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ</div>
+                <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,7&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
             </div>
         </div>
 
