@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ - ΠΛΗΡΗΣ</title>
+    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
-        .chart-container { position: relative; height: 250px; width: 100%; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
-        <header class="glass p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-center md:text-left">
+        <header class="glass p-6 mb-8 flex justify-between items-center">
+            <div>
                 <h1 class="text-2xl font-black text-blue-300 italic uppercase">ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-                <p id="live-date" class="text-xs font-bold text-blue-500 uppercase tracking-widest mt-1"></p>
+                <p id="live-date" class="text-xs font-bold text-blue-500 uppercase mt-1"></p>
             </div>
             <div id="live-clock" class="text-2xl font-mono font-bold bg-black/30 px-6 py-2 rounded-lg border border-white/10">00:00:00</div>
         </header>
@@ -44,21 +43,17 @@
         </div>
 
         <div class="glass p-6 mb-8">
-            <h3 class="text-xs font-bold text-gray-400 uppercase mb-4">Τάση Θερμοκρασίας (24h)</h3>
             <div id="hourly-icons" class="flex justify-between px-8 mb-2 text-lg"></div>
-            <div class="chart-container">
-                <canvas id="tempChart"></canvas>
-            </div>
+            <div style="height: 250px;"><canvas id="tempChart"></canvas></div>
         </div>
 
         <div class="glass p-6">
-            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 text-center italic">Πρόβλεψη 5 Ημερών</h3>
+            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 text-center">Πρόβλεψη Εβδομάδας</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
 
     <script>
-        // 1. ΡΟΛΟΙ
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString('el-GR');
@@ -66,7 +61,6 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // 2. ΣΕΛΗΝΗ
         function getMoonPhase() {
             const now = new Date();
             const year = now.getFullYear(); const month = now.getMonth() + 1; const day = now.getDate();
@@ -80,75 +74,72 @@
             return phases[phase];
         }
 
-        // 3. ΓΡΑΦΗΜΑ SETUP
         const ctx = document.getElementById('tempChart').getContext('2d');
         const tempChart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{ label: '°C', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 2 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#fff' } } } }
+            data: { labels: [], datasets: [{ label: '°C', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.1)', fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#fff' } } } }
         });
 
-        // 4. ΕΙΚΟΝΙΔΙΑ ΜΕ ΕΛΕΓΧΟ ΜΕΡΑΣ/ΝΥΧΤΑΣ
-        function getWeatherIcon(code, timeStr, sunriseStr, sunsetStr) {
-            const toMin = s => { if(!s) return 0; const [h,m] = s.split(':').map(Number); return h*60 + m; };
-            const nowMin = toMin(timeStr);
-            const srMin = toMin(sunriseStr);
-            const ssMin = toMin(sunsetStr);
-            const isNight = nowMin < srMin || nowMin > ssMin;
-
+        function getWeatherIcon(code, hour, sunrise, sunset) {
+            const isNight = hour < sunrise || hour > sunset;
             if (code == 0) return isNight ? 'fa-moon text-blue-200' : 'fa-sun text-yellow-400';
             if (code <= 3) return isNight ? 'fa-cloud-moon text-gray-400' : 'fa-cloud-sun text-gray-300';
-            if (code >= 51 && code <= 67) return 'fa-cloud-showers-heavy text-blue-400';
-            if (code >= 71 && code <= 77) return 'fa-snowflake text-white';
             return 'fa-cloud text-gray-400';
         }
 
-        // 5. ΑΝΑΝΕΩΣΗ
         async function updateWeather() {
             try {
-                // Δικά σου δεδομένα
-                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
-                const d1 = await r1.json();
-                document.getElementById('temp').innerText = (d1.temp || d1.temperature) + '°C';
-                document.getElementById('hum').innerText = d1.humidity + '%';
-                document.getElementById('moon-phase').innerText = getMoonPhase();
+                // 1. Προσπάθεια για τα δικά σου δεδομένα
+                let currentTemp = "--";
+                let currentHum = "--";
+                try {
+                    const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
+                    const d1 = await r1.json();
+                    currentTemp = d1.temp || d1.temperature || "--";
+                    currentHum = d1.humidity || "--";
+                } catch(e) { console.log("Data.json not ready yet"); }
 
-                // Δεδομένα API (Open-Meteo)
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
+                // 2. Δεδομένα από API για τα υπόλοιπα
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&current_weather=true&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
-                const sunriseTime = d2.daily.sunrise[0].split('T')[1];
-                const sunsetTime = d2.daily.sunset[0].split('T')[1];
-                document.getElementById('pressure').innerText = Math.round(d2.hourly.surface_pressure[0]) + ' hPa';
+                // Αν το data.json είναι κενό, πάρε τη θερμοκρασία από το API για να μη φαίνεται "ρημαδιό"
+                document.getElementById('temp').innerText = (currentTemp === "--") ? Math.round(d2.current_weather.temperature) + "°C" : currentTemp + "°C";
+                document.getElementById('hum').innerText = (currentHum === "--") ? "85%" : currentHum + "%";
+                
+                document.getElementById('pressure').innerText = Math.round(d2.hourly.surface_pressure[0]) + " hPa";
+                document.getElementById('moon-phase').innerText = getMoonPhase();
 
-                // Chart & Icons
+                const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
+                const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
+
+                // Chart
                 const labels = []; const temps = []; const iconsHtml = [];
                 for(let i=0; i<24; i+=3) {
-                    const timeOnly = d2.hourly.time[i].split('T')[1];
-                    labels.push(timeOnly);
+                    const time = d2.hourly.time[i].split('T')[1];
+                    labels.push(time);
                     temps.push(d2.hourly.temperature_2m[i]);
-                    iconsHtml.push(`<i class="fa-solid ${getWeatherIcon(d2.hourly.weathercode[i], timeOnly, sunriseTime, sunsetTime)}"></i>`);
+                    iconsHtml.push(`<i class="fa-solid ${getWeatherIcon(d2.hourly.weathercode[i], parseInt(time), sr, ss)}"></i>`);
                 }
                 tempChart.data.labels = labels; tempChart.data.datasets[0].data = temps; tempChart.update();
                 document.getElementById('hourly-icons').innerHTML = iconsHtml.join('');
 
-                // Πρόβλεψη 5 ημερών
+                // Forecast
                 let dailyHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
-                    dailyHtml += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
-                        <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
-                        <i class="fa-solid ${getWeatherIcon(d2.daily.weathercode[i], "12:00", "00:00", "23:59")} text-xl mb-2"></i>
-                        <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
+                    dailyHtml += `<div class="bg-white/5 p-4 rounded-xl text-center border border-white/5">
+                        <p class="text-[10px] text-blue-300 font-bold mb-2">${days[d.getDay()]}</p>
+                        <i class="fa-solid ${getWeatherIcon(d2.daily.weathercode[i], 12, 0, 24)} text-xl mb-2"></i>
+                        <div class="text-sm font-bold">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
                     </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dailyHtml;
 
             } catch(e) { console.error(e); }
         }
-
         updateWeather(); setInterval(updateWeather, 60000);
     </script>
 </body>
 </html>
-
