@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ (1050μ)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -36,11 +36,16 @@
             <div class="flex justify-between items-start">
                 <div class="flex flex-col gap-3">
                     <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30 shadow-xl">
-                        <h1 class="text-xl md:text-3xl font-black uppercase tracking-tight text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+                        <h1 class="text-xl md:text-3xl font-black uppercase tracking-tight text-white">
+                            ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ <span class="text-blue-300 text-lg md:text-xl font-bold ml-2">(1050μ)</span>
+                        </h1>
                     </div>
                     <div class="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-full shadow-lg w-fit mt-2">
-                        <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span></span>
-                        <span class="text-xs font-black uppercase tracking-widest italic text-white">LIVE ΜΕΤΡΗΣΗ</span>
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                        </span>
+                        <span class="text-xs font-black uppercase tracking-widest italic text-white">LIVE ΜΕΤΡΗΣΗ (1050μ)</span>
                     </div>
                 </div>
                 <div class="bg-white p-3 rounded-3xl shadow-2xl border-4 border-blue-400/30">
@@ -50,7 +55,9 @@
 
             <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6">
                 <div class="flex items-center gap-6">
-                    <div class="bg-white/10 p-5 rounded-full border border-white/20"><i class="fa-solid fa-temperature-high text-5xl md:text-7xl text-orange-400"></i></div>
+                    <div class="bg-white/10 p-5 rounded-full border border-white/20">
+                        <i class="fa-solid fa-temperature-high text-5xl md:text-7xl text-orange-400"></i>
+                    </div>
                     <div>
                         <h2 id="temp-hero" class="text-8xl md:text-[10rem] font-black tracking-tighter leading-none">--°</h2>
                         <p id="date-hero" class="text-blue-200 font-bold uppercase text-sm md:text-lg mt-2 tracking-widest bg-blue-900/40 px-3 py-1 rounded-lg w-fit"></p>
@@ -143,7 +150,6 @@
                 const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
                 const ss = parseInt(d2.daily.sunset[0].split('T')[1]);
 
-                // CHART ΜΕ ΣΤΥΛ METEO
                 const labels = []; const temps = []; const iconsHtml = [];
                 for(let i=0; i<24; i+=3) {
                     const timeStr = d2.hourly.time[i].split('T')[1].split(':')[0] + ":00";
@@ -155,8 +161,8 @@
 
                 const ctx = document.getElementById('myChart').getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Πράσινο πάνω
-                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)'); // Μπλε κάτω
+                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
+                gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)');
 
                 new Chart(ctx, {
                     type: 'line',
@@ -203,4 +209,3 @@
     </script>
 </body>
 </html>
-
