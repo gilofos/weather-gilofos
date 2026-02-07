@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; margin: 0; padding: 0; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
         .logo-img { height: 110px; width: auto; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        iframe { width: 100%; height: 450px; border-radius: 1rem; border: none; }
-        .data-card { border-bottom: 4px solid; }
+        .chart-container { position: relative; height: 400px; width: 100%; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -37,19 +37,19 @@
         </header>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="glass p-6 text-center data-card border-blue-500">
+            <div class="glass p-6 text-center border-b-4 border-blue-500">
                 <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ΤΩΡΑ</span>
                 <div id="temp" class="text-4xl font-black mt-2">--°C</div>
             </div>
-            <div class="glass p-6 text-center data-card border-red-500">
+            <div class="glass p-6 text-center border-b-4 border-red-500">
                 <span class="text-[10px] text-red-400 font-bold uppercase italic tracking-widest">MAX</span>
                 <div id="temp-max" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
-            <div class="glass p-6 text-center data-card border-cyan-500">
+            <div class="glass p-6 text-center border-b-4 border-cyan-500">
                 <span class="text-[10px] text-cyan-400 font-bold uppercase italic tracking-widest">MIN</span>
                 <div id="temp-min" class="text-3xl font-bold mt-2 text-white">--°</div>
             </div>
-            <div class="glass p-6 text-center data-card border-indigo-500">
+            <div class="glass p-6 text-center border-b-4 border-indigo-500">
                 <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">ΥΓΡΑΣΙΑ</span>
                 <div id="hum" class="text-3xl font-bold mt-2 text-white">--%</div>
             </div>
@@ -68,13 +68,16 @@
                     <p id="sunset" class="font-bold text-xl text-white">--:--</p>
                 </div>
             </div>
-            <div class="lg:col-span-2 shadow-2xl">
-                <iframe src="https://embed.windy.com/embed2.html?lat=39.88&lon=21.82&zoom=10&level=surface&overlay=radar&product=radar&menu=&message=&marker=true&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&scrollWheelZoom=false"></iframe>
+            <div class="lg:col-span-2 glass p-6 shadow-2xl">
+                <p class="text-[10px] text-blue-300 font-bold uppercase mb-4 tracking-widest italic">Τάση Θερμοκρασίας (24h)</p>
+                <div class="chart-container">
+                    <canvas id="tempChart"></canvas>
+                </div>
             </div>
         </div>
 
         <div class="glass p-8">
-            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic">Πρόβλεψη Επομένων Ημερών</h3>
+            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη Επομένων Ημερών</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
@@ -88,22 +91,45 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        function getIcon(code) {
-            if (code == 0) return 'fa-sun text-yellow-400';
-            if (code <= 3) return 'fa-cloud-sun text-slate-300';
-            if (code >= 51 && code <= 67) return 'fa-cloud-showers-heavy text-blue-400';
-            if (code >= 71 && code <= 77) return 'fa-snowflake text-white';
-            return 'fa-cloud-bolt text-indigo-400';
-        }
+        // Δημιουργία Γραφήματος
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        const tempChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Τώρα'],
+                datasets: [{
+                    label: 'Θερμοκρασία °C',
+                    data: [0, 0, 0, 0, 0, 0, 0], // Θα γεμίσει από την API
+                    borderColor: '#60a5fa',
+                    backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
 
         async function updateWeather() {
             try {
+                // Δεδομένα από το data.json σου
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 document.getElementById('temp').innerText = d1.temp + '°C';
                 document.getElementById('hum').innerText = d1.humidity + '%';
 
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
+                // Δεδομένα από Open-Meteo για πρόβλεψη και γράφημα
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=39.88&longitude=21.82&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m&timezone=auto`);
                 const d2 = await r2.json();
 
                 document.getElementById('sunrise').innerText = d2.daily.sunrise[0].split('T')[1];
@@ -111,13 +137,19 @@
                 document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
                 document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
 
+                // Ενημέρωση Γραφήματος με πραγματικά δεδομένα 24ώρου
+                const hourlyTemps = d2.hourly.temperature_2m.slice(0, 24).filter((_, i) => i % 4 === 0);
+                hourlyTemps.push(parseFloat(d1.temp)); // Προσθήκη της τωρινής μέτρησης του σταθμού
+                tempChart.data.datasets[0].data = hourlyTemps;
+                tempChart.update();
+
+                // Πρόβλεψη 5 ημερών
                 let html = '';
                 const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
                     html += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
                         <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
-                        <i class="fa-solid ${getIcon(d2.daily.weathercode[i])} text-2xl mb-2"></i>
                         <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
                         <div class="text-[10px] text-blue-400">${Math.round(d2.daily.temperature_2m_min[i])}°</div>
                     </div>`;
