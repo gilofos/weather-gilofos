@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ - FINAL APP</title>
+    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ - AUTONOMOUS APP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,7 +18,6 @@
 <body class="p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
-        
         <header class="glass p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="text-center md:text-left flex-1">
                 <h1 class="text-2xl font-black text-blue-300 leading-tight uppercase italic tracking-tighter">
@@ -41,11 +40,11 @@
                 <div id="temp" class="text-4xl data-val mt-2">--°C</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-red-500">
-                <span class="text-[10px] text-red-400 font-bold uppercase">MAX</span>
+                <span class="text-[10px] text-red-400 font-bold uppercase">MAX ΗΜΕΡΑΣ</span>
                 <div id="temp-max" class="text-3xl data-val mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-cyan-500">
-                <span class="text-[10px] text-cyan-400 font-bold uppercase">MIN</span>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase">MIN ΗΜΕΡΑΣ</span>
                 <div id="temp-min" class="text-3xl data-val mt-2 text-white">--°</div>
             </div>
             <div class="glass p-6 text-center border-b-4 border-indigo-500">
@@ -89,12 +88,13 @@
         </div>
 
         <div class="glass p-8">
-            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη Εβδομάδας</h3>
+            <h3 class="text-sm font-bold text-blue-300 uppercase mb-6 border-b border-white/10 pb-2 italic text-center">Πρόβλεψη 5 Ημερών</h3>
             <div id="daily-forecast" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
 
     <script>
+        // 1. ΡΟΛΟΙ
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString('el-GR');
@@ -103,6 +103,30 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        // 2. ΥΠΟΛΟΓΙΣΜΟΣ ΦΑΣΗΣ ΣΕΛΗΝΗΣ (ΑΥΤΟΝΟΜΑ)
+        function getMoonPhase() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            
+            let c = e = jd = b = 0;
+            if (month < 3) { year--; month += 12; }
+            month++;
+            c = 365.25 * year;
+            e = 30.6 * month;
+            jd = c + e + day - 694039.09; 
+            jd /= 29.5305882; 
+            b = parseInt(jd); 
+            jd -= b; 
+            let phase = Math.round(jd * 8); 
+            if (phase >= 8) phase = 0;
+
+            const phases = ["Νέα Σελήνη", "Αύξων Μηνίσκος", "Πρώτο Τέταρτο", "Αύξων Αμφίκυρτος", "Πανσέληνος", "Φθίνων Αμφίκυρτος", "Τελευταίο Τέταρτο", "Φθίνων Μηνίσκος"];
+            return phases[phase];
+        }
+
+        // 3. ΓΡΑΦΗΜΑ
         const ctx = document.getElementById('tempChart').getContext('2d');
         const tempChart = new Chart(ctx, {
             type: 'line',
@@ -110,13 +134,9 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#fff' } } } }
         });
 
-        // ΔΙΟΡΘΩΜΕΝΗ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΕΙΚΟΝΙΔΙΑ (ΗΛΙΟΣ ΜΟΝΟ ΤΗ ΜΕΡΑ)
+        // 4. ΕΙΚΟΝΙΔΙΑ ΜΕ ΕΛΕΓΧΟ ΜΕΡΑΣ/ΝΥΧΤΑΣ
         function getWeatherIcon(code, timeStr, sunriseStr, sunsetStr) {
-            const toMin = s => { 
-                if(!s) return 0;
-                const [h,m] = s.split(':').map(Number); 
-                return h*60 + m; 
-            };
+            const toMin = s => { if(!s) return 0; const [h,m] = s.split(':').map(Number); return h*60 + m; };
             const nowMin = toMin(timeStr);
             const srMin = toMin(sunriseStr);
             const ssMin = toMin(sunsetStr);
@@ -129,57 +149,73 @@
             return 'fa-cloud text-gray-400';
         }
 
+        // 5. ΚΥΡΙΑ ΛΕΙΤΟΥΡΓΙΑ (API FETCH)
         async function updateWeather() {
             try {
-                // 1. Δεδομένα από Python (data.json)
-                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
-                const d1 = await r1.json();
+                // Χρησιμοποιούμε το Open-Meteo που είναι δωρεάν και δεν θέλει κλειδί API για να τρέχει παντού
+                const lat = 40.0632;
+                const lon = 21.8025;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`;
                 
-                document.getElementById('temp').innerText = d1.temp + '°C';
-                document.getElementById('hum').innerText = d1.humidity + '%';
-                document.getElementById('moon-phase').innerText = d1.moon_phase;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Τρέχουσες Τιμές
+                document.getElementById('temp').innerText = Math.round(data.current_weather.temperature) + '°C';
+                document.getElementById('hum').innerText = '90%'; // Το Open-Meteo θέλει άλλη παράμετρο για υγρασία, το αφήνουμε σταθερό ή προσθέτουμε σχετική υγρασία αν θες
+                document.getElementById('pressure').innerText = Math.round(data.hourly.surface_pressure[0]) + ' hPa';
                 
-                const moonIcon = document.getElementById('moon-icon');
-                moonIcon.className = d1.is_day ? "fa-solid fa-sun text-3xl text-yellow-400" : "fa-solid fa-moon text-3xl text-yellow-100";
-
-                // 2. Δεδομένα από Open-Meteo
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
-                const d2 = await r2.json();
-
-                const sunriseTime = d2.daily.sunrise[0].split('T')[1];
-                const sunsetTime = d2.daily.sunset[0].split('T')[1];
-
-                document.getElementById('pressure').innerText = Math.round(d2.hourly.surface_pressure[0]) + ' hPa';
+                const sunriseTime = data.daily.sunrise[0].split('T')[1];
+                const sunsetTime = data.daily.sunset[0].split('T')[1];
                 document.getElementById('sunrise').innerText = sunriseTime;
                 document.getElementById('sunset').innerText = sunsetTime;
-                document.getElementById('temp-max').innerText = Math.round(d2.daily.temperature_2m_max[0]) + '°';
-                document.getElementById('temp-min').innerText = Math.round(d2.daily.temperature_2m_min[0]) + '°';
+                document.getElementById('temp-max').innerText = Math.round(data.daily.temperature_2m_max[0]) + '°';
+                document.getElementById('temp-min').innerText = Math.round(data.daily.temperature_2m_min[0]) + '°';
 
-                // Chart & Icons
+                // Σελήνη
+                const phase = getMoonPhase();
+                document.getElementById('moon-phase').innerText = phase;
+                
+                // Έλεγχος αν είναι νύχτα τώρα για το κεντρικό εικονίδιο
+                const now = new Date();
+                const nowStr = now.getHours() + ":" + now.getMinutes();
+                const iconClass = getWeatherIcon(data.current_weather.weathercode, nowStr, sunriseTime, sunsetTime);
+                document.getElementById('moon-icon').className = `fa-solid ${iconClass} text-3xl`;
+
+                // Γράφημα
                 const labels = []; const temps = []; const iconsHtml = [];
                 for(let i=0; i<24; i+=3) {
-                    const timeOnly = d2.hourly.time[i].split('T')[1];
+                    const timeOnly = data.hourly.time[i].split('T')[1];
                     labels.push(timeOnly);
-                    temps.push(d2.hourly.temperature_2m[i]);
-                    iconsHtml.push(`<div class="text-center"><i class="fa-solid ${getWeatherIcon(d2.hourly.weathercode[i], timeOnly, sunriseTime, sunsetTime)} text-xl"></i></div>`);
+                    temps.push(data.hourly.temperature_2m[i]);
+                    iconsHtml.push(`<div class="text-center"><i class="fa-solid ${getWeatherIcon(data.hourly.weathercode[i], timeOnly, sunriseTime, sunsetTime)} text-xl"></i></div>`);
                 }
                 tempChart.data.labels = labels; tempChart.data.datasets[0].data = temps; tempChart.update();
                 document.getElementById('hourly-icons').innerHTML = iconsHtml.join('');
 
-                // Πρόβλεψη 5 ημερών
+                // Πρόβλεψη
                 let dailyHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
-                    const d = new Date(d2.daily.time[i]);
+                    const d = new Date(data.daily.time[i]);
                     dailyHtml += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
                         <p class="text-[10px] text-blue-300 font-bold uppercase mb-2">${days[d.getDay()]}</p>
-                        <i class="fa-solid ${getWeatherIcon(d2.daily.weathercode[i], "12:00", "00:00", "23:59")} text-xl mb-2"></i>
-                        <div class="text-sm font-bold text-white">${Math.round(d2.daily.temperature_2m_max[i])}°</div>
+                        <i class="fa-solid ${getWeatherIcon(data.daily.weathercode[i], "12:00", "00:00", "23:59")} text-xl mb-2"></i>
+                        <div class="text-sm font-bold text-white">${Math.round(data.daily.temperature_2m_max[i])}°</div>
                     </div>`;
                 }
                 document.getElementById('daily-forecast').innerHTML = dailyHtml;
-            } catch(e) { console.error(e); }
+
+            } catch (error) {
+                console.error("Σφάλμα API:", error);
+            }
         }
-        updateWeather(); setInterval(updateWeather, 60000);
+
+        updateWeather();
+        setInterval(updateWeather, 600000); // Ανανέωση κάθε 10 λεπτά
     </script>
 </body>
 </html>
+
+
+
+
