@@ -1,49 +1,35 @@
 name: Update Weather Data
-
 on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
   pages: write
   id-token: write
-
 jobs:
-  update_and_deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: pip install requests
-
       - name: Run Weather Script
         run: python kairos.py
-
-      - name: Commit and Push changes
+      - name: Save Data
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
           git add data.json
-          git commit -m "Auto update weather data" || exit 0
+          git commit -m "update data" || exit 0
           git push
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
+      - name: Upload for Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - name: Deploy to Pages
         uses: actions/deploy-pages@v4
