@@ -21,7 +21,7 @@ def get_weather():
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
 
             # Υπολογισμός πίεσης στη θάλασσα (MSL) - Γήλοφος ~1000μ
-            sea_level_pressure = round(current["surface_pressure"] + 116)
+            sea_level_pressure = round(current["surface_pressure"] + 116,1)
 
             # ΤΟ JSON ΠΟΥ ΘΑ ΔΙΑΒΑΖΕΙ ΤΟ INDEX.HTML
             weather_info = {
@@ -47,3 +47,4 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
+
