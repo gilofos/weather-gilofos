@@ -8,78 +8,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
-        body { background: radial-gradient(circle at center, #1e293b, #0f172a); font-family: 'Rajdhani', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { background: radial-gradient(circle at center, #1e293b, #0f172a); font-family: 'Rajdhani', sans-serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 20px; }
         .lcd-text { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen p-4 flex flex-col items-center">
+<body class="text-slate-200">
 
-    <header class="w-full max-w-4xl flex flex-col md:flex-row justify-between items-center mb-8 glass p-6 rounded-3xl">
+    <header class="w-full max-w-4xl flex flex-col md:flex-row justify-between items-center mb-6 glass">
         <div class="flex items-center gap-4">
-            <div class="bg-sky-500/20 p-3 rounded-2xl border border-sky-500/50">
-                <i class="fa-solid fa-mountain-sun text-4xl text-sky-400"></i>
+            <div class="bg-sky-500/20 p-3 rounded-2xl border border-sky-500/50 text-sky-400 text-3xl">
+                <i class="fa-solid fa-mountain-sun"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-bold tracking-tighter">ΓΗΛΟΦΟΣ <span class="text-sky-400">1050μ</span></h1>
-                <p class="text-xs text-slate-400 uppercase tracking-widest">Μετεωρολογικός Σταθμός - LIVE</p>
+                <h1 class="text-2xl font-bold uppercase tracking-tighter">ΓΗΛΟΦΟΣ <span class="text-sky-400 text-3xl">1050μ</span></h1>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest">Μετεωρολογικός Σταθμός - LIVE</p>
             </div>
         </div>
-        <div class="text-right mt-4 md:mt-0">
-            <p id="date-display" class="text-sm font-medium"></p>
+        <div class="text-center md:text-right mt-4 md:mt-0">
+            <p id="date-display" class="text-xs font-medium text-slate-400"></p>
             <p id="clock-display" class="text-2xl font-bold text-sky-400 lcd-text"></p>
         </div>
     </header>
 
     <main class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4">
         
-        <div class="col-span-2 md:col-span-2 glass rounded-3xl p-6 relative overflow-hidden border-t-8 border-sky-500">
-            <p class="text-xs text-sky-300 tracking-widest mb-2 uppercase">Θερμοκρασία</p>
+        <div class="col-span-2 glass border-t-4 border-sky-500">
+            <p class="text-[10px] text-sky-300 tracking-widest uppercase mb-2">Θερμοκρασία</p>
             <div class="flex items-center justify-between">
-                <h2 id="temp" class="text-7xl font-bold lcd-text">--°C</h2>
-                <i class="fa-solid fa-thermometer-half text-5xl text-sky-500/30"></i>
+                <h2 id="temp" class="text-6xl font-bold lcd-text">--°C</h2>
+                <i class="fa-solid fa-temperature-three-quarters text-4xl text-sky-500/20"></i>
             </div>
-            <p class="text-xs mt-4 text-slate-400"><i class="fa-solid fa-location-dot"></i> Γήλοφος Γρεβενών (1050μ)</p>
         </div>
 
-        <div class="glass rounded-3xl p-6 border-b-8 border-blue-400 text-center">
-            <p class="text-xs text-blue-300 tracking-widest mb-2">ΥΓΡΑΣΙΑ</p>
-            <i class="fa-solid fa-droplet text-4xl text-blue-400 mb-2"></i>
+        <div class="glass border-b-4 border-blue-400 text-center">
+            <p class="text-[10px] text-blue-300 tracking-widest uppercase mb-2">Υγρασία</p>
             <h2 id="hum" class="text-3xl font-bold">--%</h2>
+            <i class="fa-solid fa-droplet text-blue-400/30 mt-2"></i>
         </div>
 
-        <div class="glass rounded-3xl p-6 border-b-8 border-emerald-400 text-center">
-            <p class="text-xs text-emerald-300 tracking-widest mb-2">ΠΙΕΣΗ</p>
-            <i class="fa-solid fa-gauge-high text-4xl text-emerald-400 mb-2"></i>
-            <h2 id="pres" class="text-3xl font-bold">-- hPa</h2>
+        <div class="glass border-b-4 border-emerald-400 text-center">
+            <p class="text-[10px] text-emerald-300 tracking-widest uppercase mb-2">Πίεση</p>
+            <h2 id="pres" class="text-2xl font-bold">-- hPa</h2>
+            <i class="fa-solid fa-gauge-high text-emerald-400/30 mt-2"></i>
         </div>
 
-        <div class="glass rounded-3xl p-6 border-b-8 border-orange-400 text-center">
-            <p class="text-xs text-orange-300 tracking-widest mb-2">ΑΝΕΜΟΣ</p>
-            <i class="fa-solid fa-wind text-4xl text-orange-400 mb-2"></i>
+        <div class="glass border-b-4 border-orange-400 text-center">
+            <p class="text-[10px] text-orange-300 tracking-widest uppercase mb-1">Άνεμος</p>
             <h2 id="wind" class="text-2xl font-bold">-- km/h</h2>
-            <p id="wind-dir-text" class="text-[10px] font-bold text-orange-100 italic uppercase mt-1">--</p>
+            <p id="wind-dir-text" class="text-[11px] font-bold text-orange-100 italic uppercase">--</p>
         </div>
 
-        <div class="glass rounded-3xl p-6 border-b-8 border-slate-500 text-center">
-            <p class="text-xs text-slate-400 tracking-widest mb-2">UPDATE</p>
-            <i class="fa-solid fa-clock-rotate-left text-4xl text-slate-400 mb-2"></i>
-            <h2 id="update" class="text-xl font-bold text-slate-300">--:--</h2>
+        <div class="glass border-b-4 border-slate-500 text-center">
+            <p class="text-[10px] text-slate-400 tracking-widest uppercase mb-2">Ενημέρωση</p>
+            <h2 id="update" class="text-lg font-bold">--:--</h2>
         </div>
 
     </main>
 
     <footer class="mt-8 text-slate-500 text-[10px] uppercase tracking-[0.3em]">
-        Ghilofos Grevenon Weather Station &copy; 2026
+        Ghilofos Grevenon Weather Station
     </footer>
 
     <script>
         function updateClock() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            const dateStr = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
-            document.getElementById('clock-display').textContent = timeStr;
-            document.getElementById('date-display').textContent = dateStr;
+            document.getElementById('clock-display').textContent = now.toLocaleTimeString('el-GR');
+            document.getElementById('date-display').textContent = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -91,11 +86,10 @@
                 
                 document.getElementById('temp').innerText = data.temperature + "°C";
                 document.getElementById('hum').innerText = data.humidity + "%";
-                document.getElementById('pres').innerText = data.pressure;
+                document.getElementById('pres').innerText = data.pressure + " hPa";
                 document.getElementById('wind').innerText = data.wind_speed + " km/h";
                 document.getElementById('update').innerText = data.last_update;
 
-                // Μετατροπή μοιρών σε λέξεις
                 const degrees = data.wind_dir;
                 let direction = "---";
                 if (degrees !== undefined) {
@@ -109,13 +103,10 @@
                     else if (degrees > 292.5 && degrees <= 337.5) direction = "ΒΔΥΤΙΚΟΣ";
                 }
                 document.getElementById('wind-dir-text').innerText = direction;
-
-            } catch (error) {
-                console.log("Σφάλμα φόρτωσης:", error);
-            }
+            } catch (e) { console.log(e); }
         }
         loadWeather();
-        setInterval(loadWeather, 60000); // Ανανέωση κάθε λεπτό
+        setInterval(loadWeather, 60000);
     </script>
 </body>
 </html>
