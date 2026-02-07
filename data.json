@@ -1,8 +1,8 @@
 {
     "temp": 6.0,
-    "humidity": 92,
-    "pressure": 1003,
+    "humidity": 91,
+    "pressure": 1004,
     "description": "Αίθριος καιρός",
     "city": "Γηλόφος",
-    "timestamp": 1770423682
+    "timestamp": 1770424286
 }
