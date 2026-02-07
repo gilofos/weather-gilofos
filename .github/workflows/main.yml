@@ -1,52 +1,32 @@
 name: Update Weather Data
+
 on:
   schedule:
-    - cron: '*/30 * * * *' # Ανανέωση κάθε 30 λεπτά
+    - cron: '*/30 * * * *' # Τρέχει κάθε 30 λεπτά
   workflow_dispatch: # Σου επιτρέπει να το τρέχεις και χειροκίνητα
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.9'
 
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run Weather Script
+      - name: Run weather script
         run: python kairos.py
 
-      - name: Commit and Push Data
+      - name: Commit and Push changes
         run: |
-          git config --global user.name "github-actions"
+          git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add data.json
-          git commit -m "Auto-update weather data" || exit 0
+          git add data.json index.html
+          git commit -m "Auto update weather data" || exit 0
           git push
-
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps: deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
