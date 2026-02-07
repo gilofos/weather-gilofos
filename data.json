@@ -1,9 +1,9 @@
 {
-    "temperature": 8.2,
-    "humidity": 75,
+    "temperature": 7.8,
+    "humidity": 74,
     "pressure": 1060,
-    "wind_speed": 6.9,
-    "wind_dir": 227,
+    "wind_speed": 6.6,
+    "wind_dir": 221,
     "description": "Live από Γήλοφο",
-    "last_update": "21:05:22"
+    "last_update": "21:52:14"
 }
