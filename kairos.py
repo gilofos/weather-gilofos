@@ -21,17 +21,17 @@ def get_weather():
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
 
             # Υπολογισμός πίεσης στη θάλασσα (MSL) - Γήλοφος 1050μ
-            # Η διόρθωση για 1050μ είναι περίπου +124.5 hPa
+            # Η διόρθωση για 1050μ είναι +124.5 hPa (αναγωγή στο επίπεδο της θάλασσας)
             station_pressure = current["surface_pressure"]
             sea_level_pressure = round(station_pressure + 124.5)
 
-            # Λογική Alert
+            # Λογική Alert (Επιδείνωση)
             # Αν η πίεση πέσει κάτω από 1000 hPa ή ο άνεμος είναι πάνω από 50 km/h
             alert_status = False
             if sea_level_pressure < 1000 or current["wind_speed_10m"] > 50:
                 alert_status = True
 
-            # Δημιουργία των δεδομένων για το data.json
+            # Προετοιμασία δεδομένων για το αρχείο JSON
             weather_data = {
                 "temperature": round(current["temperature_2m"], 1),
                 "humidity": current["relative_humidity_2m"],
@@ -42,14 +42,14 @@ def get_weather():
                 "status": "ΕΠΙΔΕΙΝΩΣΗ" if alert_status else "ΟΜΑΛΟΣ ΚΑΙΡΟΣ"
             }
 
-            # Αποθήκευση στο data.json
+            # Εγγραφή στο data.json
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
             print(f"Ενημέρωση {current_time}: {weather_data['temperature']}°C, {sea_level_pressure} hPa")
 
     except Exception as e:
-        print(f"Σφάλμα: {e}")
+        print(f"Σφάλμα κατά την ανάκτηση δεδομένων: {e}")
 
 if __name__ == "__main__":
     get_weather()
