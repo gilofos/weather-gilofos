@@ -2,43 +2,88 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΣ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <style>
-        body { background: #1a202c; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
-        .box { background: #2d3748; padding: 20px; border-radius: 15px; display: inline-block; border: 2px solid #4a5568; min-width: 300px; }
-        h1 { color: #63b3ed; margin-bottom: 10px; }
-        .val { font-size: 40px; font-weight: bold; color: #f6e05e; }
-        #status { font-size: 18px; margin-bottom: 15px; display: block; }
+        body { background: #1a202c; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #2563eb; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { font-size: 24px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        
+        /* ALERT STYLE */
+        #status { font-size: 20px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 20px; display: inline-block; min-width: 250px; }
+        
+        .main-temp { font-size: 100px; font-weight: bold; margin: 20px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 30px; }
+        .card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; border-bottom: 4px solid #60a5fa; }
+        .card h3 { font-size: 14px; margin-bottom: 10px; opacity: 0.8; text-transform: uppercase; }
+        .card p { font-size: 24px; font-weight: bold; margin: 0; }
+        
+        .update-time { font-size: 12px; opacity: 0.6; margin-top: 20px; }
+        hr { border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>ΓΗΛΟΦΟΣ LIVE</h1>
-        <div id="status" style="color: #68d391; font-weight: bold;">--</div>
-        <p>ΘΕΡΜΟΚΡΑΣΙΑ: <span id="temp" class="val">--</span>°C</p>
-        <p>ΠΙΕΣΗ: <span id="pres" class="val">--</span> hPa</p>
-        <hr>
-        <p style="font-size: 12px; opacity: 0.6;">ΕΝΗΜΕΡΩΣΗ: <span id="time">--</span></p>
+
+<div class="container">
+    <h1>Μετεωρολογικός Σταθμός Γηλόφου</h1>
+    
+    <div id="status">Φόρτωση...</div>
+
+    <div class="main-temp"><span id="temp">--</span>°</div>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>Υγρασία</h3>
+            <p><span id="hum">--</span>%</p>
+        </div>
+        <div class="card" style="border-bottom-color: #34d399;">
+            <h3>Πίεση</h3>
+            <p><span id="pres">--</span> <small>hPa</small></p>
+        </div>
+        <div class="card" style="border-bottom-color: #fbbf24;">
+            <h3>Άνεμος</h3>
+            <p><span id="wind">--</span> <small>km/h</small></p>
+        </div>
     </div>
 
-    <script>
-        async function update() {
-            try {
-                const res = await fetch('data.json?t=' + Date.now());
-                if (!res.ok) throw new Error("File not found");
-                const d = await res.json();
-                
-                document.getElementById('temp').innerText = d.temperature || "--";
-                document.getElementById('pres').innerText = d.pressure || "--";
-                document.getElementById('status').innerText = d.status || "Ενημέρωση...";
-                document.getElementById('time').innerText = d.last_update || "--";
-            } catch(e) { 
-                console.log("Σφάλμα φόρτωσης:", e);
-                document.getElementById('status').innerText = "Αναμονή δεδομένων...";
+    <hr>
+    <div class="update-time">ΤΕΛΕΥΤΑΙΑ ΕΝΗΜΕΡΩΣΗ: <span id="time">--:--</span></div>
+</div>
+
+<script>
+    async function updateWeather() {
+        try {
+            // Το ?t=Date.now() εμποδίζει τον browser να δείχνει παλιά δεδομένα (cache)
+            const response = await fetch('data.json?t=' + Date.now());
+            const data = await response.json();
+
+            document.getElementById('temp').innerText = data.temperature;
+            document.getElementById('hum').innerText = data.humidity;
+            document.getElementById('pres').innerText = data.pressure;
+            document.getElementById('wind').innerText = data.wind_speed;
+            document.getElementById('time').innerText = data.last_update;
+            
+            // Ενημέρωση του Status / Alert
+            const statusBox = document.getElementById('status');
+            statusBox.innerText = data.status || "Σταθερός Καιρός";
+            
+            // Αλλαγή χρώματος αν υπάρχει προειδοποίηση
+            if (data.status && data.status.includes("⚠️")) {
+                statusBox.style.color = "#ffbdad"; // Απαλό κόκκινο
+            } else {
+                statusBox.style.color = "#a7f3d0"; // Απαλό πράσινο
             }
+
+        } catch (error) {
+            console.error("Σφάλμα σύνδεσης με τα δεδομένα:", error);
+            document.getElementById('status').innerText = "Αναμονή για δεδομένα...";
         }
-        update();
-        setInterval(update, 30000);
-    </script>
+    }
+
+    // Εκτέλεση αμέσως και μετά κάθε 30 δευτερόλεπτα
+    updateWeather();
+    setInterval(updateWeather, 30000);
+</script>
+
 </body>
 </html>
