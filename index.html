@@ -45,7 +45,16 @@
                     <div class="bg-orange-500/10 p-6 rounded-full border border-orange-500/30"><i class="fa-solid fa-temperature-full text-7xl text-orange-400"></i></div>
                     <div>
                         <div id="temp-main" class="text-8xl md:text-9xl font-black tracking-tighter leading-none">--°</div>
-                        <div id="date-main" class="text-blue-200 font-bold uppercase text-xs mt-4 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full">--</div>
+                        <!-- SUNRISE & SUNSET -->
+                        <div class="flex gap-4 mt-2">
+                            <div class="flex items-center gap-2 text-xs font-bold text-orange-300 tracking-tighter bg-white/5 px-3 py-1 rounded-full border border-orange-500/20">
+                                <i class="fa-solid fa-sun-up text-orange-400"></i> <span id="sunrise-val">--:--</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-blue-300 tracking-tighter bg-white/5 px-3 py-1 rounded-full border border-blue-500/20">
+                                <i class="fa-solid fa-sun-down text-blue-400"></i> <span id="sunset-val">--:--</span>
+                            </div>
+                        </div>
+                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-4 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full">--</div>
                     </div>
                 </div>
                 
@@ -154,7 +163,6 @@
                 document.getElementById('pres-val').innerText = data.pressure + " hPa";
                 document.getElementById('wind-val').innerText = data.wind_speed;
 
-                // Εδώ αφαιρέσαμε την πρόσθεση ωρών για να δείχνει ακριβώς ό,τι στέλνει το αρχείο
                 if (data.last_update) {
                     document.getElementById('update-time').innerText = data.last_update;
                 }
@@ -176,9 +184,18 @@
         }
 
         async function loadForecast() {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto');
+            // Updated fetch to include daily sunrise and sunset
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
             const data = await res.json();
             
+            // Update Sunrise & Sunset display
+            if (data.daily.sunrise[0]) {
+                document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
+            }
+            if (data.daily.sunset[0]) {
+                document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
+            }
+
             const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
             const temps = data.hourly.temperature_2m.slice(0, 24);
             const codes = data.hourly.weathercode.slice(0, 24);
