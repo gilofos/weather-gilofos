@@ -1,14 +1,14 @@
 {
-    "temperature": 9.3,
-    "feels_like": 8.1,
+    "temperature": 9.0,
+    "feels_like": 7.8,
     "icon": "☁️",
-    "humidity": 80,
-    "pressure": 1008.2,
-    "status": "✅ ΣΤΑΘΕΡΗ ΠΙΕΣΗ",
-    "wind_speed": 1.8,
-    "wind_dir": 143,
+    "humidity": 81,
+    "pressure": 1008.4,
+    "wind_speed": 1.6,
+    "wind_dir": 153,
+    "alert": "✅ Καιρός Σταθερός",
     "description": "Live από Γήλοφο",
-    "last_update": "19:09:30",
+    "last_update": "17:25:00",
     "forecast": [
         {
             "time": "00:00",
