@@ -3,113 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; }
-        .main-box { background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%); border-radius: 2rem; }
+        body { 
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            min-height: 100vh; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-section { 
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); 
+            border-radius: 30px; 
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .card { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; 
+            padding: 20px; 
+        }
         #custom-alert { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-10">
-    <div class="max-w-4xl mx-auto">
-        <div class="main-box p-8 mb-6 shadow-2xl relative overflow-hidden">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 class="text-2xl font-black bg-white text-blue-900 px-4 py-1 rounded-lg uppercase">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-                    <p class="text-blue-200 font-bold mt-2 uppercase tracking-widest text-sm">ΥΨΟΜΕΤΡΟ: 1050m</p>
+<body class="p-4">
+    <div class="max-w-5xl w-full mx-auto">
+        <!-- Κεντρικό Πάνελ -->
+        <div class="hero-section mb-8 p-8 md:p-12">
+            <div class="flex justify-between items-start mb-10">
+                <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30">
+                    <h1 class="text-xl md:text-3xl font-black uppercase text-white tracking-tighter">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+                    <p class="text-blue-200 font-bold text-sm tracking-[0.3em]">ΥΨΟΜΕΤΡΟ: 1050M</p>
+                </div>
+                <div id="status-badge" class="text-yellow-400 font-black italic uppercase tracking-widest text-lg">
+                    ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ
                 </div>
             </div>
 
-            <div class="flex flex-col md:flex-row justify-between items-center mt-10 gap-8">
-                <div class="flex items-center gap-5">
-                    <i class="fa-solid fa-temperature-high text-6xl text-orange-400"></i>
-                    <div id="temp-display" class="text-8xl font-black tracking-tighter leading-none">--°</div>
-                </div>
-                <div class="text-center md:text-right">
-                    <div id="alert-status-text" class="text-yellow-400 text-xl font-black italic mb-2 uppercase tracking-widest">
-                        ΦΟΡΤΩΣΗ...
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-8">
+                    <i class="fa-solid fa-temperature-high text-7xl text-orange-400"></i>
+                    <div>
+                        <h2 id="temp-val" class="text-8xl md:text-9xl font-black tracking-tighter leading-none">--°</h2>
+                        <p id="date-display" class="text-blue-200 font-bold uppercase text-sm mt-4 tracking-widest"></p>
                     </div>
-                    <div id="clock" class="text-6xl font-mono font-bold bg-black/30 px-6 py-2 rounded-2xl text-blue-100 shadow-inner">00:00:00</div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-blue-950/80 backdrop-blur-xl px-8 py-5 rounded-[2rem] border border-white/20 shadow-2xl">
+                        <div id="clock-display" class="text-5xl md:text-7xl font-mono font-black text-blue-100 leading-none">00:00:00</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 text-center">
-            <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-cyan-400 text-cyan-400 shadow-lg">
-                <p class="text-xs font-bold mb-1 uppercase">ΥΓΡΑΣΙΑ</p>
-                <div id="hum-display" class="text-4xl font-black text-white">--%</div>
+        <!-- Δευτερεύουσες Μετρήσεις -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center uppercase font-black italic">
+            <div class="card border-b-8 border-cyan-400">
+                <p class="text-cyan-300 mb-2 tracking-widest text-xs">ΥΓΡΑΣΙΑ</p>
+                <h2 id="hum-val" class="text-5xl">--%</h2>
             </div>
-            <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-emerald-400 text-emerald-400 shadow-lg">
-                <p class="text-xs font-bold mb-1 uppercase">ΠΙΕΣΗ</p>
-                <div id="pres-display" class="text-4xl font-black text-white">-- hPa</div>
+            <div class="card border-b-8 border-emerald-400">
+                <p class="text-emerald-300 mb-2 tracking-widest text-xs">ΠΙΕΣΗ</p>
+                <h2 id="pres-val" class="text-5xl">-- hPa</h2>
             </div>
-            <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-orange-400 text-orange-400 shadow-lg">
-                <p class="text-xs font-bold mb-1 uppercase">ΑΝΕΜΟΣ</p>
-                <div id="wind-display" class="text-4xl font-black text-white">-- km/h</div>
+            <div class="card border-b-8 border-orange-400">
+                <p class="text-orange-300 mb-2 tracking-widest text-xs">ΑΝΕΜΟΣ</p>
+                <h2 id="wind-val" class="text-5xl">-- km/h</h2>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM ALERT MODAL -->
-    <div id="custom-alert" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full p-12 border-t-[12px] border-red-600 text-center">
-            <i class="fa-solid fa-triangle-exclamation text-red-600 text-6xl mb-6 animate-pulse"></i>
-            <h3 class="text-4xl font-black text-gray-900 mb-6 uppercase">ΠΡΟΣΟΧΗ</h3>
-            <p id="alert-message" class="text-2xl text-gray-800 leading-tight font-bold mb-8"></p>
-            <button onclick="closeAlert()" class="w-full bg-gray-900 text-white font-black py-5 rounded-2xl text-2xl uppercase tracking-widest">ΕΛΑΒΑ ΓΝΩΣΗ</button>
+    <!-- MEGA ALERT MODAL -->
+    <div id="custom-alert" class="fixed inset-0 bg-black/95 flex items-center justify-center p-6 z-50">
+        <div class="bg-white rounded-[3rem] p-16 max-w-3xl w-full text-center border-t-[20px] border-red-600 shadow-2xl">
+            <i class="fa-solid fa-triangle-exclamation text-red-600 text-8xl mb-8 animate-bounce"></i>
+            <h2 class="text-6xl font-black text-gray-900 mb-6 uppercase tracking-tighter">Προσοχη</h2>
+            <p id="alert-msg" class="text-3xl text-gray-700 font-bold mb-10 leading-tight"></p>
+            <button onclick="document.getElementById('custom-alert').style.display='none'" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-6 rounded-2xl text-3xl uppercase transition-colors">
+                Ελαβα Γνωση
+            </button>
         </div>
     </div>
 
     <script>
-        let lastAlertStatus = false;
-
-        function showAlert(message) {
-            document.getElementById('alert-message').textContent = message;
-            document.getElementById('custom-alert').style.display = 'flex';
-        }
-
-        function closeAlert() {
-            document.getElementById('custom-alert').style.display = 'none';
-        }
+        let lastAlert = false;
 
         function update() {
-            // Live Ρολόι
+            // Ενημέρωση Ρολογιού & Ημερομηνίας
             const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
+            document.getElementById('clock-display').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
+            document.getElementById('date-display').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
             
-            // Φόρτωση δεδομένων
+            // Λήψη δεδομένων από το data.json
             fetch('data.json?v=' + Date.now())
                 .then(r => r.json())
                 .then(data => {
-                    // ΠΡΟΣΟΧΗ: Εδώ χρησιμοποιούμε τα ονόματα από το kairos.py (temp, hum, pres, wind, alert)
-                    document.getElementById('temp-display').innerText = (data.temp !== undefined ? data.temp : "--") + "°";
-                    document.getElementById('hum-display').innerText = (data.hum !== undefined ? data.hum : "--") + "%";
-                    document.getElementById('pres-display').innerText = (data.pres !== undefined ? data.pres : "--") + " hPa";
-                    document.getElementById('wind-display').innerText = (data.wind !== undefined ? data.wind : "--") + " km/h";
+                    // Χρήση των κλειδιών από το kairos.py (temp, hum, pres, wind, alert)
+                    document.getElementById('temp-val').innerText = (data.temp !== undefined ? data.temp : "--") + "°";
+                    document.getElementById('hum-val').innerText = (data.hum !== undefined ? data.hum : "--") + "%";
+                    document.getElementById('pres-val').innerText = (data.pres !== undefined ? data.pres : "--") + " hPa";
+                    document.getElementById('wind-val').innerText = (data.wind !== undefined ? data.wind : "--") + " km/h";
                     
-                    const statusText = document.getElementById('alert-status-text');
+                    const statusBadge = document.getElementById('status-badge');
                     
-                    if(data.alert === true) {
-                        statusText.innerText = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ";
-                        statusText.className = "text-red-500 text-xl font-black italic animate-pulse tracking-widest mb-2 uppercase";
-                        if (!lastAlertStatus) {
-                            showAlert("Προσοχή Αχιλλέα! Οι μετρήσεις δείχνουν επιδείνωση των συνθηκών στον Γήλοφο!");
+                    if(data.alert) {
+                        statusBadge.innerText = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ";
+                        statusBadge.className = "text-red-500 font-black italic uppercase tracking-widest text-lg animate-pulse";
+                        
+                        // Εμφάνιση Modal αν είναι νέα ειδοποίηση
+                        if(!lastAlert) {
+                            document.getElementById('alert-msg').innerText = "Αχιλλέα, προσοχή! Η πίεση έπεσε ή ο άνεμος δυνάμωσε απότομα στον Γήλοφο!";
+                            document.getElementById('custom-alert').style.display = 'flex';
                         }
                     } else {
-                        statusText.innerText = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ";
-                        statusText.className = "text-yellow-400 text-xl font-black italic tracking-widest mb-2 uppercase";
+                        statusBadge.innerText = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ";
+                        statusBadge.className = "text-yellow-400 font-black italic uppercase tracking-widest text-lg";
                     }
-                    lastAlertStatus = data.alert;
+                    lastAlert = data.alert;
                 })
-                .catch(err => {
-                    console.log("Περιμένω το data.json...");
-                });
+                .catch(e => console.log("Αναμονή για δεδομένα..."));
         }
 
+        // Εκτέλεση κάθε δευτερόλεπτο
         setInterval(update, 1000);
         update();
+
+        // Κλείσιμο με Esc
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.getElementById('custom-alert').style.display = 'none';
+        });
     </script>
 </body>
 </html>
