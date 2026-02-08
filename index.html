@@ -8,12 +8,29 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
-        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; }
-        .hero-section { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-radius: 30px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { 
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            min-height: 100vh;
+        }
+        .card { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; 
+            padding: 20px; 
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body class="p-2 md:p-6">
+
     <div class="max-w-6xl mx-auto">
         <div class="hero-section mb-8 p-6 md:p-10 flex flex-col justify-between">
             <div class="flex justify-between items-start">
@@ -40,23 +57,34 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <div id="alert-box" class="text-yellow-400 font-black text-sm md:text-base mb-3 italic uppercase tracking-widest"></div>
+                    <div id="alert-box" class="text-yellow-400 font-black text-sm md:text-base mb-3 italic uppercase tracking-widest drop-shadow-md"></div>
                     <div class="bg-blue-950/80 backdrop-blur-xl px-8 py-5 rounded-[2rem] border-2 border-white/20 shadow-2xl">
-                        <div id="clock-hero" class="text-4xl md:text-6xl font-mono font-black tracking-tighter text-blue-100">00:00:00</div>
+                        <div id="clock-hero" class="text-4xl md:text-5xl font-mono font-black tracking-tighter text-blue-100">00:00:00</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center font-black italic uppercase">
-            <div class="card border-b-8 border-cyan-400"><p class="text-xs text-cyan-300 tracking-widest mb-2">ΥΓΡΑΣΙΑ</p><h2 id="hum" class="text-5xl">--%</h2></div>
+            <div class="card border-b-8 border-cyan-400">
+                <p class="text-xs text-cyan-300 tracking-widest mb-2">ΥΓΡΑΣΙΑ</p>
+                <h2 id="hum" class="text-5xl">--%</h2>
+            </div>
             <div class="card border-b-8 border-emerald-400">
                 <p class="text-xs text-emerald-300 tracking-widest mb-2 italic">ΠΙΕΣΗ / ΥΨΟΜ</p>
                 <h2 id="pres" class="text-2xl mt-2">-- hPa</h2>
                 <p class="text-[10px] text-white/50 lowercase mt-1">Υψόμετρο: <span id="alt">1050</span>m</p>
             </div>
-            <div class="card border-b-8 border-yellow-400"><p class="text-xs text-yellow-300 tracking-widest mb-2 italic">ΣΕΛΗΝΗ</p><i id="moon-icon" class="fa-solid fa-moon text-4xl text-yellow-100 mt-1"></i><p id="moon" class="text-xs font-bold italic mt-2 normal-case">--</p></div>
-            <div class="card border-b-8 border-orange-400"><p class="text-xs text-orange-300 tracking-widest mb-2">ΑΝΕΜΟΣ</p><i class="fa-solid fa-wind text-4xl text-orange-200 mt-1"></i><h2 id="wind" class="text-2xl mt-1">-- km/h</h2></div>
+            <div class="card border-b-8 border-yellow-400">
+                <p class="text-xs text-yellow-300 tracking-widest mb-2 italic">ΣΕΛΗΝΗ</p>
+                <i id="moon-icon" class="fa-solid fa-moon text-4xl text-yellow-100 mt-1"></i>
+                <p id="moon" class="text-xs font-bold italic mt-2 normal-case">--</p>
+            </div>
+            <div class="card border-b-8 border-orange-400">
+                <p class="text-xs text-orange-300 tracking-widest mb-2">ΑΝΕΜΟΣ</p>
+                <i class="fa-solid fa-wind text-4xl text-orange-200 mt-1"></i>
+                <h2 id="wind" class="text-2xl mt-1">-- km/h</h2>
+            </div>
         </div>
 
         <div class="card mb-8">
@@ -66,6 +94,7 @@
         </div>
 
         <div class="card p-0 overflow-hidden h-[600px] relative border-2 border-blue-500/20 mb-8">
+            <div class="absolute top-4 left-4 z-10 bg-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-xl">ΚΙΝΗΣΗ ΝΕΦΩΝ & ΒΡΟΧΗΣ</div>
             <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,7&oFa=0&oC=1&oU=0&oN=1&oC=1&oT=2&oF=1&oV=1&oA=1&oR=1&ls=1&tm=20&v=rv" class="w-full h-full border-0"></iframe>
         </div>
 
@@ -106,12 +135,15 @@
             try {
                 const r1 = await fetch('data.json?v=' + Date.now());
                 const d1 = await r1.json();
+                
                 document.getElementById('temp-hero').innerText = d1.temperature + "°";
                 document.getElementById('hum').innerText = d1.humidity + "%";
                 document.getElementById('pres').innerText = d1.pressure + " hPa";
                 document.getElementById('wind').innerText = d1.wind_speed + " km/h";
-                document.getElementById('alert-box').innerText = d1.description || "";
-                document.getElementById('alt').innerText = d1.altitude || "1050";
+                
+                // Διόρθωση εδώ: Διαβάζουμε το d1.status που έχει το αρχείο σου
+                document.getElementById('alert-box').innerText = d1.status || d1.description || "";
+                document.getElementById('alt').innerText = "1050";
                 document.getElementById('moon').innerText = getMoon();
                 
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
@@ -172,7 +204,8 @@
                     </div>`;
                 }
                 document.getElementById('forecast').innerHTML = fHtml;
-            } catch(e) { console.error(e); }
+
+            } catch(e) { console.error("Σφάλμα:", e); }
         }
         startClock(); loadWeather(); setInterval(loadWeather, 60000);
     </script>
