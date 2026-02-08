@@ -1,9 +1,53 @@
 {
     "temperature": 12.0,
-    "humidity": 65,
+    "feels_like": 10.0,
+    "icon": "⛅",
+    "humidity": 64,
     "pressure": 1059.0,
     "wind_speed": 6.3,
     "wind_dir": 301,
     "description": "Live από Γήλοφο",
-    "last_update": "13:47:24"
+    "last_update": "13:56:05",
+    "forecast": [
+        {
+            "time": "00:00",
+            "temp": 6.9,
+            "icon": "☁️"
+        },
+        {
+            "time": "03:00",
+            "temp": 6.9,
+            "icon": "☁️"
+        },
+        {
+            "time": "06:00",
+            "temp": 6.3,
+            "icon": "🌧️"
+        },
+        {
+            "time": "09:00",
+            "temp": 6.1,
+            "icon": "🌧️"
+        },
+        {
+            "time": "12:00",
+            "temp": 10.1,
+            "icon": "⛅"
+        },
+        {
+            "time": "15:00",
+            "temp": 12.6,
+            "icon": "🌤️"
+        },
+        {
+            "time": "18:00",
+            "temp": 11.0,
+            "icon": "☁️"
+        },
+        {
+            "time": "21:00",
+            "temp": 7.8,
+            "icon": "☁️"
+        }
+    ]
 }
