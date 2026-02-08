@@ -12,7 +12,7 @@ def get_weather():
         data = response.json()
         if response.status_code == 200:
             current = data["current"]
-            # Ώρα Ελλάδος (UTC+2)
+            # Ώρα Ελλάδος
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
             pressure = round(current["pressure_msl"], 1)
 
