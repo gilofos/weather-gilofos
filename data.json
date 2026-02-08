@@ -1,13 +1,13 @@
 {
-    "temperature": 12.6,
-    "feels_like": 10.5,
+    "temperature": 12.2,
+    "feels_like": 10.6,
     "icon": "🌤️",
-    "humidity": 61,
-    "pressure": 1059.4,
-    "wind_speed": 6.3,
-    "wind_dir": 294,
+    "humidity": 64,
+    "pressure": 1059.6,
+    "wind_speed": 3.6,
+    "wind_dir": 307,
     "description": "Live από Γήλοφο",
-    "last_update": "15:58:10",
+    "last_update": "16:59:00",
     "forecast": [
         {
             "time": "00:00",
