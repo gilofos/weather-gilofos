@@ -8,74 +8,134 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
-        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; }
-        .hero-section { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-radius: 30px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { 
+            background-color: #0f172a; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+        .hero-panel { 
+            background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%); 
+            border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .data-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .clock-box {
+            background: #020617;
+            border-radius: 15px;
+            padding: 10px 20px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .forecast-row {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
-<body class="p-2 md:p-6 text-center">
-    <div class="max-w-6xl mx-auto">
-        <div class="hero-section mb-8 p-6 md:p-10 flex flex-col justify-between">
-            <div class="flex justify-between items-start">
-                <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30">
-                    <h1 class="text-xl md:text-3xl font-black uppercase text-white">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
+<body>
+
+    <div class="max-w-5xl mx-auto">
+        <!-- ΚΕΝΤΡΙΚΟ ΠΑΝΕΛ -->
+        <div class="hero-panel">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                    <h1 class="text-lg md:text-2xl font-black uppercase tracking-tighter">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
                 </div>
-                <div class="bg-white p-2 rounded-2xl">
-                    <img src="logo.png" alt="Logo" class="h-20 w-auto" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
+                <div class="bg-white p-2 rounded-2xl shadow-xl">
+                    <img src="logo.png" alt="Logo" class="h-12 md:h-16 w-auto" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
                 </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6 text-left">
+
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end gap-6">
+                <!-- ΘΕΡΜΟΚΡΑΣΙΑ -->
                 <div class="flex items-center gap-6">
-                    <div class="bg-white/10 p-5 rounded-full border border-white/20">
+                    <div class="bg-orange-500/20 p-4 rounded-full border border-orange-500/30">
                         <i class="fa-solid fa-temperature-high text-5xl text-orange-400"></i>
                     </div>
                     <div>
-                        <h2 id="temp-hero" class="text-6xl md:text-7xl font-black">--°</h2>
-                        <p id="date-hero" class="text-blue-200 font-bold uppercase text-xs mt-2"></p>
+                        <div class="flex items-start">
+                            <span id="temp-val" class="text-7xl md:text-8xl font-black tracking-tighter">--</span>
+                            <span class="text-3xl font-bold mt-4">°C</span>
+                        </div>
+                        <p id="date-text" class="text-blue-200 font-bold uppercase text-xs tracking-widest">--</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div id="alert-box" class="font-black text-xl md:text-3xl mb-2 italic uppercase"></div>
-                    <div class="bg-blue-950/80 px-6 py-4 rounded-3xl border border-white/20 inline-block shadow-2xl">
-                        <div id="clock-hero" class="text-3xl md:text-5xl font-mono font-black text-blue-100">00:00:00</div>
+
+                <!-- ΚΑΤΑΣΤΑΣΗ & ΡΟΛΟΙ -->
+                <div class="text-center md:text-right">
+                    <h2 id="status-text" class="text-yellow-400 font-black text-2xl md:text-3xl italic uppercase tracking-widest mb-4">--</h2>
+                    <div class="clock-box">
+                        <span id="clock" class="text-4xl md:text-5xl font-mono font-black text-blue-50">00:00:00</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 uppercase font-black italic text-sm">
-            <div class="card border-b-4 border-cyan-400">
-                <p class="text-cyan-300">ΥΓΡΑΣΙΑ</p>
-                <h2 id="hum" class="text-4xl">--%</h2>
+
+        <!-- ΚΑΡΤΕΣ ΔΕΔΟΜΕΝΩΝ -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 uppercase font-black italic">
+            <div class="data-card border-b-4 border-cyan-500">
+                <p class="text-cyan-400 text-[10px] mb-1">ΥΓΡΑΣΙΑ</p>
+                <h3 id="hum-val" class="text-2xl">--%</h3>
             </div>
-            <div class="card border-b-4 border-emerald-400">
-                <p class="text-emerald-300">ΠΙΕΣΗ</p>
-                <h2 id="pres" class="text-xl mt-1">-- hPa</h2>
+            <div class="data-card border-b-4 border-emerald-500">
+                <p class="text-emerald-400 text-[10px] mb-1">ΠΙΕΣΗ</p>
+                <h3 id="pres-val" class="text-xl mt-1">-- HPA</h3>
             </div>
-            <div class="card border-b-4 border-yellow-400">
-                <p class="text-yellow-300">ΣΕΛΗΝΗ</p>
-                <div id="moon-icon" class="text-4xl my-1"></div>
-                <p id="moon-text" class="text-[11px] font-bold normal-case">--</p>
+            <div class="data-card border-b-4 border-yellow-500">
+                <p class="text-yellow-400 text-[10px] mb-1">ΣΕΛΗΝΗ</p>
+                <div id="moon-icon" class="text-2xl">🌑</div>
+                <p id="moon-name" class="text-[9px] font-bold normal-case text-white/50">--</p>
             </div>
-            <div class="card border-b-4 border-orange-400">
-                <p class="text-orange-300">ΑΝΕΜΟΣ</p>
-                <h2 id="wind" class="text-xl mt-1">-- km/h</h2>
+            <div class="data-card border-b-4 border-orange-500">
+                <p class="text-orange-400 text-[10px] mb-1">ΑΝΕΜΟΣ</p>
+                <h3 id="wind-val" class="text-xl mt-1">-- KM/H</h3>
             </div>
         </div>
-        <div class="card mb-8">
-            <h3 class="text-xs mb-4 text-white/50 uppercase">Πρόγνωση Θερμοκρασίας 24ώρου</h3>
-            <canvas id="myChart" style="max-height: 250px;"></canvas>
+
+        <!-- ΓΡΑΦΗΜΑ & ΠΡΟΓΝΩΣΗ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-slate-800/40 rounded-3xl p-6 border border-white/5">
+                <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">ΘΕΡΜΟΚΡΑΣΙΑ 24ΩΡΟΥ</p>
+                <div class="h-[250px]">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/40 rounded-3xl p-6 border border-white/5">
+                <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">ΠΡΟΓΝΩΣΗ ΕΒΔΟΜΑΔΑΣ</p>
+                <div id="weekly-list" class="space-y-1"></div>
+            </div>
         </div>
     </div>
+
     <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('date-text').innerText = now.toLocaleDateString('el-GR', options).toUpperCase();
+        }
+
         function getMoonPhase() {
             const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const c = Math.floor(365.25 * year);
-            const e = Math.floor(30.6 * month);
-            const jd = c + e + day - 694039.09; 
-            const b = jd / 29.5305882;
+            const year = date.getFullYear(); const month = date.getMonth() + 1; const day = date.getDate();
+            const c = Math.floor(365.25 * year); const e = Math.floor(30.6 * month);
+            const jd = c + e + day - 694039.09; const b = jd / 29.5305882;
             const phase = b - Math.floor(b);
             if (phase < 0.06) return ["Νέα Σελήνη", "🌑"];
             if (phase < 0.19) return ["Αύξων Μηνίσκος", "🌒"];
@@ -84,58 +144,64 @@
             if (phase < 0.56) return ["Πανσέληνος", "🌕"];
             if (phase < 0.69) return ["Φθίνων Αμφίκυρτος", "🌖"];
             if (phase < 0.81) return ["Τελευταίο Τέταρτο", "🌗"];
-            if (phase < 0.94) return ["Φθίνων Μηνίσκος", "🌘"];
-            return ["Νέα Σελήνη", "🌑"];
+            return ["Φθίνων Μηνίσκος", "🌘"];
         }
-        function startClock() {
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
-                document.getElementById('date-hero').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
-            }, 1000);
+
+        function getWeatherIcon(code) {
+            if (code <= 1) return '<i class="fa-solid fa-sun text-yellow-400"></i>';
+            if (code <= 3) return '<i class="fa-solid fa-cloud-sun text-gray-300"></i>';
+            if (code <= 61) return '<i class="fa-solid fa-cloud-rain text-blue-400"></i>';
+            if (code <= 75) return '<i class="fa-solid fa-snowflake text-white"></i>';
+            return '<i class="fa-solid fa-cloud-bolt text-purple-400"></i>';
         }
-        async function updateUI() {
+
+        async function updateData() {
             try {
-                const res = await fetch('data.json?v=' + Date.now());
-                const data = await res.json();
-                document.getElementById('temp-hero').innerText = data.temperature + "°";
-                document.getElementById('hum').innerText = data.humidity + "%";
-                document.getElementById('pres').innerText = data.pressure + " hPa";
-                document.getElementById('wind').innerText = data.wind_speed + " km/h";
-                const ab = document.getElementById('alert-box');
-                ab.innerText = data.status;
-                ab.style.color = (data.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") ? "#ef4444" : "#facc15";
+                // Φόρτωση από data.json
+                const resLocal = await fetch('data.json?t=' + Date.now());
+                const data = await resLocal.json();
+                document.getElementById('temp-val').innerText = data.temperature;
+                document.getElementById('hum-val').innerText = data.humidity + "%";
+                document.getElementById('pres-val').innerText = data.pressure + " HPA";
+                document.getElementById('wind-val').innerText = data.wind_speed + " KM/H";
+                document.getElementById('status-text').innerText = data.status;
+
                 const [mName, mIcon] = getMoonPhase();
                 document.getElementById('moon-icon').innerText = mIcon;
-                document.getElementById('moon-text').innerText = mName;
-                const cRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&timezone=auto');
-                const cData = await cRes.json();
-                const ctx = document.getElementById('myChart');
-                if (window.stChart) window.stChart.destroy();
-                window.stChart = new Chart(ctx, {
+                document.getElementById('moon-name').innerText = mName;
+
+                // Open-Meteo API (Ghilofos coords: 40.06, 21.80)
+                const resApi = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto');
+                const api = await resApi.json();
+
+                const ctx = document.getElementById('tempChart').getContext('2d');
+                if (window.myChart) window.myChart.destroy();
+                window.myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: cData.hourly.time.slice(0, 24).map(t => t.split('T')[1]),
+                        labels: api.hourly.time.slice(0, 24).map(t => t.split('T')[1]),
                         datasets: [{
-                            data: cData.hourly.temperature_2m.slice(0, 24),
-                            borderColor: '#4ade80',
-                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 3,
-                            pointRadius: 2
+                            data: api.hourly.temperature_2m.slice(0, 24),
+                            borderColor: '#3b82f6', fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.4, pointRadius: 0
                         }]
                     },
-                    options: { 
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
-            } catch(e) { console.log(e); }
+
+                const list = document.getElementById('weekly-list');
+                list.innerHTML = '';
+                for(let i=0; i<7; i++) {
+                    const d = new Date(api.daily.time[i]);
+                    const day = d.toLocaleDateString('el-GR', {weekday: 'short'}).toUpperCase();
+                    list.innerHTML += `<div class="forecast-row"><span>${day}</span>${getWeatherIcon(api.daily.weathercode[i])}<div>${Math.round(api.daily.temperature_2m_max[i])}° / ${Math.round(api.daily.temperature_2m_min[i])}°</div></div>`;
+                }
+            } catch (e) { console.error(e); }
         }
-        startClock(); updateUI(); setInterval(updateUI, 60000);
+
+        setInterval(updateClock, 1000);
+        updateClock();
+        updateData();
+        setInterval(updateData, 60000);
     </script>
 </body>
 </html>
