@@ -5,181 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { 
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); 
+            background: #0f172a; 
             color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            min-height: 100vh;
+            font-family: sans-serif; 
         }
-        .card { 
-            background: rgba(30, 41, 59, 0.6); 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 20px; 
-            padding: 20px; 
+        .hero-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+            border-radius: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .hero-section {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
-            border-radius: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .stat-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1.5rem;
         }
-        .status-stable { color: #facc15; }
-        .status-alert { color: #ef4444; }
-        canvas { max-height: 250px; width: 100% !important; }
+        .clock-bg {
+            background: rgba(0,0,0,0.3);
+            border-radius: 1rem;
+            padding: 10px 20px;
+        }
     </style>
 </head>
-<body class="p-2 md:p-6 text-white">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-6xl mx-auto">
-        <!-- Main Header Panel -->
-        <div class="hero-section mb-8 p-6 md:p-10 flex flex-col justify-between relative overflow-hidden">
-            <div class="flex justify-between items-start relative z-10">
-                <div class="flex flex-col gap-3">
-                    <div class="bg-white/20 backdrop-blur-md px-6 py-2 rounded-xl border border-white/30 shadow-xl">
-                        <h1 class="text-xl md:text-2xl font-black uppercase tracking-tight">ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</h1>
-                    </div>
-                    <div class="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-full shadow-lg w-fit mt-2">
-                        <span class="relative flex h-3 w-3">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                        </span>
-                        <span class="text-xs font-black uppercase tracking-widest italic">LIVE ΣΤΑΘΜΟΣ</span>
+    <div class="max-w-5xl mx-auto">
+        <!-- Κεντρικό Πάνελ -->
+        <div class="hero-card p-8 mb-8">
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black uppercase tracking-tighter bg-white text-blue-900 px-4 py-1 rounded-lg inline-block mb-2">
+                        ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ
+                    </h1>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">LIVE</span>
+                        <p class="text-blue-200 font-bold uppercase text-xs tracking-widest">ΥΨΟΜΕΤΡΟ: 1050m</p>
                     </div>
                 </div>
-                
-                <div class="bg-white p-2 rounded-2xl shadow-2xl border-2 border-blue-400/30">
-                    <img src="logo.png" alt="Logo" class="h-12 md:h-20 w-auto" onerror="this.src='https://via.placeholder.com/150?text=GHILOFOS'">
-                </div>
+                <img src="logo.png" class="h-16 md:h-20" onerror="this.src='https://via.placeholder.com/80?text=LOGO'">
             </div>
 
-            <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex items-center gap-6">
-                    <div class="bg-white/10 p-5 rounded-full border border-white/20 text-orange-400 text-5xl md:text-6xl">
-                        <i class="fa-solid fa-temperature-half"></i>
-                    </div>
+                    <i class="fa-solid fa-temperature-high text-6xl text-orange-400"></i>
                     <div>
-                        <h2 id="temp-hero" class="text-7xl md:text-8xl font-black tracking-tighter leading-none">--°</h2>
-                        <p id="date-hero" class="text-blue-200 font-bold uppercase text-xs mt-2 tracking-widest"></p>
+                        <div id="temp" class="text-8xl font-black tracking-tighter leading-none">--°</div>
+                        <div id="date" class="text-blue-200 font-bold mt-2 uppercase text-sm">--</div>
                     </div>
                 </div>
-                
-                <div class="flex flex-col items-center md:items-end gap-3">
-                    <div id="alert-text" class="status-stable text-xl md:text-2xl font-black uppercase tracking-widest italic drop-shadow-lg">ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ</div>
-                    <div class="bg-blue-950/80 backdrop-blur-xl px-8 py-4 rounded-3xl border-2 border-white/10 shadow-2xl">
-                        <div id="clock-hero" class="text-5xl md:text-6xl font-mono font-black tracking-tighter text-blue-100">00:00:00</div>
+
+                <div class="flex flex-col items-center md:items-end gap-4">
+                    <div id="alert" class="text-yellow-400 text-xl font-black italic uppercase tracking-widest">ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ</div>
+                    <div class="clock-bg">
+                        <div id="clock" class="text-5xl md:text-6xl font-mono font-bold text-white tracking-tight">00:00:00</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center font-black italic uppercase">
-            <div class="card border-b-4 border-cyan-400">
-                <p class="text-[10px] text-cyan-300 mb-1">ΥΓΡΑΣΙΑ</p>
-                <h2 id="hum" class="text-3xl">--%</h2>
+        <!-- Δευτερεύοντα Στοιχεία -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card p-6 text-center border-b-4 border-cyan-400">
+                <p class="text-xs text-cyan-400 font-bold uppercase mb-2">ΥΓΡΑΣΙΑ</p>
+                <div id="hum" class="text-4xl font-black">--%</div>
             </div>
-            <div class="card border-b-4 border-emerald-400">
-                <p class="text-[10px] text-emerald-300 mb-1">ΠΙΕΣΗ (1050m)</p>
-                <h2 id="pres" class="text-2xl">-- hPa</h2>
+            <div class="stat-card p-6 text-center border-b-4 border-emerald-400">
+                <p class="text-xs text-emerald-400 font-bold uppercase mb-2">ΠΙΕΣΗ</p>
+                <div id="pres" class="text-4xl font-black">-- hPa</div>
+                <p class="text-[10px] opacity-50 mt-1">Αναγωγή στη θάλασσα</p>
             </div>
-            <div class="card border-b-4 border-yellow-400">
-                <p class="text-[10px] text-yellow-300 mb-1">ΣΕΛΗΝΗ</p>
-                <div id="moon-icon" class="text-2xl">🌑</div>
-            </div>
-            <div class="card border-b-4 border-orange-400">
-                <p class="text-[10px] text-orange-300 mb-1">ΑΝΕΜΟΣ</p>
-                <h2 id="wind" class="text-2xl">-- km/h</h2>
+            <div class="stat-card p-6 text-center border-b-4 border-orange-400">
+                <p class="text-xs text-orange-400 font-bold uppercase mb-2">ΑΝΕΜΟΣ</p>
+                <div id="wind" class="text-4xl font-black">-- km/h</div>
             </div>
         </div>
 
-        <!-- Charts Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="card">
-                <h3 class="text-xs font-black mb-4 uppercase text-blue-300 tracking-widest">ΤΑΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ (24h)</h3>
-                <canvas id="tempChart"></canvas>
-            </div>
-            <div class="card">
-                <h3 class="text-xs font-black mb-4 uppercase text-emerald-300 tracking-widest">ΤΑΣΗ ΠΙΕΣΗΣ (24h)</h3>
-                <canvas id="presChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Radar -->
-        <div class="card h-[400px] overflow-hidden p-0 border-2 border-blue-500/20">
-             <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,8&tm=20" class="w-full h-full border-0"></iframe>
+        <!-- Ραντάρ -->
+        <div class="rounded-3xl overflow-hidden h-[450px] border-4 border-white/10">
+            <iframe src="https://www.rainviewer.com/map.html?loc=40.06,21.8,8&tm=20" class="w-full h-full border-0"></iframe>
         </div>
     </div>
 
     <script>
-        let tempChart, presChart;
-
-        function initCharts() {
-            const ctxT = document.getElementById('tempChart').getContext('2d');
-            tempChart = new Chart(ctxT, {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: '°C', data: [], borderColor: '#fb923c', tension: 0.4, fill: true, backgroundColor: 'rgba(251, 146, 60, 0.1)' }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } } }
-            });
-
-            const ctxP = document.getElementById('presChart').getContext('2d');
-            presChart = new Chart(ctxP, {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'hPa', data: [], borderColor: '#34d399', tension: 0.4, fill: true, backgroundColor: 'rgba(52, 211, 153, 0.1)' }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } } }
-            });
-        }
-
-        function updateClock() {
+        function updateUI() {
             const now = new Date();
-            document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: false});
-            document.getElementById('date-hero').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
+            document.getElementById('date').innerText = now.toLocaleDateString('el-GR', {weekday: 'long', day:'numeric', month:'long'}).toUpperCase();
         }
 
-        async function loadData() {
+        async function fetchData() {
             try {
-                const r = await fetch('data.json?v=' + Date.now());
-                const data = await r.json();
-                
-                document.getElementById('temp-hero').innerText = data.temperature + "°";
+                const res = await fetch('data.json?v=' + Date.now());
+                const data = await res.json();
+                document.getElementById('temp').innerText = data.temperature + "°";
                 document.getElementById('hum').innerText = data.humidity + "%";
                 document.getElementById('pres').innerText = data.pressure + " hPa";
                 document.getElementById('wind').innerText = data.wind_speed + " km/h";
-
-                const alertText = document.getElementById('alert-text');
-                if(data.alert) {
-                    alertText.innerText = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ";
-                    alertText.className = "status-alert text-xl font-black italic animate-pulse drop-shadow-lg";
-                } else {
-                    alertText.innerText = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ";
-                    alertText.className = "status-stable text-xl font-black italic drop-shadow-lg";
-                }
-
-                if(tempChart.data.labels.length > 10) tempChart.data.labels.shift();
-                if(tempChart.data.datasets[0].data.length > 10) tempChart.data.datasets[0].data.shift();
                 
-                tempChart.data.labels.push(data.last_update.substring(0,5));
-                tempChart.data.datasets[0].data.push(data.temperature);
-                tempChart.update();
-
-                if(presChart.data.labels.length > 10) presChart.data.labels.shift();
-                if(presChart.data.datasets[0].data.length > 10) presChart.data.datasets[0].data.shift();
-
-                presChart.data.labels.push(data.last_update.substring(0,5));
-                presChart.data.datasets[0].data.push(data.pressure);
-                presChart.update();
-
+                const alertEl = document.getElementById('alert');
+                if(data.alert) {
+                    alertEl.innerText = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ";
+                    alertEl.classList.add('text-red-500', 'animate-pulse');
+                    alertEl.classList.remove('text-yellow-400');
+                } else {
+                    alertEl.innerText = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ";
+                    alertEl.classList.add('text-yellow-400');
+                    alertEl.classList.remove('text-red-500', 'animate-pulse');
+                }
             } catch(e) { console.log("Αναμονή για δεδομένα..."); }
         }
 
-        initCharts();
-        setInterval(updateClock, 1000);
-        setInterval(loadData, 60000);
-        updateClock();
-        loadData();
+        setInterval(updateUI, 1000);
+        setInterval(fetchData, 60000);
+        updateUI();
+        fetchData();
     </script>
 </body>
 </html>
