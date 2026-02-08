@@ -36,7 +36,7 @@
                 </div>
                 <div class="text-right">
                     <div id="alert-box" class="font-black text-xl md:text-3xl mb-2 italic uppercase"></div>
-                    <div class="bg-blue-950/80 px-6 py-4 rounded-3xl border border-white/20 inline-block">
+                    <div class="bg-blue-950/80 px-6 py-4 rounded-3xl border border-white/20 inline-block shadow-2xl">
                         <div id="clock-hero" class="text-3xl md:text-5xl font-mono font-black text-blue-100">00:00:00</div>
                     </div>
                 </div>
@@ -53,8 +53,8 @@
             </div>
             <div class="card border-b-4 border-yellow-400">
                 <p class="text-yellow-300">ΣΕΛΗΝΗ</p>
-                <div id="moon-icon" class="text-3xl my-1"></div>
-                <p id="moon-text" class="text-[10px] normal-case">--</p>
+                <div id="moon-icon" class="text-4xl my-1"></div>
+                <p id="moon-text" class="text-[11px] font-bold normal-case">--</p>
             </div>
             <div class="card border-b-4 border-orange-400">
                 <p class="text-orange-300">ΑΝΕΜΟΣ</p>
@@ -104,11 +104,11 @@
                 document.getElementById('wind').innerText = data.wind_speed + " km/h";
                 const ab = document.getElementById('alert-box');
                 ab.innerText = data.status;
-                ab.style.color = (data.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") ? "#ff0000" : "#ffff00";
+                ab.style.color = (data.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") ? "#ef4444" : "#facc15";
                 const [mName, mIcon] = getMoonPhase();
                 document.getElementById('moon-icon').innerText = mIcon;
                 document.getElementById('moon-text').innerText = mName;
-                const cRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&timezone=auto`);
+                const cRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&timezone=auto');
                 const cData = await cRes.json();
                 const ctx = document.getElementById('myChart');
                 if (window.stChart) window.stChart.destroy();
@@ -121,7 +121,9 @@
                             borderColor: '#4ade80',
                             backgroundColor: 'rgba(74, 222, 128, 0.1)',
                             fill: true,
-                            tension: 0.4
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 2
                         }]
                     },
                     options: { 
