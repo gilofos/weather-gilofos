@@ -1,8 +1,8 @@
 {
-    "temperature": 6.7,
-    "humidity": 82,
-    "pressure": 1010.0,
+    "temperature": 6.2,
+    "humidity": 85,
+    "pressure": 1010.1,
     "status": "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ",
-    "wind_speed": 5.7,
-    "last_update": "01:00:59"
+    "wind_speed": 5.9,
+    "last_update": "01:46:20"
 }
