@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 LAT = 40.06
 LON = 21.80
 
-# URL για Open-Meteo
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto"
+# URL για Open-Meteo (Τρέχοντα + Ωριαία + Ημερήσια Πρόγνωση)
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto"
 
 def get_weather():
     try:
@@ -16,22 +16,38 @@ def get_weather():
 
         if response.status_code == 200:
             current = data["current"]
+            hourly = data["hourly"]
+            daily = data["daily"]
             
-            # Ώρα Ελλάδας για το GitHub Actions
+            # Ώρα Ελλάδας
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
 
-            # Υπολογισμός πίεσης στη θάλασσα (MSL) - Γήλοφος 1050μ
-            # Η διόρθωση για 1050μ είναι +124.5 hPa (αναγωγή στο επίπεδο της θάλασσας)
+            # Πίεση στα 1050μ
             station_pressure = current["surface_pressure"]
             sea_level_pressure = round(station_pressure + 124.5)
 
-            # Λογική Alert (Επιδείνωση)
-            # Αν η πίεση πέσει κάτω από 1000 hPa ή ο άνεμος είναι πάνω από 50 km/h
+            # Alert Logic
             alert_status = False
             if sea_level_pressure < 1000 or current["wind_speed_10m"] > 50:
                 alert_status = True
 
-            # Προετοιμασία δεδομένων για το αρχείο JSON
+            # Δεδομένα για το γράφημα (τελευταίες 24 ώρες)
+            history_temp = hourly["temperature_2m"][:24]
+            history_labels = [t.split('T')[1] for t in hourly["time"][:24]]
+
+            # Δεδομένα για πρόβλεψη εβδομάδας
+            forecast_days = []
+            days_names = ["Κυρ", "Δευ", "Τρι", "Τετ", "Πεμ", "Παρ", "Σαβ"]
+            
+            for i in range(7):
+                date_obj = datetime.strptime(daily["time"][i], "%Y-%m-%d")
+                forecast_days.append({
+                    "day": days_names[date_obj.weekday()],
+                    "temp_max": round(daily["temperature_2m_max"][i]),
+                    "temp_min": round(daily["temperature_2m_min"][i]),
+                    "code": daily["weathercode"][i]
+                })
+
             weather_data = {
                 "temperature": round(current["temperature_2m"], 1),
                 "humidity": current["relative_humidity_2m"],
@@ -39,17 +55,19 @@ def get_weather():
                 "wind_speed": round(current["wind_speed_10m"], 1),
                 "last_update": current_time,
                 "alert": alert_status,
-                "status": "ΕΠΙΔΕΙΝΩΣΗ" if alert_status else "ΟΜΑΛΟΣ ΚΑΙΡΟΣ"
+                "status": "ΕΠΙΔΕΙΝΩΣΗ" if alert_status else "ΟΜΑΛΟΣ ΚΑΙΡΟΣ",
+                "chart_data": history_temp,
+                "chart_labels": history_labels,
+                "forecast": forecast_days
             }
 
-            # Εγγραφή στο data.json
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-            print(f"Ενημέρωση {current_time}: {weather_data['temperature']}°C, {sea_level_pressure} hPa")
+            print(f"Ενημέρωση {current_time}: OK")
 
     except Exception as e:
-        print(f"Σφάλμα κατά την ανάκτηση δεδομένων: {e}")
+        print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
     get_weather()
