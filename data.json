@@ -1,9 +1,7 @@
 {
-    "temperature": 7.6,
-    "humidity": 84,
-    "pressure": 1069,
-    "wind_speed": 2.3,
-    "last_update": "21:55:03",
-    "alert": false,
-    "status": "ΟΜΑΛΟΣ ΚΑΙΡΟΣ"
+    "temp": 7.3,
+    "hum": 85,
+    "pres": 1064,
+    "wind": 3.3,
+    "alert": false
 }
