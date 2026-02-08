@@ -1,8 +1,9 @@
 {
-    "temperature": 7.7,
-    "humidity": 85,
-    "pressure": 1009.5,
-    "status": "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ",
-    "wind_speed": 1.6,
-    "last_update": "21:15:52"
+    "temperature": 7.6,
+    "humidity": 84,
+    "pressure": 1069,
+    "wind_speed": 2.3,
+    "last_update": "21:55:03",
+    "alert": false,
+    "status": "ΟΜΑΛΟΣ ΚΑΙΡΟΣ"
 }
