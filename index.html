@@ -25,14 +25,12 @@
             <div class="flex flex-col md:flex-row justify-between items-center mt-10 gap-8">
                 <div class="flex items-center gap-5">
                     <i class="fa-solid fa-temperature-high text-6xl text-orange-400"></i>
-                    <div id="temp" class="text-8xl font-black tracking-tighter leading-none">--°</div>
+                    <div id="temp-display" class="text-8xl font-black tracking-tighter leading-none">--°</div>
                 </div>
                 <div class="text-center md:text-right">
-                    <!-- STATUS TEXT -->
                     <div id="alert-status-text" class="text-yellow-400 text-xl font-black italic mb-2 uppercase tracking-widest">
-                        ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ
+                        ΦΟΡΤΩΣΗ...
                     </div>
-                    <!-- 24ΩΡΟ ΡΟΛΟΙ -->
                     <div id="clock" class="text-6xl font-mono font-bold bg-black/30 px-6 py-2 rounded-2xl text-blue-100 shadow-inner">00:00:00</div>
                 </div>
             </div>
@@ -41,38 +39,26 @@
         <div class="grid grid-cols-3 gap-4 text-center">
             <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-cyan-400 text-cyan-400 shadow-lg">
                 <p class="text-xs font-bold mb-1 uppercase">ΥΓΡΑΣΙΑ</p>
-                <div id="hum" class="text-4xl font-black text-white">--%</div>
+                <div id="hum-display" class="text-4xl font-black text-white">--%</div>
             </div>
             <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-emerald-400 text-emerald-400 shadow-lg">
                 <p class="text-xs font-bold mb-1 uppercase">ΠΙΕΣΗ</p>
-                <div id="pres" class="text-4xl font-black text-white">-- hPa</div>
+                <div id="pres-display" class="text-4xl font-black text-white">-- hPa</div>
             </div>
             <div class="bg-slate-800/50 p-6 rounded-2xl border-b-4 border-orange-400 text-orange-400 shadow-lg">
                 <p class="text-xs font-bold mb-1 uppercase">ΑΝΕΜΟΣ</p>
-                <div id="wind" class="text-4xl font-black text-white">-- km/h</div>
+                <div id="wind-display" class="text-4xl font-black text-white">-- km/h</div>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM ALERT MODAL - MASSIVE VERSION -->
+    <!-- CUSTOM ALERT MODAL -->
     <div id="custom-alert" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-2xl w-full p-12 transform transition-all border-t-[12px] border-red-600">
-            <div class="flex items-center justify-center mb-8">
-                <div class="bg-red-100 p-6 rounded-full animate-pulse">
-                    <i class="fa-solid fa-triangle-exclamation text-red-600 text-5xl"></i>
-                </div>
-            </div>
-            <h3 class="text-4xl font-black text-center text-gray-900 mb-6 uppercase tracking-tighter">ΕΚΤΑΚΤΗ ΕΙΔΟΠΟΙΗΣΗ</h3>
-            <div class="bg-gray-100 p-6 rounded-2xl mb-8 border-l-8 border-red-500">
-                <p id="alert-message" class="text-2xl text-gray-800 text-center leading-tight font-bold">
-                    <!-- Το μήνυμα μπαίνει εδώ -->
-                </p>
-            </div>
-            <button 
-                onclick="closeAlert()"
-                class="w-full bg-gray-900 hover:bg-black text-white font-black py-5 px-8 rounded-2xl transition duration-200 text-2xl shadow-2xl uppercase tracking-widest">
-                ΕΛΑΒΑ ΓΝΩΣΗ
-            </button>
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full p-12 border-t-[12px] border-red-600 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-red-600 text-6xl mb-6 animate-pulse"></i>
+            <h3 class="text-4xl font-black text-gray-900 mb-6 uppercase">ΠΡΟΣΟΧΗ</h3>
+            <p id="alert-message" class="text-2xl text-gray-800 leading-tight font-bold mb-8"></p>
+            <button onclick="closeAlert()" class="w-full bg-gray-900 text-white font-black py-5 rounded-2xl text-2xl uppercase tracking-widest">ΕΛΑΒΑ ΓΝΩΣΗ</button>
         </div>
     </div>
 
@@ -89,40 +75,38 @@
         }
 
         function update() {
-            // Ρολόι 24ωρο με δευτερόλεπτα
+            // Live Ρολόι
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
             
+            // Φόρτωση δεδομένων
             fetch('data.json?v=' + Date.now())
                 .then(r => r.json())
                 .then(data => {
-                    document.getElementById('temp').innerText = data.temp + "°";
-                    document.getElementById('hum').innerText = data.hum + "%";
-                    document.getElementById('pres').innerText = data.pres + " hPa";
-                    document.getElementById('wind').innerText = data.wind + " km/h";
+                    // ΠΡΟΣΟΧΗ: Εδώ χρησιμοποιούμε τα ονόματα από το kairos.py (temp, hum, pres, wind, alert)
+                    document.getElementById('temp-display').innerText = (data.temp !== undefined ? data.temp : "--") + "°";
+                    document.getElementById('hum-display').innerText = (data.hum !== undefined ? data.hum : "--") + "%";
+                    document.getElementById('pres-display').innerText = (data.pres !== undefined ? data.pres : "--") + " hPa";
+                    document.getElementById('wind-display').innerText = (data.wind !== undefined ? data.wind : "--") + " km/h";
                     
                     const statusText = document.getElementById('alert-status-text');
                     
-                    if(data.alert) {
+                    if(data.alert === true) {
                         statusText.innerText = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ";
                         statusText.className = "text-red-500 text-xl font-black italic animate-pulse tracking-widest mb-2 uppercase";
-                        
-                        // Αυτόματη εμφάνιση του μεγάλου Alert αν αλλάξει η κατάσταση
                         if (!lastAlertStatus) {
-                            showAlert("Προσοχή Αχιλλέα! Η πίεση έπεσε ή ο άνεμος δυνάμωσε απότομα. Επιδείνωση συνθηκών στον Γήλοφο!");
+                            showAlert("Προσοχή Αχιλλέα! Οι μετρήσεις δείχνουν επιδείνωση των συνθηκών στον Γήλοφο!");
                         }
                     } else {
                         statusText.innerText = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ";
                         statusText.className = "text-yellow-400 text-xl font-black italic tracking-widest mb-2 uppercase";
                     }
-                    
                     lastAlertStatus = data.alert;
-                }).catch(() => {});
+                })
+                .catch(err => {
+                    console.log("Περιμένω το data.json...");
+                });
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeAlert();
-        });
 
         setInterval(update, 1000);
         update();
