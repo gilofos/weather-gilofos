@@ -5,9 +5,10 @@
     <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΣ</title>
     <style>
         body { background: #1a202c; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
-        .box { background: #2d3748; padding: 20px; border-radius: 15px; display: inline-block; border: 2px solid #4a5568; }
-        h1 { color: #63b3ed; }
+        .box { background: #2d3748; padding: 20px; border-radius: 15px; display: inline-block; border: 2px solid #4a5568; min-width: 300px; }
+        h1 { color: #63b3ed; margin-bottom: 10px; }
         .val { font-size: 40px; font-weight: bold; color: #f6e05e; }
+        #status { font-size: 18px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
@@ -23,14 +24,18 @@
     <script>
         async function update() {
             try {
-                // Χρησιμοποιούμε το όνομα του αρχείου απευθείας
                 const res = await fetch('data.json?t=' + Date.now());
+                if (!res.ok) throw new Error("File not found");
                 const d = await res.json();
-                document.getElementById('temp').innerText = d.temperature;
-                document.getElementById('pres').innerText = d.pressure;
-                document.getElementById('status').innerText = d.status;
-                document.getElementById('time').innerText = d.last_update;
-            } catch(e) { console.log("Περίμενε το GitHub..."); }
+                
+                document.getElementById('temp').innerText = d.temperature || "--";
+                document.getElementById('pres').innerText = d.pressure || "--";
+                document.getElementById('status').innerText = d.status || "Ενημέρωση...";
+                document.getElementById('time').innerText = d.last_update || "--";
+            } catch(e) { 
+                console.log("Σφάλμα φόρτωσης:", e);
+                document.getElementById('status').innerText = "Αναμονή δεδομένων...";
+            }
         }
         update();
         setInterval(update, 30000);
