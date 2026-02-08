@@ -4,19 +4,20 @@ import time
 import os
 
 def generate_weather_data():
-    # Ghilofos Coordinates
+    # Συντεταγμένες Γηλόφου
     lat = 40.06
     lon = 21.80
     
     while True:
-        # Simulation of sensors
-        temperature = round(random.uniform(-5.0, 15.0), 1)
+        # Προσομοίωση αισθητήρων (Εδώ θα μπουν οι πραγματικές μετρήσεις σου)
+        temperature = round(random.uniform(-5.0, 18.0), 1)
         humidity = random.randint(30, 95)
-        pressure = random.randint(990, 1030) # Pressure included
-        wind_speed = round(random.uniform(0, 50), 1)
+        pressure = random.randint(990, 1030) # Πίεση hPa
+        wind_speed = round(random.uniform(0, 60), 1)
         
-        # Alert Logic (Status)
-        if pressure < 1000 or wind_speed > 40:
+        # Λογική Alert (Ειδοποίηση)
+        # Αν η πίεση πέσει κάτω από 1000 ή ο άνεμος ξεπεράσει τα 45 km/h
+        if pressure < 1000 or wind_speed > 45:
             status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
             alert_active = True
         else:
@@ -33,12 +34,12 @@ def generate_weather_data():
             "last_update": time.strftime("%H:%M:%S")
         }
         
-        # Save to data.json for the HTML to read
+        # Αποθήκευση στο data.json για το index.html
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
             
-        print(f"Data Updated: {temperature}°C, {pressure} hPa - {status}")
-        time.sleep(60) # Update every minute
+        print(f"Ενημέρωση: {temperature}°C, {pressure} hPa | {status}")
+        time.sleep(60)
 
 if __name__ == "__main__":
     generate_weather_data()
