@@ -1,45 +1,55 @@
+import requests
 import json
-import random
-import time
-import os
+from datetime import datetime, timedelta, timezone
 
-def generate_weather_data():
-    # Συντεταγμένες Γηλόφου
-    lat = 40.06
-    lon = 21.80
-    
-    while True:
-        # Προσομοίωση αισθητήρων (Εδώ θα μπουν οι πραγματικές μετρήσεις σου)
-        temperature = round(random.uniform(-5.0, 18.0), 1)
-        humidity = random.randint(30, 95)
-        pressure = random.randint(990, 1030) # Πίεση hPa
-        wind_speed = round(random.uniform(0, 60), 1)
-        
-        # Λογική Alert (Ειδοποίηση)
-        # Αν η πίεση πέσει κάτω από 1000 ή ο άνεμος ξεπεράσει τα 45 km/h
-        if pressure < 1000 or wind_speed > 45:
-            status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
-            alert_active = True
-        else:
-            status = "ΟΜΑΛΕΣ ΣΥΝΘΗΚΕΣ"
-            alert_active = False
+# Συντεταγμένες για Γήλοφο Γρεβενών
+LAT = 40.06
+LON = 21.80
+
+# URL για Open-Meteo
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto"
+
+def get_weather():
+    try:
+        response = requests.get(URL)
+        data = response.json()
+
+        if response.status_code == 200:
+            current = data["current"]
             
-        data = {
-            "temperature": temperature,
-            "humidity": humidity,
-            "pressure": pressure,
-            "wind_speed": wind_speed,
-            "status": status,
-            "alert": alert_active,
-            "last_update": time.strftime("%H:%M:%S")
-        }
-        
-        # Αποθήκευση στο data.json για το index.html
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            # Ώρα Ελλάδας για το GitHub Actions
+            current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
+
+            # Υπολογισμός πίεσης στη θάλασσα (MSL) - Γήλοφος 1050μ
+            # Η διόρθωση για 1050μ είναι περίπου +124.5 hPa
+            station_pressure = current["surface_pressure"]
+            sea_level_pressure = round(station_pressure + 124.5)
+
+            # Λογική Alert
+            # Αν η πίεση πέσει κάτω από 1000 hPa ή ο άνεμος είναι πάνω από 50 km/h
+            alert_status = False
+            if sea_level_pressure < 1000 or current["wind_speed_10m"] > 50:
+                alert_status = True
+
+            # Δημιουργία των δεδομένων για το data.json
+            weather_data = {
+                "temperature": round(current["temperature_2m"], 1),
+                "humidity": current["relative_humidity_2m"],
+                "pressure": sea_level_pressure,
+                "wind_speed": round(current["wind_speed_10m"], 1),
+                "last_update": current_time,
+                "alert": alert_status,
+                "status": "ΕΠΙΔΕΙΝΩΣΗ" if alert_status else "ΟΜΑΛΟΣ ΚΑΙΡΟΣ"
+            }
+
+            # Αποθήκευση στο data.json
+            with open("data.json", "w", encoding="utf-8") as f:
+                json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Ενημέρωση: {temperature}°C, {pressure} hPa | {status}")
-        time.sleep(60)
+            print(f"Ενημέρωση {current_time}: {weather_data['temperature']}°C, {sea_level_pressure} hPa")
+
+    except Exception as e:
+        print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
-    generate_weather_data()
+    get_weather()
