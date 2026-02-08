@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 LAT = 40.06
 LON = 21.80
 
-# URL για Open-Meteo (Προστέθηκαν: weather_code, apparent_temperature και hourly forecast)
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,apparent_temperature,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,weather_code&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=1"
+# URL για Open-Meteo (Χρήση pressure_msl για σωστή πίεση στη θάλασσα)
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=1"
 
 def get_weather_icon(code):
     # Αντιστοίχιση κωδικών Open-Meteo σε Emojis
@@ -30,11 +30,11 @@ def get_weather():
             current = data["current"]
             hourly = data["hourly"]
             
-            # Ώρα Ελλάδας
+            # Ώρα Ελλάδας (UTC+2)
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
 
-            # Υπολογισμός πίεσης στη θάλασσα (MSL)
-            sea_level_pressure = round(current["surface_pressure"] + 116.5, 1)
+            # Πίεση στη θάλασσα (MSL) απευθείας από το API
+            sea_level_pressure = round(current["pressure_msl"], 1)
 
             # Δημιουργία λίστας πρόγνωσης ανά 3 ώρες
             forecast_24h = []
@@ -63,7 +63,7 @@ def get_weather():
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_info, f, ensure_ascii=False, indent=4)
             
-            print(f"Ενημέρωση ολοκληρώθηκε: {current_time}")
+            print(f"Ενημέρωση ολοκληρώθηκε: {current_time} | Πίεση: {sea_level_pressure} hPa")
         else:
             print(f"API Error: {response.status_code}")
     except Exception as e:
