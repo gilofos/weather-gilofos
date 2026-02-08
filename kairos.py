@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 # Συντεταγμένες για Γήλοφο
 LAT, LON = 40.06, 21.80
-URL = f"[https://api.open-meteo.com/v1/forecast?latitude=](https://api.open-meteo.com/v1/forecast?latitude=){LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m&timezone=auto"
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m&timezone=auto"
 
 def get_weather():
     try:
@@ -16,7 +16,7 @@ def get_weather():
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
             pressure = round(current["pressure_msl"], 1)
 
-            # Λογική ειδοποίησης: < 1007 hPa = ΕΠΙΔΕΙΝΩΣΗ
+            # Λογική ειδοποίησης: < 1007 hPa = ΕΠΙΔΕΙΝΩΣΗ / > 1007 = ΣΤΑΘΕΡΟΣ
             if pressure < 1007:
                 status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
             else:
