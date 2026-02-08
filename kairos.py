@@ -1,73 +1,67 @@
 import requests
 import json
+import os
 from datetime import datetime, timedelta, timezone
 
-# Συντεταγμένες για Γήλοφο Γρεβενών
+# --- ΡΥΘΜΙΣΕΙΣ ΣΤΑΘΜΟΥ ΓΗΛΟΦΟΥ ---
 LAT = 40.06
 LON = 21.80
+ALTITUDE_OFFSET = 116  # Διόρθωση πίεσης για υψόμετρο ~1050m (hPa)
 
-# URL για Open-Meteo (Τρέχοντα + Ωριαία + Ημερήσια Πρόγνωση)
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto"
+# URL για την άντληση δεδομένων από το Open-Meteo
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,weathercode&timezone=auto"
 
 def get_weather():
     try:
-        response = requests.get(URL)
+        # Κλήση στο API
+        response = requests.get(URL, timeout=10)
         data = response.json()
 
         if response.status_code == 200:
             current = data["current"]
-            hourly = data["hourly"]
-            daily = data["daily"]
             
-            # Ώρα Ελλάδας
-            current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
+            # Υπολογισμός Ώρας Ελλάδας (UTC+2 ή UTC+3 ανάλογα την εποχή)
+            # Για το GitHub Actions χρησιμοποιούμε σταθερή προσθήκη ή το timezone του API
+            now = datetime.now(timezone.utc) + timedelta(hours=2)
+            current_time = now.strftime("%H:%M:%S")
 
-            # Πίεση στα 1050μ
-            station_pressure = current["surface_pressure"]
-            sea_level_pressure = round(station_pressure + 124.5)
+            # Υπολογισμός πίεσης στη στάθμη της θάλασσας (MSL)
+            sea_level_pressure = round(current["surface_pressure"] + ALTITUDE_OFFSET)
 
-            # Alert Logic
-            alert_status = False
-            if sea_level_pressure < 1000 or current["wind_speed_10m"] > 50:
-                alert_status = True
+            # --- ΛΟΓΙΚΗ ALERT (ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ) ---
+            # Ενεργοποιείται αν: 
+            # 1. Η πίεση είναι πολύ χαμηλή (< 1000 hPa)
+            # 2. Ο άνεμος είναι ισχυρός (> 30 km/h)
+            # 3. Ο κωδικός καιρού δείχνει καταιγίδα (weathercode > 60)
+            is_alert = False
+            if sea_level_pressure < 1000 or current["wind_speed_10m"] > 30 or current["weathercode"] > 60:
+                is_alert = True
 
-            # Δεδομένα για το γράφημα (τελευταίες 24 ώρες)
-            history_temp = hourly["temperature_2m"][:24]
-            history_labels = [t.split('T')[1] for t in hourly["time"][:24]]
-
-            # Δεδομένα για πρόβλεψη εβδομάδας
-            forecast_days = []
-            days_names = ["Κυρ", "Δευ", "Τρι", "Τετ", "Πεμ", "Παρ", "Σαβ"]
-            
-            for i in range(7):
-                date_obj = datetime.strptime(daily["time"][i], "%Y-%m-%d")
-                forecast_days.append({
-                    "day": days_names[date_obj.weekday()],
-                    "temp_max": round(daily["temperature_2m_max"][i]),
-                    "temp_min": round(daily["temperature_2m_min"][i]),
-                    "code": daily["weathercode"][i]
-                })
-
-            weather_data = {
+            # Δημιουργία του αντικειμένου δεδομένων
+            weather_info = {
                 "temperature": round(current["temperature_2m"], 1),
                 "humidity": current["relative_humidity_2m"],
                 "pressure": sea_level_pressure,
                 "wind_speed": round(current["wind_speed_10m"], 1),
+                "wind_dir": current["wind_direction_10m"],
+                "description": "Live από Γήλοφο",
                 "last_update": current_time,
-                "alert": alert_status,
-                "status": "ΕΠΙΔΕΙΝΩΣΗ" if alert_status else "ΟΜΑΛΟΣ ΚΑΙΡΟΣ",
-                "chart_data": history_temp,
-                "chart_labels": history_labels,
-                "forecast": forecast_days
+                "alert": is_alert,
+                "weather_code": current["weathercode"]
             }
 
+            # Αποθήκευση στο αρχείο data.json (αυτό που διαβάζει η ιστοσελίδα)
             with open("data.json", "w", encoding="utf-8") as f:
-                json.dump(weather_data, f, ensure_ascii=False, indent=4)
+                json.dump(weather_info, f, ensure_ascii=False, indent=4)
             
-            print(f"Ενημέρωση {current_time}: OK")
+            print(f"Επιτυχής ενημέρωση: {current_time}")
+            print(f"Temp: {weather_info['temperature']}°C | Pres: {sea_level_pressure} hPa | Alert: {is_alert}")
+        
+        else:
+            print(f"Σφάλμα API: {response.status_code}")
 
     except Exception as e:
-        print(f"Σφάλμα: {e}")
+        print(f"Σφάλμα κατά την εκτέλεση του script: {e}")
 
 if __name__ == "__main__":
     get_weather()
