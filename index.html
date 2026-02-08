@@ -58,8 +58,8 @@
                         <p id="date-hero" class="text-blue-100 font-bold uppercase text-xs md:text-sm mt-2 tracking-widest bg-blue-900/40 px-3 py-1 rounded-lg w-fit"></p>
                     </div>
                 </div>
-                <div class="bg-blue-950/80 backdrop-blur-xl px-8 py-4 rounded-[1.5rem] border border-white/20 shadow-2xl">
-                    <div id="clock-hero" class="text-4xl md:text-6xl font-mono font-black tracking-tighter text-blue-100">00:00</div>
+                <div class="bg-blue-950/80 backdrop-blur-xl px-6 py-4 rounded-[1.5rem] border border-white/20 shadow-2xl min-w-[180px] text-center">
+                    <div id="clock-hero" class="text-4xl md:text-5xl font-mono font-black tracking-tighter text-blue-100 italic">00:00:00</div>
                 </div>
             </div>
         </div>
@@ -108,7 +108,8 @@
         function startClock() {
             const update = () => {
                 const now = new Date();
-                document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit'});
+                // Προσθήκη δευτερολέπτων (second: '2-digit')
+                document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                 const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
                 if (!document.getElementById('date-hero').innerHTML.includes('ΑΙΣΘΗΣΗ')) {
                     document.getElementById('date-hero').innerText = dateText;
@@ -117,6 +118,7 @@
             setInterval(update, 1000); update();
         }
 
+        // Οι υπόλοιπες συναρτήσεις παραμένουν ίδιες...
         function getMoon() {
             const now = new Date(); const lp = 2551443; 
             const new_moon = new Date('1970-01-07T20:35:00Z');
@@ -149,8 +151,6 @@
                 const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
                 if (d1.feels_like !== undefined) {
                     document.getElementById('date-hero').innerHTML = `${dateText} | <span class="text-orange-300">ΑΙΣΘΗΣΗ: ${d1.feels_like}°</span>`;
-                } else {
-                    document.getElementById('date-hero').innerText = dateText;
                 }
 
                 document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
