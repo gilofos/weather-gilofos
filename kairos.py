@@ -2,9 +2,11 @@ import requests
 import json
 from datetime import datetime, timedelta, timezone
 
+# Συντεταγμένες για Γήλοφο Γρεβενών
 LAT = 40.06
 LON = 21.80
 
+# URL για Open-Meteo
 URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=1"
 
 def get_weather_icon(code):
@@ -26,17 +28,20 @@ def get_weather():
         if response.status_code == 200:
             current = data["current"]
             hourly = data["hourly"]
+            
+            # Ώρα Ελλάδας
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
+
+            # Πίεση στη θάλασσα (MSL)
             sea_level_pressure = round(current["pressure_msl"], 1)
 
             # --- ΛΕΙΤΟΥΡΓΙΑ ALERT ---
             if sea_level_pressure < 1005:
-                status_msg = "⚠️ Χαμηλή Πίεση - Προσοχή!"
+                status_msg = "⚠️ ΧΑΜΗΛΗ ΠΙΕΣΗ - ΠΡΟΣΟΧΗ"
             elif sea_level_pressure > 1025:
-                status_msg = "☀️ Υψηλή Πίεση - Καλοκαιρία"
+                status_msg = "☀️ ΥΨΗΛΗ ΠΙΕΣΗ - ΚΑΛΟΚΑΙΡΙΑ"
             else:
-                status_msg = "✅ Σταθερή Πίεση"
-            # -------------------------
+                status_msg = "✅ ΣΤΑΘΕΡΗ ΠΙΕΣΗ"
 
             forecast_24h = []
             for i in range(0, 24, 3):
@@ -52,7 +57,7 @@ def get_weather():
                 "icon": get_weather_icon(current["weather_code"]),
                 "humidity": current["relative_humidity_2m"],
                 "pressure": sea_level_pressure,
-                "status": status_msg, # ΤΟ ΝΕΟ ΠΕΔΙΟ
+                "status": status_msg,
                 "wind_speed": round(current["wind_speed_10m"], 1),
                 "wind_dir": current["wind_direction_10m"],
                 "description": "Live από Γήλοφο",
@@ -60,6 +65,7 @@ def get_weather():
                 "forecast": forecast_24h
             }
 
+            # Αποθήκευση στο data.json
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_info, f, ensure_ascii=False, indent=4)
             
