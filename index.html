@@ -50,7 +50,9 @@
 
             <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6">
                 <div class="flex items-center gap-6">
-                    <div class="bg-white/10 p-5 rounded-full border border-white/20"><i class="fa-solid fa-temperature-high text-5xl md:text-7xl text-orange-400"></i></div>
+                    <div id="main-icon-container" class="bg-white/10 p-5 rounded-full border border-white/20 text-5xl md:text-7xl">
+                        <i class="fa-solid fa-temperature-high text-orange-400"></i>
+                    </div>
                     <div>
                         <h2 id="temp-hero" class="text-8xl md:text-[10rem] font-black tracking-tighter leading-none normal-case">--°</h2>
                         <p id="date-hero" class="text-blue-200 font-bold uppercase text-sm md:text-lg mt-2 tracking-widest bg-blue-900/40 px-3 py-1 rounded-lg w-fit"></p>
@@ -95,17 +97,20 @@
         </div>
 
         <div class="card mb-8">
-            <h3 class="text-center text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest text-white">Πρόγνωση Εβδομάδας</h3>
+            <h3 class="text-center text-blue-400 font-bold mb-6 uppercase text-xs tracking-widest">Πρόγνωση Εβδομάδας</h3>
             <div id="forecast" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
 
     <script>
+        let myChartInstance = null;
+
         function startClock() {
             const update = () => {
                 const now = new Date();
                 document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit'});
-                document.getElementById('date-hero').innerText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+                const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+                document.getElementById('date-hero').innerText = dateText;
             }
             setInterval(update, 1000); update();
         }
@@ -129,17 +134,31 @@
 
         async function loadWeather() {
             try {
+                // 1. Φόρτωση δεδομένων από το δικό σου data.json
                 const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
                 const d1 = await r1.json();
                 
-                // ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ ΜΕ ΤΑ ΜΙΚΡΑ ΓΡΑΜΜΑΤΑ hPa ΚΑΙ km/h
+                // Ενημέρωση Κεντρικού Εικονιδίου (Emoji από Python)
+                if (d1.icon) {
+                    document.getElementById('main-icon-container').innerHTML = `<span class="text-6xl md:text-8xl">${d1.icon}</span>`;
+                }
+
                 document.getElementById('temp-hero').innerText = (d1.temperature !== undefined ? d1.temperature.toFixed(1) : "--") + "°";
+                
+                // Προσθήκη Αίσθησης Θερμοκρασίας δίπλα στην ημερομηνία
+                if (d1.feels_like !== undefined) {
+                    const now = new Date();
+                    const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+                    document.getElementById('date-hero').innerHTML = `${dateText} | <span class="text-orange-300">ΑΙΣΘΗΣΗ: ${d1.feels_like}°</span>`;
+                }
+
                 document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
                 document.getElementById('wind').innerText = (d1.wind_speed !== undefined ? d1.wind_speed.toFixed(1) : "0") + " km/h";
                 document.getElementById('pres').innerText = (d1.pressure !== undefined ? d1.pressure.toFixed(1) : "--") + " hPa";
                 document.getElementById('moon').innerText = getMoon();
                 
-                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode,surface_pressure&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
+                // 2. Φόρτωση Πρόγνωσης και Γραφήματος
+                const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
                 const sr = parseInt(d2.daily.sunrise[0].split('T')[1]);
@@ -155,11 +174,13 @@
                 document.getElementById('icons-row').innerHTML = iconsHtml.join('');
 
                 const ctx = document.getElementById('myChart').getContext('2d');
+                if (myChartInstance) { myChartInstance.destroy(); }
+                
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
                 gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); 
                 gradient.addColorStop(1, 'rgba(30, 58, 138, 0.0)'); 
 
-                new Chart(ctx, {
+                myChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -198,8 +219,9 @@
                 }
                 document.getElementById('forecast').innerHTML = fHtml;
 
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Σφάλμα φόρτωσης:", e); }
         }
+
         startClock(); loadWeather(); setInterval(loadWeather, 60000);
     </script>
 </body>
