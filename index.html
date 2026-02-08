@@ -2,63 +2,38 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Καιρός Γήλοφος</title>
+    <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΣ</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
-        .card { background: #1e1e1e; display: inline-block; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; min-width: 280px; }
-        #alert-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; }
-        .temp-val { font-size: 4.5rem; font-weight: bold; color: #00b4d8; margin: 5px 0; }
-        .stats { margin: 20px 0; font-size: 1.1rem; line-height: 1.6; color: #bbb; }
-        .footer { font-size: 0.8rem; color: #666; margin-top: 15px; }
+        body { background: #1a202c; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
+        .box { background: #2d3748; padding: 20px; border-radius: 15px; display: inline-block; border: 2px solid #4a5568; }
+        h1 { color: #63b3ed; }
+        .val { font-size: 40px; font-weight: bold; color: #f6e05e; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <div id="alert-box">Φόρτωση δεδομένων...</div>
-    <div style="font-size: 1.4rem; color: #eee;">Γήλοφος Γρεβενών</div>
-    <div class="temp-val"><span id="temp">--</span>°C</div>
-    
-    <div class="stats">
-        ⏲️ Πίεση: <span id="press">--</span> hPa<br>
-        🌬️ Άνεμος: <span id="wind">--</span> km/h
+    <div class="box">
+        <h1>ΓΗΛΟΦΟΣ LIVE</h1>
+        <div id="status" style="color: #68d391; font-weight: bold;">--</div>
+        <p>ΘΕΡΜΟΚΡΑΣΙΑ: <span id="temp" class="val">--</span>°C</p>
+        <p>ΠΙΕΣΗ: <span id="pres" class="val">--</span> hPa</p>
+        <hr>
+        <p style="font-size: 12px; opacity: 0.6;">ΕΝΗΜΕΡΩΣΗ: <span id="time">--</span></p>
     </div>
 
-    <div class="footer" id="time">--:--:--</div>
-</div>
-
-<script>
-    async function refreshWeather() {
-        try {
-            const response = await fetch('data.json?cache=' + Date.now());
-            const data = await response.json();
-
-            // Ενημέρωση κειμένων
-            document.getElementById('temp').innerText = data.temp;
-            document.getElementById('press').innerText = data.press;
-            document.getElementById('wind').innerText = data.wind;
-            document.getElementById('time').innerText = "Τελευταία ενημέρωση: " + data.time;
-            
-            // Ενημέρωση Alert και Χρωμάτων
-            const ab = document.getElementById('alert-box');
-            ab.innerText = data.alert;
-            
-            if (data.alert.includes("🚨")) {
-                ab.style.background = "#9b2226"; ab.style.color = "#ffb3b3"; // Κόκκινο
-            } else if (data.alert.includes("⚠️")) {
-                ab.style.background = "#ee9b00"; ab.style.color = "#332200"; // Πορτοκαλί/Κίτρινο
-            } else {
-                ab.style.background = "#0a9396"; ab.style.color = "#e9d8a6"; // Πράσινο/Μπλε
-            }
-        } catch (err) {
-            document.getElementById('alert-box').innerText = "Αναμονή για το Python script...";
+    <script>
+        async function update() {
+            try {
+                // Χρησιμοποιούμε το όνομα του αρχείου απευθείας
+                const res = await fetch('data.json?t=' + Date.now());
+                const d = await res.json();
+                document.getElementById('temp').innerText = d.temperature;
+                document.getElementById('pres').innerText = d.pressure;
+                document.getElementById('status').innerText = d.status;
+                document.getElementById('time').innerText = d.last_update;
+            } catch(e) { console.log("Περίμενε το GitHub..."); }
         }
-    }
-
-    refreshWeather();
-    setInterval(refreshWeather, 10000); // Ανανέωση κάθε 10 δευτερόλεπτα
-</script>
-
+        update();
+        setInterval(update, 30000);
+    </script>
 </body>
 </html>
