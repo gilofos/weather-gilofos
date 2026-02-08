@@ -3,61 +3,57 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 
-# --- ΡΥΘΜΙΣΕΙΣ ΣΤΑΘΜΟΥ ΓΗΛΟΦΟΥ ---
+# Ρυθμίσεις για τον Γήλοφο Γρεβενών
 LAT = 40.06
 LON = 21.80
 
-# ΧΕΙΡΟΚΙΝΗΤΗ ΔΙΟΡΘΩΣΗ ΠΙΕΣΗΣ (OFFSET)
-# Ρύθμισε το CORRECTION έτσι ώστε (surface_pressure + CORRECTION) = 1009 hPa (ή την τιμή που επιθυμείς)
-CORRECTION = 119 
+# ΧΕΙΡΟΚΙΝΗΤΗ ΔΙΟΡΘΩΣΗ (OFFSET): 
+# Αν η επιφανειακή πίεση από το API είναι ~890, το 119 μας δίνει 1009 hPa.
+OFFSET = 119 
 
-# URL για την άντληση δεδομένων από το Open-Meteo
+# URL του Open-Meteo API
 URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m&timezone=auto"
 
-def get_weather():
+def update_weather():
+    """Κύρια συνάρτηση λήψης και αποθήκευσης δεδομένων"""
     try:
-        # Κλήση στο API με timeout 10 δευτερολέπτων
+        # Λήψη δεδομένων με timeout 10 δευτερόλεπτα
         response = requests.get(URL, timeout=10)
         
         if response.status_code == 200:
-            data = response.json()
-            current = data["current"]
+            data = response.json()["current"]
             
-            # Υπολογισμός Ώρας Ελλάδας (UTC+2)
-            # Χρησιμοποιούμε την τοπική ώρα του συστήματος για το last_update
-            current_time = datetime.now().strftime("%H:%M:%S")
-
-            # Υπολογισμός τελικής πίεσης με τη δική σου διόρθωση
-            # Μετατροπή σε integer για καθαρή εμφάνιση στο UI
-            final_pressure = int(current["surface_pressure"] + CORRECTION)
-
-            # ΛΟΓΙΚΗ ALERT (ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ)
-            # Το index.html περιμένει το πεδίο "alert" (boolean)
+            # 1. Υπολογισμός τελικής πίεσης με το offset
+            pressure_final = int(data["surface_pressure"] + OFFSET)
+            
+            # 2. Λογική ALERT (Ειδοποίησης)
+            # Ενεργοποιείται αν η πίεση πέσει κάτω από 1000 hPa (χαμηλό βαρομετρικό)
+            # ή αν ο άνεμος ξεπεράσει τα 35 km/h.
             is_alert = False
-            if final_pressure < 1000 or current["wind_speed_10m"] > 35:
+            if pressure_final < 1000 or data["wind_speed_10m"] > 35:
                 is_alert = True
 
-            # Προετοιμασία δεδομένων για το data.json
-            weather_info = {
-                "temperature": round(current["temperature_2m"], 1),
-                "humidity": current["relative_humidity_2m"],
-                "pressure": final_pressure,
-                "wind_speed": round(current["wind_speed_10m"], 1),
-                "last_update": current_time,
-                "alert": is_alert
+            # 3. Προετοιμασία δεδομένων για το data.json (που διαβάζει το index.html)
+            output = {
+                "temp": round(data["temperature_2m"], 1),
+                "hum": data["relative_humidity_2m"],
+                "pres": pressure_final,
+                "wind": round(data["wind_speed_10m"], 1),
+                "alert": is_alert,
+                "last_update": datetime.now().strftime("%H:%M:%S")
             }
 
             # Αποθήκευση στο αρχείο data.json
             with open("data.json", "w", encoding="utf-8") as f:
-                json.dump(weather_info, f, ensure_ascii=False, indent=4)
+                json.dump(output, f, indent=4, ensure_ascii=False)
             
-            print(f"Επιτυχής ενημέρωση: {current_time} | Πίεση: {final_pressure} hPa | Alert: {is_alert}")
-        
+            print(f"Ενημέρωση Επιτυχής: {pressure_final} hPa | Alert: {is_alert}")
         else:
             print(f"Σφάλμα API: {response.status_code}")
-
+            
     except Exception as e:
-        print(f"Σφάλμα κατά την εκτέλεση: {e}")
+        print(f"Παρουσιάστηκε σφάλμα: {e}")
 
 if __name__ == "__main__":
-    get_weather()
+    # Εκτέλεση της ενημέρωσης
+    update_weather()
