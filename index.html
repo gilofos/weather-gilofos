@@ -100,7 +100,7 @@
         </div>
 
         <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] pb-16">
-            ΤΕΛΕΥΤΑΙΑ ΕΝΗΜΕΡΩΣΗ (ΩΡΑ ΕΛΛΑΔΑΣ): <span id="update-time" class="text-blue-400">--:--:--</span>
+            ΤΕΛΕΥΤΑΙΑ ΕΝΗΜΕΡΩΣΗ: <span id="update-time" class="text-blue-400">--:--:--</span>
         </div>
     </div>
 
@@ -154,13 +154,9 @@
                 document.getElementById('pres-val').innerText = data.pressure + " hPa";
                 document.getElementById('wind-val').innerText = data.wind_speed;
 
-                // ΔΙΟΡΘΩΣΗ ΩΡΑΣ: Μετατροπή UTC από data.json σε Ώρα Ελλάδας (UTC+2)
+                // Εδώ αφαιρέσαμε την πρόσθεση ωρών για να δείχνει ακριβώς ό,τι στέλνει το αρχείο
                 if (data.last_update) {
-                    const parts = data.last_update.split(':');
-                    let hours = parseInt(parts[0]) + 2; // Προσθήκη 2 ωρών
-                    if (hours >= 24) hours -= 24;
-                    const correctedTime = String(hours).padStart(2, '0') + ':' + parts[1] + ':' + parts[2];
-                    document.getElementById('update-time').innerText = correctedTime;
+                    document.getElementById('update-time').innerText = data.last_update;
                 }
 
                 const alertBox = document.getElementById('alert-box');
