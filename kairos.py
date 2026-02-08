@@ -21,4 +21,5 @@ def get_weather():
             current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
 
             # Υπολογισμός πίεσης στη θάλασσα (MSL) - Γήλοφος ~1050μ
-            sea_level_pressure = round(current["surface_pressure"] + 119)
+            sea_level_pressure = round(current["surface_pressure"] + 116)
+
