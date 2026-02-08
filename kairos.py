@@ -1,41 +1,82 @@
-import requests, json
+import requests
+import json
 from datetime import datetime
 
-# Ρυθμίσεις για Γήλοφο
-LAT, LON = 40.06, 21.80
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,pressure_msl,wind_speed_10m,weather_code&timezone=auto"
+# Συντεταγμένες για Γήλοφο Γρεβενών
+LAT = 40.06
+LON = 21.80
+
+# URL για Open-Meteo
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=1"
+
+def get_weather_icon(code):
+    mapping = {
+        0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 
+        45: "🌫️", 48: "🌫️", 
+        51: "🌦️", 53: "🌦️", 55: "🌦️",
+        61: "🌧️", 63: "🌧️", 65: "🌧️",
+        71: "❄️", 73: "❄️", 75: "❄️",
+        95: "⛈️"
+    }
+    return mapping.get(code, "🌡️")
 
 def get_weather():
     try:
-        r = requests.get(URL, timeout=10)
-        if r.status_code == 200:
-            d = r.json()["current"]
-            p = round(d["pressure_msl"], 1)
-            w = round(d["wind_speed_10m"], 1)
-            
-            # Λογική Alert - Πάντα θα έχει μια τιμή
-            if p < 1000 or w > 50:
-                alert = "🚨 ALERT: Επικίνδυνη Κακοκαιρία!"
-            elif p < 1007:
-                alert = "⚠️ ΠΡΟΣΟΧΗ: Πτώση πίεσης - Καιρός άστατος"
-            elif p > 1025:
-                alert = "☀️ Καλοκαιρία - Υψηλή πίεση"
-            else:
-                alert = "✅ Καιρός Σταθερός"
+        response = requests.get(URL)
+        data = response.json()
 
-            weather_data = {
-                "temp": round(d["temperature_2m"], 1),
-                "press": p,
-                "wind": w,
-                "alert": alert,
-                "time": datetime.now().strftime("%H:%M:%S")
+        if response.status_code == 200:
+            current = data["current"]
+            hourly = data["hourly"]
+            
+            # Ώρα Ελλάδας (από το σύστημα)
+            current_time = datetime.now().strftime("%H:%M:%S")
+
+            # Πίεση στη θάλασσα (MSL) απευθείας από το API
+            sea_level_pressure = round(current["pressure_msl"], 1)
+
+            # --- ΕΔΩ ΕΙΝΑΙ ΤΟ ALERT ΠΟΥ ΗΘΕΛΕΣ ---
+            alert_message = ""
+            if sea_level_pressure < 1007:
+                alert_message = "⚠️ ΠΡΟΣΟΧΗ: Χαμηλή πίεση - Καιρός άστατος!"
+            elif sea_level_pressure > 1025:
+                alert_message = "☀️ Υψηλή πίεση - Σταθερός καιρός"
+            else:
+                alert_message = "✅ Καιρός Σταθερός"
+
+            # Δημιουργία λίστας πρόγνωσης ανά 3 ώρες
+            forecast_24h = []
+            for i in range(0, 24, 3):
+                forecast_24h.append({
+                    "time": hourly["time"][i][-5:],
+                    "temp": round(hourly["temperature_2m"][i], 1),
+                    "icon": get_weather_icon(hourly["weather_code"][i])
+                })
+
+            # ΤΟ ΤΕΛΙΚΟ JSON
+            weather_info = {
+                "temperature": round(current["temperature_2m"], 1),
+                "feels_like": round(current["apparent_temperature"], 1),
+                "icon": get_weather_icon(current["weather_code"]),
+                "humidity": current["relative_humidity_2m"],
+                "pressure": sea_level_pressure,
+                "wind_speed": round(current["wind_speed_10m"], 1),
+                "wind_dir": current["wind_direction_10m"],
+                "alert": alert_message, # Αυτό προσθέσαμε
+                "description": "Live από Γήλοφο",
+                "last_update": current_time,
+                "forecast": forecast_24h
             }
 
+            # Αποθήκευση στο data.json
             with open("data.json", "w", encoding="utf-8") as f:
-                json.dump(weather_data, f, ensure_ascii=False, indent=4)
-            print(f"Ενημερώθηκε επιτυχώς στις {weather_data['time']}")
+                json.dump(weather_info, f, ensure_ascii=False, indent=4)
+            
+            print(f"Ενημέρωση ολοκληρώθηκε: {current_time}")
+        else:
+            print(f"API Error: {response.status_code}")
     except Exception as e:
-        print(f"Σφάλμα API: {e}")
+        print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
     get_weather()
