@@ -42,6 +42,7 @@
                 </div>
             </div>
         </div>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center font-black italic uppercase text-sm">
             <div class="card border-b-4 border-cyan-400">
                 <p class="text-cyan-300 mb-1">ΥΓΡΑΣΙΑ</p>
@@ -54,18 +55,43 @@
             </div>
             <div class="card border-b-4 border-yellow-400">
                 <p class="text-yellow-300 mb-1">ΣΕΛΗΝΗ</p>
-                <p id="moon" class="text-xs font-bold normal-case mt-1">--</p>
+                <div id="moon-icon" class="text-2xl my-1"></div>
+                <p id="moon-text" class="text-[10px] font-bold normal-case">--</p>
             </div>
             <div class="card border-b-4 border-orange-400">
                 <p class="text-orange-300 mb-1">ΑΝΕΜΟΣ</p>
                 <h2 id="wind" class="text-xl mt-1">-- km/h</h2>
             </div>
         </div>
+
         <div class="card mb-8 h-[350px]">
             <canvas id="myChart"></canvas>
         </div>
     </div>
+
     <script>
+        function getMoonPhase() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const c = Math.floor(365.25 * year);
+            const e = Math.floor(30.6 * month);
+            const jd = c + e + day - 694039.09; 
+            const b = jd / 29.5305882;
+            const phase = b - Math.floor(b);
+            
+            if (phase < 0.06) return ["Νέα Σελήνη", "🌑"];
+            if (phase < 0.19) return ["Αύξων Μηνίσκος", "🌒"];
+            if (phase < 0.31) return ["Πρώτο Τέταρτο", "🌓"];
+            if (phase < 0.44) return ["Αύξων Αμφίκυρτος", "🌔"];
+            if (phase < 0.56) return ["Πανσέληνος", "🌕"];
+            if (phase < 0.69) return ["Φθίνων Αμφίκυρτος", "🌖"];
+            if (phase < 0.81) return ["Τελευταίο Τέταρτο", "🌗"];
+            if (phase < 0.94) return ["Φθίνων Μηνίσκος", "🌘"];
+            return ["Νέα Σελήνη", "🌑"];
+        }
+
         function startClock() {
             const update = () => {
                 const now = new Date();
@@ -74,6 +100,7 @@
             }
             setInterval(update, 1000); update();
         }
+
         async function loadWeather() {
             try {
                 const r1 = await fetch('data.json?v=' + Date.now());
@@ -82,13 +109,15 @@
                 document.getElementById('hum').innerText = d1.humidity + "%";
                 document.getElementById('pres').innerText = d1.pressure + " hPa";
                 document.getElementById('wind').innerText = d1.wind_speed + " km/h";
+                
                 const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = d1.status;
-                if (d1.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") {
-                    alertBox.style.color = "#ff0000";
-                } else {
-                    alertBox.style.color = "#ffff00";
-                }
+                alertBox.style.color = (d1.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") ? "#ff0000" : "#ffff00";
+
+                const [mName, mIcon] = getMoonPhase();
+                document.getElementById('moon-icon').innerText = mIcon;
+                document.getElementById('moon-text').innerText = mName;
+
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&timezone=auto`);
                 const d2 = await r2.json();
                 const ctx = document.getElementById('myChart');
@@ -98,19 +127,20 @@
                     data: {
                         labels: d2.hourly.time.slice(0, 24).map(t => t.split('T')[1]),
                         datasets: [{
+                            label: 'Θερμοκρασία 24ώρου',
                             data: d2.hourly.temperature_2m.slice(0, 24),
                             borderColor: '#4ade80',
                             backgroundColor: 'rgba(74, 222, 128, 0.1)',
                             borderWidth: 3,
                             tension: 0.4,
                             fill: true,
-                            pointRadius: 0
+                            pointRadius: 2
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: { legend: { display: true, labels: { color: 'white' } } },
                         scales: {
                             y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
                             x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
