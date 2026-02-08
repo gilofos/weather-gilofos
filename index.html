@@ -50,7 +50,7 @@
 
             <div class="flex flex-col md:flex-row justify-between items-end mt-12 gap-6">
                 <div class="flex items-center gap-6">
-                    <div id="main-icon-container" class="bg-white/10 p-5 rounded-full border border-white/20 text-5xl md:text-7xl">
+                    <div id="main-icon-container" class="bg-white/10 p-5 rounded-full border border-white/20 text-5xl md:text-7xl flex items-center justify-center min-w-[100px] min-h-[100px]">
                         <i class="fa-solid fa-temperature-high text-orange-400"></i>
                     </div>
                     <div>
@@ -110,7 +110,10 @@
                 const now = new Date();
                 document.getElementById('clock-hero').innerText = now.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit'});
                 const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
-                document.getElementById('date-hero').innerText = dateText;
+                // Αρχική εμφάνιση ημερομηνίας - θα συμπληρωθεί από το loadWeather με την αίσθηση
+                if (!document.getElementById('date-hero').innerHTML.includes('ΑΙΣΘΗΣΗ')) {
+                    document.getElementById('date-hero').innerText = dateText;
+                }
             }
             setInterval(update, 1000); update();
         }
@@ -134,30 +137,33 @@
 
         async function loadWeather() {
             try {
-                // 1. Φόρτωση δεδομένων από το δικό σου data.json
-                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?v=' + Date.now());
+                // Προσθήκη timestamp για να παρακάμψουμε την cache του GitHub
+                const r1 = await fetch('https://raw.githubusercontent.com/gilofos/weather-gilofos/main/data.json?t=' + new Date().getTime());
                 const d1 = await r1.json();
                 
-                // Ενημέρωση Κεντρικού Εικονιδίου (Emoji από Python)
+                // 1. ΕΝΗΜΕΡΩΣΗ ΚΕΝΤΡΙΚΟΥ ΕΙΚΟΝΙΔΙΟΥ (ΑΠΟ PYTHON)
                 if (d1.icon) {
                     document.getElementById('main-icon-container').innerHTML = `<span class="text-6xl md:text-8xl">${d1.icon}</span>`;
                 }
 
+                // 2. ΘΕΡΜΟΚΡΑΣΙΑ ΚΑΙ ΑΙΣΘΗΣΗ
                 document.getElementById('temp-hero').innerText = (d1.temperature !== undefined ? d1.temperature.toFixed(1) : "--") + "°";
                 
-                // Προσθήκη Αίσθησης Θερμοκρασίας δίπλα στην ημερομηνία
+                const now = new Date();
+                const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
                 if (d1.feels_like !== undefined) {
-                    const now = new Date();
-                    const dateText = now.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
                     document.getElementById('date-hero').innerHTML = `${dateText} | <span class="text-orange-300">ΑΙΣΘΗΣΗ: ${d1.feels_like}°</span>`;
+                } else {
+                    document.getElementById('date-hero').innerText = dateText;
                 }
 
+                // 3. ΛΟΙΠΑ ΣΤΟΙΧΕΙΑ
                 document.getElementById('hum').innerText = (d1.humidity || "--") + "%";
                 document.getElementById('wind').innerText = (d1.wind_speed !== undefined ? d1.wind_speed.toFixed(1) : "0") + " km/h";
                 document.getElementById('pres').innerText = (d1.pressure !== undefined ? d1.pressure.toFixed(1) : "--") + " hPa";
                 document.getElementById('moon').innerText = getMoon();
                 
-                // 2. Φόρτωση Πρόγνωσης και Γραφήματος
+                // 4. ΠΡΟΓΝΩΣΗ & ΓΡΑΦΗΜΑ (ΑΠΟ OPEN-METEO)
                 const r2 = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`);
                 const d2 = await r2.json();
 
@@ -207,11 +213,11 @@
                     }
                 });
 
-                let fHtml = ''; const days = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
+                let fHtml = ''; const daysArr = ['Κυρ', 'Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ'];
                 for(let i=0; i<5; i++) {
                     const d = new Date(d2.daily.time[i]);
                     fHtml += `<div class="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
-                        <p class="text-sm font-bold text-blue-300 mb-2">${days[d.getDay()]}</p>
+                        <p class="text-sm font-bold text-blue-300 mb-2">${daysArr[d.getDay()]}</p>
                         <i class="fa-solid ${getIcon(d2.daily.weathercode[i], 12, 0, 24)} text-2xl my-2"></i>
                         <p class="font-black text-white text-xl">${Math.round(d2.daily.temperature_2m_max[i])}°</p>
                         <p class="text-blue-500 text-xs">${Math.round(d2.daily.temperature_2m_min[i])}°</p>
@@ -219,7 +225,7 @@
                 }
                 document.getElementById('forecast').innerHTML = fHtml;
 
-            } catch(e) { console.error("Σφάλμα φόρτωσης:", e); }
+            } catch(e) { console.error("Σφάλμα:", e); }
         }
 
         startClock(); loadWeather(); setInterval(loadWeather, 60000);
