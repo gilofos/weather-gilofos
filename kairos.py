@@ -1,41 +1,44 @@
-import requests
 import json
-from datetime import datetime, timedelta, timezone
+import random
+import time
+import os
 
-# Συντεταγμένες για Γήλοφο
-LAT, LON = 40.06, 21.80
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m&timezone=auto"
-
-def get_weather():
-    try:
-        response = requests.get(URL)
-        data = response.json()
-        if response.status_code == 200:
-            current = data["current"]
-            # Ώρα Ελλάδος
-            current_time = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%H:%M:%S")
-            pressure = round(current["pressure_msl"], 1)
-
-            # Λογική ειδοποίησης: < 1007 hPa = ΕΠΙΔΕΙΝΩΣΗ / > 1007 = ΣΤΑΘΕΡΟΣ
-            if pressure < 1007:
-                status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
-            else:
-                status = "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ"
-
-            weather_data = {
-                "temperature": round(current["temperature_2m"], 1),
-                "humidity": current["relative_humidity_2m"],
-                "pressure": pressure,
-                "status": status,
-                "wind_speed": round(current["wind_speed_10m"], 1),
-                "last_update": current_time
-            }
+def generate_weather_data():
+    # Ghilofos Coordinates
+    lat = 40.06
+    lon = 21.80
+    
+    while True:
+        # Simulation of sensors
+        temperature = round(random.uniform(-5.0, 15.0), 1)
+        humidity = random.randint(30, 95)
+        pressure = random.randint(990, 1030) # Pressure included
+        wind_speed = round(random.uniform(0, 50), 1)
+        
+        # Alert Logic (Status)
+        if pressure < 1000 or wind_speed > 40:
+            status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
+            alert_active = True
+        else:
+            status = "ΟΜΑΛΕΣ ΣΥΝΘΗΚΕΣ"
+            alert_active = False
             
-            with open("data.json", "w", encoding="utf-8") as f:
-                json.dump(weather_data, f, ensure_ascii=False, indent=4)
-            print(f"Ενημέρωση: {status} ({pressure} hPa)")
-    except Exception as e:
-        print(f"Σφάλμα: {e}")
+        data = {
+            "temperature": temperature,
+            "humidity": humidity,
+            "pressure": pressure,
+            "wind_speed": wind_speed,
+            "status": status,
+            "alert": alert_active,
+            "last_update": time.strftime("%H:%M:%S")
+        }
+        
+        # Save to data.json for the HTML to read
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+            
+        print(f"Data Updated: {temperature}°C, {pressure} hPa - {status}")
+        time.sleep(60) # Update every minute
 
 if __name__ == "__main__":
-    get_weather()
+    generate_weather_data()
