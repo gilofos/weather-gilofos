@@ -117,14 +117,12 @@
                 
                 const ab = document.getElementById('alert-box');
                 ab.innerText = data.status;
-                // Χρώμα ανάλογα με την κατάσταση
                 ab.style.color = (data.status === "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ") ? "#ff0000" : "#ffff00";
 
                 const [mName, mIcon] = getMoonPhase();
                 document.getElementById('moon-icon').innerText = mIcon;
                 document.getElementById('moon-text').innerText = mName;
 
-                // Ενημέρωση Γραφήματος από Open-Meteo
                 const cRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m&timezone=auto`);
                 const cData = await cRes.json();
                 const ctx = document.getElementById('myChart');
@@ -160,7 +158,7 @@
 
         startClock();
         updateUI();
-        setInterval(updateUI, 60000); // Ανανέωση κάθε λεπτό
+        setInterval(updateUI, 60000);
     </script>
 </body>
 </html>
