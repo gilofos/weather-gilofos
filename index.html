@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        body { back<ground: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); }
         .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.15); }
         .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
@@ -46,17 +46,19 @@
                     <div>
                         <div id="temp-main" class="text-8xl md:text-9xl font-black tracking-tighter leading-none">--°</div>
                         
-                        <!-- ανατολή & δύση με μικρά -->
-                        <div class="flex flex-col gap-2 mt-4">
-                            <div class="flex items-center gap-3 text-[12px] font-medium text-orange-300 tracking-tight bg-white/5 px-4 py-2 rounded-xl border border-orange-500/10 w-fit">
-                                <i class="fa-solid fa-sun-up text-lg text-orange-400"></i> ανατολή: <span id="sunrise-val" class="font-bold ml-1">--:--</span>
+                        <!-- Ημερομηνία -->
+                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-4 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit">--</div>
+
+                        <!-- ΑΝΑΤΟΛΗ & ΔΥΣΗ στην ίδια ευθεία κάτω από την ημερομηνία -->
+                        <div class="flex items-center gap-4 mt-4">
+                            <div class="flex items-center gap-2 text-[11px] font-black text-orange-300 tracking-wider uppercase">
+                                <i class="fa-solid fa-sun text-lg text-orange-400"></i> ΑΝΑΤΟΛΗ: <span id="sunrise-val" class="text-white">--:--</span>
                             </div>
-                            <div class="flex items-center gap-3 text-[12px] font-medium text-blue-300 tracking-tight bg-white/5 px-4 py-2 rounded-xl border border-blue-500/10 w-fit">
-                                <i class="fa-solid fa-sun-down text-lg text-blue-400"></i> δύση: <span id="sunset-val" class="font-bold ml-1">--:--</span>
+                            <div class="w-px h-4 bg-white/10"></div>
+                            <div class="flex items-center gap-2 text-[11px] font-black text-blue-300 tracking-wider uppercase">
+                                <i class="fa-solid fa-mountain-sun text-lg text-blue-400"></i> ΔΥΣΗ: <span id="sunset-val" class="text-white">--:--</span>
                             </div>
                         </div>
-
-                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-6 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit">--</div>
                     </div>
                 </div>
                 
