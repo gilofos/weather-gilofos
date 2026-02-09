@@ -148,13 +148,15 @@
         }
 
         function getWeatherIcon(code) {
-            if (code <= 1) return '☀️'; 
-            if (code <= 3) return '☁️'; 
-            if (code <= 48) return '🌫️'; 
-            if (code <= 65) return '🌧️'; 
-            if (code <= 77) return '❄️'; 
-            if (code <= 82) return '🚿'; 
-            return '⛈️'; 
+            if (code === 0) return '☀️';  // Καθαρός ουρανός
+    if (code === 1) return '🌤️';  // Σχεδόν καθαρός
+    if (code === 2) return '⛅';  // Λίγα σύννεφα
+    if (code === 3) return '☁️';  // Συννεφιά (αυτό που βλέπεις τώρα)
+    if (code <= 48) return '🌫️'; // Ομίχλη
+    if (code <= 65) return '🌧️'; // Βροχή
+    if (code <= 77) return '❄️';  // Χιόνι
+    if (code <= 82) return '🚿'; // Μπόρες
+    return '⛈️';                // Καταιγίδα
         }
 
         async function loadData() {
@@ -275,4 +277,5 @@
     </script>
 </body>
 </html>
+
 
