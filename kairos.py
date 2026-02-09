@@ -49,11 +49,11 @@ def get_weather():
             ix = int((deg + 22.5) / 45) % 8
             wind_dir_cardinal = directions[ix]
 
-            # Δημιουργία των δεδομένων
+            # Δημιουργία των δεδομένων - Το βελάκι μπαίνει στο ΤΕΛΟΣ
             weather_data = {
                 "temperature": round(data["temperature_2m"], 1),
                 "humidity": data["relative_humidity_2m"],
-                "pressure": f"{pressure} {trend}", 
+                "pressure": f"{pressure} hPa {trend}", 
                 "status": status,
                 "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h {wind_dir_cardinal}",
                 "last_update": current_time
@@ -63,7 +63,7 @@ def get_weather():
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-            print(f"Update OK: {current_time} | Πίεση: {pressure}{trend} | Άνεμος: {wind_dir_cardinal}")
+            print(f"Update OK: {current_time} | Πίεση: {pressure} hPa {trend}")
         else:
             print(f"Σφάλμα API: {response.status_code}")
     except Exception as e:
