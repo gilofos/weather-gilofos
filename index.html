@@ -83,12 +83,12 @@
             <div class="card p-7 text-center border-b-8 border-orange-600">
                 <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-2 uppercase">ΑΝΕΜΟΣ</p>
                 <h3 id="wind-val" class="text-3xl font-black mt-1">--</h3>
-                <p class="text-[12px] text-white/40 font-medium tracking-tight">km/h</p>
+                <p class="text-[12px] text-white/40 font-medium tracking-tight uppercase">ΕΝΤΑΣΗ & ΔΙΕΥΘΥΝΣΗ</p>
             </div>
         </div>
 
         <div class="card p-8">
-            <h4 class="text-center text-[12px] font-black text-white/40 tracking-[0.5em] mb-10 uppercase italic">ΤΑΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ (24ΩΡΟ)</h4>
+            <h4 class="text-center text-[12px] font-black text-white/40 tracking-[0.5em] mb-10 uppercase italic">ΤΑΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ & ΠΡΟΓΝΩΣΗ (24ΩΡΟ)</h4>
             <div class="relative h-[400px]">
                 <canvas id="tempChart"></canvas>
             </div>
@@ -159,6 +159,8 @@
                 document.getElementById('temp-main').innerText = data.temperature + "°";
                 document.getElementById('hum-val').innerText = data.humidity + "%";
                 document.getElementById('pres-val').innerText = data.pressure;
+                
+                // Διόρθωση ανέμου: Εμφανίζει την τιμή όπως έρχεται (π.χ. "10 km/h Β")
                 document.getElementById('wind-val').innerText = data.wind_speed;
 
                 if (data.last_update) {
@@ -205,7 +207,7 @@
                             data: temps,
                             borderColor: '#fb923c',
                             backgroundColor: 'rgba(251, 146, 60, 0.1)',
-                            borderWidth: 4,
+                            borderWidth: 5,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 0
@@ -214,18 +216,28 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: { padding: { top: 60 } }, // Περισσότερος χώρος για τα εικονίδια
                         plugins: { 
                             legend: { display: false },
                             datalabels: {
+                                display: true,
                                 align: 'top',
-                                color: '#fff',
-                                font: { size: 14, weight: 'bold' },
-                                formatter: (value, context) => context.dataIndex % 4 === 0 ? value + '°' : ''
+                                offset: 10,
+                                formatter: (value, context) => {
+                                    const index = context.dataIndex;
+                                    return index % 3 === 0 ? getWeatherIcon(codes[index]) : null;
+                                },
+                                font: { size: 30 }, // Μεγάλα εικονίδια καιρού
+                                color: '#ffffff'
                             }
                         },
                         scales: {
-                            x: { ticks: { color: '#64748b' } },
-                            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                            y: { 
+                                ticks: { color: '#64748b' }, 
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                suggestedMax: Math.max(...temps) + 5 // Αέρας για να μην κόβονται τα εικονίδια
+                            }
                         }
                     }
                 });
