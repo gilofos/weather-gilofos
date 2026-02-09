@@ -99,8 +99,13 @@
             <div id="forecast-container" class="grid grid-cols-1 sm:grid-cols-5 gap-6"></div>
         </div>
 
-    <div class="card overflow-hidden border-4 border-white/5 shadow-2xl" style="min-height: 450px; background: black;">
-    <iframe src="https://api.sat24.com/animated/GR/visual/1/EET" width="100%" height="450" frameborder="0" scrolling="no"></iframe>
+   <div class="card overflow-hidden border-4 border-white/5 shadow-2xl" style="height: 500px; position: relative;">
+    <iframe src="https://www.kairosradar.gr/rantar-kairou?loop=true" 
+            width="100%" 
+            height="700" 
+            frameborder="0" 
+            style="position: absolute; top: -120px; border:0;">
+    </iframe>
 </div>
         <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] pb-16">
             τελευταία ενημέρωση: <span id="update-time" class="text-blue-400">--:--:--</span>
@@ -269,6 +274,7 @@
     </script>
 </body>
 </html>
+
 
 
 
