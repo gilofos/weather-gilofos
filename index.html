@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { back<ground: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); }
         .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.15); }
         .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
@@ -49,7 +49,7 @@
                         <!-- Ημερομηνία -->
                         <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-4 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit">--</div>
 
-                        <!-- ΑΝΑΤΟΛΗ & ΔΥΣΗ στην ίδια ευθεία κάτω από την ημερομηνία -->
+                        <!-- ΑΝΑΤΟΛΗ & ΔΥΣΗ -->
                         <div class="flex items-center gap-4 mt-4">
                             <div class="flex items-center gap-2 text-[11px] font-black text-orange-300 tracking-wider uppercase">
                                 <i class="fa-solid fa-sun text-lg text-orange-400"></i> ΑΝΑΤΟΛΗ: <span id="sunrise-val" class="text-white">--:--</span>
@@ -184,86 +184,88 @@
                 document.getElementById('moon-name').innerText = mName;
 
                 loadForecast();
-            } catch(e) { console.log("Αναμονή για ενημέρωση..."); }
+            } catch(e) { console.log("Περιμονή δεδομένων..."); }
         }
 
         async function loadForecast() {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
-            const data = await res.json();
-            
-            if (data.daily.sunrise[0]) {
-                document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
-            }
-            if (data.daily.sunset[0]) {
-                document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
-            }
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
+                const data = await res.json();
+                
+                if (data.daily.sunrise[0]) {
+                    document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
+                }
+                if (data.daily.sunset[0]) {
+                    document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
+                }
 
-            const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
-            const temps = data.hourly.temperature_2m.slice(0, 24);
-            const codes = data.hourly.weathercode.slice(0, 24);
+                const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
+                const temps = data.hourly.temperature_2m.slice(0, 24);
+                const codes = data.hourly.weathercode.slice(0, 24);
 
-            const ctx = document.getElementById('tempChart').getContext('2d');
-            if(window.myChart) window.myChart.destroy();
-            
-            window.myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: hours,
-                    datasets: [{
-                        data: temps,
-                        borderColor: '#fb923c',
-                        backgroundColor: 'rgba(251, 146, 60, 0.08)',
-                        borderWidth: 6,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0, 
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        datalabels: {
-                            align: 'top',
-                            offset: 15,
-                            formatter: (value, context) => {
-                                const index = context.dataIndex;
-                                return index % 4 === 0 ? getWeatherIcon(codes[index]) : '';
-                            },
-                            font: { size: 28 },
-                            color: '#fff'
-                        }
+                const ctx = document.getElementById('tempChart').getContext('2d');
+                if(window.myChart) window.myChart.destroy();
+                
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: hours,
+                        datasets: [{
+                            data: temps,
+                            borderColor: '#fb923c',
+                            backgroundColor: 'rgba(251, 146, 60, 0.08)',
+                            borderWidth: 6,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0, 
+                        }]
                     },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { weight: 'bold', size: 12 } } },
-                        y: { 
-                            grid: { color: 'rgba(255,255,255,0.03)' }, 
-                            ticks: { color: '#64748b', font: { weight: 'black' } },
-                            suggestedMax: Math.max(...temps) + 6
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            datalabels: {
+                                align: 'top',
+                                offset: 15,
+                                formatter: (value, context) => {
+                                    const index = context.dataIndex;
+                                    return index % 4 === 0 ? getWeatherIcon(codes[index]) : '';
+                                },
+                                font: { size: 28 },
+                                color: '#fff'
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#64748b', font: { weight: 'bold', size: 12 } } },
+                            y: { 
+                                grid: { color: 'rgba(255,255,255,0.03)' }, 
+                                ticks: { color: '#64748b', font: { weight: 'black' } },
+                                suggestedMax: Math.max(...temps) + 5
+                            }
                         }
                     }
+                });
+
+                const container = document.getElementById('forecast-container');
+                container.innerHTML = '';
+                for(let i=1; i<6; i++) {
+                    const dayDate = new Date(data.daily.time[i]);
+                    const dayName = dayDate.toLocaleDateString('el-GR', {weekday: 'long'}).toUpperCase();
+                    const icon = getWeatherIcon(data.daily.weathercode[i]);
+                    const max = Math.round(data.daily.temperature_2m_max[i]);
+                    const min = Math.round(data.daily.temperature_2m_min[i]);
+
+                    container.innerHTML += `
+                        <div class="bg-white/5 p-6 text-center rounded-[2rem] border border-white/5">
+                            <div class="text-[10px] font-black text-blue-300/60 mb-3">${dayName}</div>
+                            <div class="text-4xl mb-4 drop-shadow-md">${icon}</div>
+                            <div class="text-2xl font-black text-white">${max}°</div>
+                            <div class="text-sm font-bold text-blue-400/50">${min}°</div>
+                        </div>
+                    `;
                 }
-            });
-
-            const container = document.getElementById('forecast-container');
-            container.innerHTML = '';
-            for(let i=1; i<6; i++) {
-                const dayDate = new Date(data.daily.time[i]);
-                const dayName = dayDate.toLocaleDateString('el-GR', {weekday: 'long'}).toUpperCase();
-                const icon = getWeatherIcon(data.daily.weathercode[i]);
-                const max = Math.round(data.daily.temperature_2m_max[i]);
-                const min = Math.round(data.daily.temperature_2m_min[i]);
-
-                container.innerHTML += `
-                    <div class="bg-white/5 p-6 text-center rounded-[2rem] border border-white/5">
-                        <div class="text-[10px] font-black text-blue-300/60 mb-3">${dayName}</div>
-                        <div class="text-4xl mb-4 drop-shadow-md">${icon}</div>
-                        <div class="text-2xl font-black text-white">${max}°</div>
-                        <div class="text-sm font-bold text-blue-400/50">${min}°</div>
-                    </div>
-                `;
-            }
+            } catch(e) { console.error("Forecast error:", e); }
         }
 
         setInterval(updateClock, 1000);
