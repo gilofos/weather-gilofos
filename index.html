@@ -142,10 +142,17 @@
             return ["Νέα Σελήνη", "🌑"];
         }
 
-        function getWeatherIcon(code) {
-            if (code === 0) return '☀️';
-            if (code === 1) return '🌤️';
-            if (code === 2) return '⛅';
+        // Η ΔΙΟΡΘΩΜΕΝΗ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΗΛΙΟ/ΦΕΓΓΑΡΙ
+        function getWeatherIcon(code, hourStr) {
+            let isNight = false;
+            if (hourStr) {
+                const hour = parseInt(hourStr.split(':')[0]);
+                if (hour < 7 || hour >= 18) isNight = true;
+            }
+
+            if (code === 0) return isNight ? '🌙' : '☀️';
+            if (code === 1) return isNight ? '☁️' : '🌤️';
+            if (code === 2) return isNight ? '☁️' : '⛅';
             if (code === 3) return '☁️';
             if (code <= 48) return '🌫️';
             if (code <= 65) return '🌧️';
@@ -163,8 +170,6 @@
                 document.getElementById('temp-main').innerText = data.temperature + "°";
                 document.getElementById('hum-val').innerText = data.humidity + "%";
                 document.getElementById('pres-val').innerText = data.pressure;
-                
-                // Διόρθωση ανέμου: Εμφανίζει την τιμή όπως έρχεται (π.χ. "10 km/h Β")
                 document.getElementById('wind-val').innerText = data.wind_speed;
 
                 if (data.last_update) {
@@ -220,7 +225,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        layout: { padding: { top: 60 } }, // Περισσότερος χώρος για τα εικονίδια
+                        layout: { padding: { top: 60 } },
                         plugins: { 
                             legend: { display: false },
                             datalabels: {
@@ -229,9 +234,10 @@
                                 offset: 10,
                                 formatter: (value, context) => {
                                     const index = context.dataIndex;
-                                    return index % 3 === 0 ? getWeatherIcon(codes[index]) : null;
+                                    // ΕΔΩ ΠΕΡΝΑΜΕ ΚΑΙ ΤΗΝ ΩΡΑ ΓΙΑ ΝΑ ΞΕΡΕΙ ΑΝ ΕΙΝΑΙ ΝΥΧΤΑ
+                                    return index % 3 === 0 ? getWeatherIcon(codes[index], hours[index]) : null;
                                 },
-                                font: { size: 30 }, // Μεγάλα εικονίδια καιρού
+                                font: { size: 30 },
                                 color: '#ffffff'
                             }
                         },
@@ -240,7 +246,7 @@
                             y: { 
                                 ticks: { color: '#64748b' }, 
                                 grid: { color: 'rgba(255,255,255,0.05)' },
-                                suggestedMax: Math.max(...temps) + 5 // Αέρας για να μην κόβονται τα εικονίδια
+                                suggestedMax: Math.max(...temps) + 5
                             }
                         }
                     }
@@ -251,7 +257,8 @@
                 for(let i=1; i<6; i++) {
                     const dayDate = new Date(data.daily.time[i]);
                     const dayName = dayDate.toLocaleDateString('el-GR', {weekday: 'short'}).toUpperCase();
-                    const icon = getWeatherIcon(data.daily.weathercode[i]);
+                    // ΣΤΙΣ ΗΜΕΡΕΣ ΔΕΝ ΣΤΕΛΝΟΥΜΕ ΩΡΑ ΓΙΑ ΝΑ ΔΕΙΧΝΕΙ ΠΑΝΤΑ ΗΛΙΟ
+                    const icon = getWeatherIcon(data.daily.weathercode[i], null);
                     const max = Math.round(data.daily.temperature_2m_max[i]);
                     const min = Math.round(data.daily.temperature_2m_min[i]);
 
@@ -274,12 +281,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
