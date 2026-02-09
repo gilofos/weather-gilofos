@@ -32,7 +32,7 @@
                         <span class="text-blue-400 text-2xl md:text-4xl">ΓΗΛΟΦΟΥ ΓΡΕΒΕΝΩΝ</span>
                     </h1>
                     <div class="flex items-center gap-3 text-blue-200/80 font-bold text-sm tracking-widest bg-white/5 px-4 py-2 rounded-2xl w-fit uppercase italic">
-                        <i class="fa-solid fa-mountain-sun text-orange-400"></i> ΥΨΟΜΕΤΡΟ: 1050μ
+                        <i class="fa-solid fa-mountain-sun text-orange-400"></i> υψόμετρο: 1050μ
                     </div>
                 </div>
                 <div class="bg-white/10 p-4 rounded-[2.5rem] border border-white/20 shadow-2xl backdrop-blur-md">
@@ -45,16 +45,18 @@
                     <div class="bg-orange-500/10 p-6 rounded-full border border-orange-500/30"><i class="fa-solid fa-temperature-full text-7xl text-orange-400"></i></div>
                     <div>
                         <div id="temp-main" class="text-8xl md:text-9xl font-black tracking-tighter leading-none">--°</div>
-                        <!-- SUNRISE & SUNSET -->
-                        <div class="flex gap-4 mt-2">
-                            <div class="flex items-center gap-2 text-xs font-bold text-orange-300 tracking-tighter bg-white/5 px-3 py-1 rounded-full border border-orange-500/20">
-                                <i class="fa-solid fa-sun-up text-orange-400"></i> <span id="sunrise-val">--:--</span>
+                        
+                        <!-- ανατολή & δύση με μικρά -->
+                        <div class="flex flex-col gap-2 mt-4">
+                            <div class="flex items-center gap-3 text-[12px] font-medium text-orange-300 tracking-tight bg-white/5 px-4 py-2 rounded-xl border border-orange-500/10 w-fit">
+                                <i class="fa-solid fa-sun-up text-lg text-orange-400"></i> ανατολή: <span id="sunrise-val" class="font-bold ml-1">--:--</span>
                             </div>
-                            <div class="flex items-center gap-2 text-xs font-bold text-blue-300 tracking-tighter bg-white/5 px-3 py-1 rounded-full border border-blue-500/20">
-                                <i class="fa-solid fa-sun-down text-blue-400"></i> <span id="sunset-val">--:--</span>
+                            <div class="flex items-center gap-3 text-[12px] font-medium text-blue-300 tracking-tight bg-white/5 px-4 py-2 rounded-xl border border-blue-500/10 w-fit">
+                                <i class="fa-solid fa-sun-down text-lg text-blue-400"></i> δύση: <span id="sunset-val" class="font-bold ml-1">--:--</span>
                             </div>
                         </div>
-                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-4 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full">--</div>
+
+                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-6 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit">--</div>
                     </div>
                 </div>
                 
@@ -85,7 +87,7 @@
             <div class="card p-7 text-center border-b-8 border-orange-600">
                 <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-2 uppercase">ΑΝΕΜΟΣ</p>
                 <h3 id="wind-val" class="text-3xl font-black mt-1">--</h3>
-                <p class="text-[10px] text-white/30 uppercase font-black">KM/H</p>
+                <p class="text-[12px] text-white/40 font-medium tracking-tight">km/h</p>
             </div>
         </div>
 
@@ -109,7 +111,7 @@
         </div>
 
         <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] pb-16">
-            ΤΕΛΕΥΤΑΙΑ ΕΝΗΜΕΡΩΣΗ: <span id="update-time" class="text-blue-400">--:--:--</span>
+            τελευταία ενημέρωση: <span id="update-time" class="text-blue-400">--:--:--</span>
         </div>
     </div>
 
@@ -184,11 +186,9 @@
         }
 
         async function loadForecast() {
-            // Updated fetch to include daily sunrise and sunset
             const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
             const data = await res.json();
             
-            // Update Sunrise & Sunset display
             if (data.daily.sunrise[0]) {
                 document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
             }
