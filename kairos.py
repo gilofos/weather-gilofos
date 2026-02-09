@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 # Συντεταγμένες για Γήλοφο
 LAT, LON = 40.06, 21.80
 
-# Ενημερωμένο URL για να παίρνουμε και την κατεύθυνση του ανέμου (wind_direction_10m)
+# URL με την προσθήκη wind_direction_10m
 URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&timezone=auto"
 
 def get_weather():
@@ -14,13 +14,13 @@ def get_weather():
         if response.status_code == 200:
             data = response.json()["current"]
             
-            # Ώρα Ελλάδος (UTC+2) - Το GitHub Actions τρέχει σε UTC
+            # Ώρα Ελλάδος
             now_gr = datetime.now(timezone.utc) + timedelta(hours=2)
             current_time = now_gr.strftime("%H:%M:%S")
             
             pressure = round(data["pressure_msl"], 1)
 
-            # Λογική ειδοποίησης - Παραμένει το 1007 ως όριο
+            # Λογική ειδοποίησης (Όριο 1007)
             if pressure < 1007:
                 status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
             else:
@@ -30,8 +30,9 @@ def get_weather():
             try:
                 with open("data.json", "r", encoding="utf-8") as f:
                     old_data = json.load(f)
-                    # Αφαιρούμε το βελάκι αν υπάρχει για να συγκρίνουμε μόνο αριθμούς
-                    old_p_val = float(str(old_data.get("pressure", pressure)).split()[0])
+                    # Παίρνουμε μόνο τον αριθμό από το παλιό "1006.3 ↓"
+                    old_p_str = str(old_data.get("pressure", pressure)).split()[0]
+                    old_p_val = float(old_p_str)
             except:
                 old_p_val = pressure
 
@@ -42,7 +43,7 @@ def get_weather():
             else:
                 trend = "→"
 
-            # --- Μετατροπή Μοιρών Ανέμου σε Γράμματα ---
+            # --- Μετατροπή Μοιρών σε Γράμματα ---
             deg = data["wind_direction_10m"]
             directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
             ix = int((deg + 22.5) / 45) % 8
@@ -52,10 +53,9 @@ def get_weather():
             weather_data = {
                 "temperature": round(data["temperature_2m"], 1),
                 "humidity": data["relative_humidity_2m"],
-                "pressure": f"{pressure} {trend}", # Προσθήκη trend
+                "pressure": f"{pressure} {trend}",
                 "status": status,
-                "wind_speed": round(data["wind_speed_10m"], 1),
-                "wind_dir": wind_dir_cardinal, # Προσθήκη κατεύθυνσης
+                "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h {wind_dir_cardinal}", # ΕΔΩ ΜΠΗΚΕ Ο ΑΝΕΜΟΣ
                 "last_update": current_time
             }
             
@@ -63,11 +63,11 @@ def get_weather():
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-            print(f"Ενημέρωση GitHub OK: {current_time} | Πίεση: {pressure}{trend} | Άνεμος: {wind_dir_cardinal}")
+            print(f"OK: {current_time} | Πίεση: {pressure}{trend} | Άνεμος: {wind_dir_cardinal}")
         else:
             print(f"Σφάλμα API: {response.status_code}")
     except Exception as e:
-        print(f"Σφάλμα κατά την εκτέλεση: {e}")
+        print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
     get_weather()
