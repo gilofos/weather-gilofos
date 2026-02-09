@@ -99,8 +99,8 @@
             <div id="forecast-container" class="grid grid-cols-1 sm:grid-cols-5 gap-6"></div>
         </div>
 
-      <div class="card overflow-hidden border-4 border-white/5 shadow-2xl">
-    <img src="https://www.meteo.gr/radar/radar_sat_hellas.jpg?v=123" style="width:100%; display:block; min-height:300px; background:white;">
+    <div class="card overflow-hidden border-4 border-white/5 shadow-2xl" style="min-height: 450px;">
+    <iframe src="https://api.sat24.com/animated/GR/visual/1/EET" style="width:100%; height:450px; border:none;"></iframe>
 </div>
         <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] pb-16">
             τελευταία ενημέρωση: <span id="update-time" class="text-blue-400">--:--:--</span>
@@ -269,6 +269,7 @@
     </script>
 </body>
 </html>
+
 
 
 
