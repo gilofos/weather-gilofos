@@ -1,8 +1,8 @@
 {
-    "temperature": 9.2,
-    "humidity": 89,
-    "pressure": "989.3 hPa ↓",
+    "temperature": 8.8,
+    "humidity": 91,
+    "pressure": "988.9 hPa ↓",
     "status": "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ",
-    "wind_speed": "2.4 km/h ΝΑ",
-    "last_update": "21:56:22"
+    "wind_speed": "1.8 km/h ΝΑ",
+    "last_update": "23:50:42"
 }
