@@ -1,8 +1,8 @@
 {
-    "temperature": 8.5,
+    "temperature": 7.6,
     "humidity": 65,
     "pressure": 988.9,
-    "wind_speed": 3.4,
+    "wind_speed": 3.9,
     "status": "ΕΠΙΔΕΙΝΩΣΗ",
-    "last_update": "18:31:07"
+    "last_update": "19:32:51"
 }
