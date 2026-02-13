@@ -1,9 +1,10 @@
 {
     "temperature": 7.5,
-    "pressure": 912.8,
+    "humidity": 80,
+    "pressure": 913.1,
     "wind_speed": 3.6,
     "wind_dir": 276,
     "rain": 0.0,
-    "weather_label": "ΣΥΝΝΕΦΙΑ ☁️",
-    "time": "22:13:46"
+    "weather_label": "ΚΑΘΑΡΟΣ ☀️",
+    "time": "22:19:57"
 }
