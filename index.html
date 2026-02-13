@@ -165,7 +165,10 @@
                 
                 document.getElementById('temp-main').innerText = data.temperature + "°";
                 document.getElementById('hum-val').innerText = data.humidity + "%";
-                document.getElementById('pres-val').innerText = data.pressure+ " hPa";
+                let trendIcon = " →"; 
+if (data.status === "ΕΠΙΔΕΙΝΩΣΗ") trendIcon = " ↓"; 
+if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
+document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
                 document.getElementById('wind-val').innerText = data.wind_speed;
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
 
@@ -241,4 +244,5 @@
     </script>
 </body>
 </html>
+
 
