@@ -1,13 +1,13 @@
 {
-    "temperature": 7.5,
+    "temperature": 7.4,
     "humidity": 80,
-    "pressure": 913.1,
-    "wind_speed": 3.6,
+    "pressure": 913.3,
+    "wind_speed": 3.3,
     "wind_dir": 276,
     "rain": 0.0,
-    "weather_label": "ΚΑΘΑΡΟΣ ☀️",
-    "condition": "ΚΑΘΑΡΟΣ ☀️",
-    "time": "22:27:14",
-    "last_update": "22:27:14",
-    "updated_at": "22:27:14"
+    "weather_label": "ΣΥΝΝΕΦΙΑ ☁️",
+    "condition": "ΣΥΝΝΕΦΙΑ ☁️",
+    "time": "22:34:41",
+    "last_update": "22:34:41",
+    "updated_at": "22:34:41"
 }
