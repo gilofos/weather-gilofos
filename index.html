@@ -172,7 +172,9 @@ document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIc
                 document.getElementById('wind-val').innerText = data.wind_speed+ " km/h";
                 document.getElementById('rain-val').innerText = (data.rain || "0.0") + " mm";
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
-
+if (data.sunrise) document.getElementById('sunrise').innerText = data.sunrise;
+                if (data.sunset) document.getElementById('sunset').innerText = data.sunset;
+                
                 const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
                 alertBox.className = (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
@@ -245,6 +247,7 @@ document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIc
     </script>
 </body>
 </html>
+
 
 
 
