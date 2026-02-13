@@ -27,9 +27,10 @@ def get_weather():
         wind_deg = current['winddirection']
         wind_dir_text = get_wind_dir(wind_deg)
         
-        # Πίεση και Βροχή από τα hourly δεδομένα
-        pressure = data['hourly']['surface_pressure'][0]
-        rain = data['hourly']['precipitation'][0]
+        # ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: Παίρνουμε την τρέχουσα ώρα
+        current_hour = datetime.now().hour
+        pressure = data['hourly']['surface_pressure'][current_hour]
+        rain = data['hourly']['precipitation'][current_hour]
 
         # Πρόγνωση status βάσει πίεσης
         if pressure <= 1007:
@@ -39,10 +40,10 @@ def get_weather():
         else:
             status = "ΣΥΝΝΕΦΙΑ - ΗΛΙΟΣ"
 
-        # Το πακέτο που πάει στο site
+        # Το πακέτο που πάει στο site (και στο data.json)
         weather_data = {
             "temperature": temp,
-            "humidity": 65,
+            "humidity": 65, # Εδώ μπορείς μελλοντικά να βάλεις αισθητήρα
             "pressure": pressure,
             "wind_speed": wind,
             "wind_dir": wind_dir_text,
