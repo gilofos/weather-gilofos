@@ -1,10 +1,10 @@
 {
-    "temperature": 4.5,
+    "temperature": 4.4,
     "humidity": 65,
     "pressure": 905.0,
     "wind_speed": 5.7,
     "wind_dir": "ΝΔ",
     "rain": 1.2,
     "status": "ΕΠΙΔΕΙΝΩΣΗ",
-    "last_update": "21:12:35"
+    "last_update": "21:23:08"
 }
