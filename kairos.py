@@ -40,14 +40,19 @@ def get_weather():
 
             trend = "↑" if pressure > old_p_val else "↓" if pressure < old_p_val else "→"
 
-            # Σύνθεση δεδομένων - ΕΔΩ ΚΑΘΑΡΙΣΑΜΕ ΤΟΝ ΑΝΕΜΟ
+            # Υπολογισμός Κατεύθυνσης Ανέμου
+            degrees = data["wind_direction_10m"]
+            directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
+            idx = int((degrees + 22.5) / 45) % 8
+            wind_dir = directions[idx]
+
+            # Σύνθεση δεδομένων - km/h μικρά και Κατεύθυνση
             weather_data = {
                 "temperature": round(data["temperature_2m"], 1),
                 "humidity": data["relative_humidity_2m"],
                 "pressure": f"{pressure} hPa {trend}", 
                 "status": status,
-                # Μόνο ταχύτητα και βροχή, χωρίς τη λέξη "Διεύθυνση"
-                "wind_speed": f"{round(data['wind_speed_10m'], 1)}km/h - Βροχή:{rain}mm",
+                "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h {wind_dir} - Βροχή: {rain}mm",
                 "last_update": current_time
             }
             
