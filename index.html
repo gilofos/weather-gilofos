@@ -80,8 +80,11 @@
                 <p id="moon-name" class="text-[10px] font-bold text-white/50 uppercase">--</p>
             </div>
             <div class="card p-7 text-center border-b-8 border-orange-600">
-                <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-2 uppercase">ΑΝΕΜΟΣ & ΒΡΟΧΗ</p>
-                <h3 id="wind-val" class="text-2xl font-black mt-1">--</h3>
+                <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-1 uppercase">ΑΝΕΜΟΣ</p>
+                <h3 id="wind-val" class="text-2xl font-black italic">-- km/h --</h3>
+                <div class="mt-3 pt-2 border-t border-white/5">
+                   <p class="text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase">ΒΡΟΧΗ: <span id="rain-val" class="text-white">--</span> mm</p>
+                </div>
             </div>
         </div>
 
@@ -127,120 +130,3 @@
             const day = date.getDate();
             const c = Math.floor(365.25 * year);
             const e = Math.floor(30.6 * month);
-            const jd = c + e + day - 694039.09; 
-            const b = jd / 29.5305882;
-            const phase = b - Math.floor(b);
-            if (phase < 0.06) return ["Νέα Σελήνη", "🌑"];
-            if (phase < 0.19) return ["Αύξων Μηνίσκος", "🌒"];
-            if (phase < 0.31) return ["Πρώτο Τέταρτο", "🌓"];
-            if (phase < 0.44) return ["Αύξων Αμφίκυρτος", "🌔"];
-            if (phase < 0.56) return ["Πανσέληνος", "🌕"];
-            if (phase < 0.69) return ["Φθίνων Αμφίκυρτος", "🌖"];
-            if (phase < 0.81) return ["Τελευταίο Τέταρτο", "🌗"];
-            if (phase < 0.94) return ["Φθίνων Μηνίσκος", "🌘"];
-            return ["Νέα Σελήνη", "🌑"];
-        }
-
-        function getWeatherIcon(code, hourStr) {
-            let isNight = false;
-            if (hourStr) {
-                const hour = parseInt(hourStr.split(':')[0]);
-                if (hour < 7 || hour >= 18) isNight = true;
-            }
-            if (code === 0) return isNight ? '🌙' : '☀️';
-            if (code === 1) return isNight ? '☁️' : '🌤️';
-            if (code === 2) return isNight ? '☁️' : '⛅';
-            if (code === 3) return '☁️';
-            if (code <= 48) return '🌫️';
-            if (code <= 65) return '🌧️';
-            if (code <= 77) return '❄️';
-            if (code <= 82) return '🚿';
-            return '⛈️';
-        }
-
-        async function loadData() {
-            try {
-                const res = await fetch('data.json?nocache=' + new Date().getTime());
-                const data = await res.json();
-                
-                document.getElementById('temp-main').innerText = data.temperature + "°";
-                document.getElementById('hum-val').innerText = data.humidity + "%";
-                let trendIcon = " →"; // Σταθερό
-                if (data.status === "ΕΠΙΔΕΙΝΩΣΗ") trendIcon = " ↓"; // Πέφτει
-                if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; // Ανεβαίνει
-                document.getElementById('pres-val').innerText = data.pressure + trendIcon;
-                document.getElementById('wind-val').innerText = data.wind_speed;
-                if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
-
-                const alertBox = document.getElementById('alert-box');
-                alertBox.innerText = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
-                alertBox.className = (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
-
-                const [mName, mIcon] = getMoonPhase();
-                document.getElementById('moon-icon').innerText = mIcon;
-                document.getElementById('moon-name').innerText = mName;
-                loadForecast();
-            } catch(e) { console.log("Waiting for data..."); }
-        }
-
-        async function loadForecast() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
-                const data = await res.json();
-                
-                if (data.daily.sunrise[0]) document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
-                if (data.daily.sunset[0]) document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
-
-                const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
-                const temps = data.hourly.temperature_2m.slice(0, 24);
-                const codes = data.hourly.weathercode.slice(0, 24);
-
-                const ctx = document.getElementById('tempChart').getContext('2d');
-                if(window.myChart) window.myChart.destroy();
-                
-                window.myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: hours,
-                        datasets: [{
-                            data: temps,
-                            borderColor: '#fb923c',
-                            backgroundColor: 'rgba(251, 146, 60, 0.1)',
-                            borderWidth: 5,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, datalabels: {
-                            display: true, align: 'top', offset: 10,
-                            formatter: (value, ctx) => ctx.dataIndex % 3 === 0 ? getWeatherIcon(codes[ctx.dataIndex], hours[ctx.dataIndex]) : null,
-                            font: { size: 30 }, color: '#ffffff'
-                        }},
-                        scales: { x: { grid: { display: false }, ticks: { color: '#64748b' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } } }
-                    }
-                });
-
-                const container = document.getElementById('forecast-container');
-                container.innerHTML = '';
-                for(let i=1; i<6; i++) {
-                    const dayName = new Date(data.daily.time[i]).toLocaleDateString('el-GR', {weekday: 'short'}).toUpperCase();
-                    container.innerHTML += `
-                        <div class="bg-white/5 p-4 text-center rounded-[2rem] border border-white/5">
-                            <div class="text-[10px] font-black text-blue-300/60 mb-2">${dayName}</div>
-                            <div class="text-3xl mb-2">${getWeatherIcon(data.daily.weathercode[i], null)}</div>
-                            <div class="text-xl font-black text-white">${Math.round(data.daily.temperature_2m_max[i])}°</div>
-                            <div class="text-xs font-bold text-blue-400/50">${Math.round(data.daily.temperature_2m_min[i])}°</div>
-                        </div>`;
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        setInterval(updateClock, 1000);
-        setInterval(loadData, 60000);
-        updateClock(); loadData();
-    </script>
-</body>
-</html>
