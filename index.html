@@ -3,173 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Μετεωρολογικός Σταθμός Γήλοφος</title>
+    <title>ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ ΓΗΛΟΦΟΥ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .weather-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            text-align: center;
-            width: 350px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            color: #00d2ff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .status-box {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 15px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-            font-size: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-        }
-
-        .label {
-            color: #00d2ff;
-        }
-
-        .value {
-            font-weight: bold;
-        }
-
-        .unit {
-            font-size: 14px;
-            color: #888;
-            margin-left: 5px;
-        }
-
-        #arrow {
-            font-size: 28px;
-            margin-left: 10px;
-            display: inline-block;
-        }
-
-        .up { color: #44ff44; }
-        .down { color: #ff4444; animation: blink 1s infinite; }
-        .stable { color: #ffcc00; }
-
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        .update-time {
-            font-size: 12px;
-            color: #666;
-            margin-top: 25px;
-        }
+        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+        .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.15); }
+        .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
+        @keyframes alert-blink { 0% { opacity: 1; color: #ef4444; } 50% { opacity: 0.4; color: #ffffff; } 100% { opacity: 1; color: #ef4444; } }
     </style>
 </head>
-<body>
+<body class="p-3 md:p-8 min-h-screen">
 
-<div class="weather-card">
-    <h1>ΓΗΛΟΦΟΣ</h1>
-    
-    <div id="weather-status" class="status-box">ΦΟΡΤΩΣΗ...</div>
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <div class="hero-gradient rounded-[3rem] p-6 md:p-10 shadow-2xl relative">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div class="space-y-4">
+                    <div class="bg-blue-500/20 backdrop-blur-xl px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] border border-blue-400/30 inline-flex items-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>LIVE ΜΕΤΑΔΟΣΗ
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-none">
+                        ΜΕΤΕΩΡΟΛΟΓΙΚΟΣ ΣΤΑΘΜΟΣ<br>
+                        <span class="text-blue-400 text-2xl md:text-4xl">ΓΗΛΟΦΟΥ ΓΡΕΒΕΝΩΝ</span>
+                    </h1>
+                    <div class="flex items-center gap-3 text-blue-200/80 font-bold text-sm tracking-widest bg-white/5 px-4 py-2 rounded-2xl w-fit uppercase italic">
+                        <i class="fa-solid fa-mountain-sun text-orange-400"></i> υψόμετρο: 1050μ
+                    </div>
+                </div>
+                <div class="bg-white/10 p-4 rounded-[2.5rem] border border-white/20 shadow-2xl backdrop-blur-md">
+                    <img src="logo.png" alt="Logo" class="h-24 md:h-36 w-auto object-contain" onerror="this.src='https://via.placeholder.com/200?text=GHILOFOS'">
+                </div>
+            </div>
 
-    <div class="data-row">
-        <span class="label">Θερμοκρασία</span>
-        <span class="value"><span id="temp">--</span><span class="unit">°C</span></span>
+            <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="bg-orange-500/10 p-5 rounded-full border border-orange-500/30"><i class="fa-solid fa-temperature-full text-6xl text-orange-400"></i></div>
+                    <div>
+                        <div id="temp-main" class="text-7xl md:text-8xl font-black tracking-tighter leading-none">--°</div>
+                        <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-2 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit">--</div>
+                        <div class="flex flex-col gap-1 mt-4">
+                            <div class="flex items-center gap-2 text-[11px] font-black text-orange-300 tracking-wider uppercase">
+                                <i class="fa-solid fa-sun text-md text-orange-400"></i> ΑΝΑΤΟΛΗ: <span id="sunrise-val" class="text-white">--:--</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-[11px] font-black text-blue-300 tracking-wider uppercase">
+                                <i class="fa-solid fa-moon text-md text-blue-400"></i> ΔΥΣΗ: <span id="sunset-val" class="text-white ml-4">--:--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end w-full md:w-auto">
+                    <div class="bg-black/40 backdrop-blur-2xl px-8 py-4 rounded-[2.5rem] border-2 border-white/10 shadow-2xl">
+                        <div id="clock-main" class="text-5xl md:text-6xl font-mono font-black text-white tracking-tighter text-center">00:00:00</div>
+                    </div>
+                    <div id="alert-box" class="mt-4 text-xl md:text-2xl font-black tracking-widest uppercase italic text-yellow-400">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="card p-7 text-center border-b-8 border-cyan-500">
+                <p class="text-[10px] font-black text-cyan-400 tracking-[0.3em] mb-2 uppercase">ΥΓΡΑΣΙΑ</p>
+                <h3 id="hum-val" class="text-4xl font-black">--%</h3>
+            </div>
+            <div class="card p-7 text-center border-b-8 border-emerald-500">
+                <p class="text-[10px] font-black text-emerald-400 tracking-[0.3em] mb-2 uppercase">ΠΙΕΣΗ (hPa)</p>
+                <h3 id="pres-val" class="text-3xl font-black mt-1">----</h3>
+            </div>
+            <div class="card p-7 text-center border-b-8 border-yellow-500">
+                <p class="text-[10px] font-black text-yellow-400 tracking-[0.3em] mb-2 uppercase italic">ΣΕΛΗΝΗ</p>
+                <div id="moon-icon" class="text-5xl mb-1">🌑</div>
+                <p id="moon-name" class="text-[10px] font-bold text-white/50 uppercase">--</p>
+            </div>
+            <div class="card p-7 text-center border-b-8 border-orange-600">
+                <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-2 uppercase">ΑΝΕΜΟΣ & ΒΡΟΧΗ</p>
+                <h3 id="wind-val" class="text-2xl font-black mt-1">--</h3>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <h4 class="text-center text-[12px] font-black text-white/40 tracking-[0.5em] mb-10 uppercase italic">ΤΑΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ & ΠΡΟΓΝΩΣΗ (24ΩΡΟ)</h4>
+            <div class="relative h-[400px]">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <h4 class="text-center text-[12px] font-black text-white/40 tracking-[0.5em] mb-10 uppercase italic">ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ</h4>
+            <div id="forecast-container" class="grid grid-cols-1 sm:grid-cols-5 gap-6"></div>
+        </div>
+
+        <div class="card overflow-hidden border-4 border-white/5 shadow-2xl" style="height: 500px; position: relative;">
+            <iframe src="https://www.kairosradar.gr/rantar-kairou?loop=true" 
+                    width="100%" 
+                    height="700" 
+                    frameborder="0" 
+                    style="position: absolute; top: -120px; border:0;">
+            </iframe>
+        </div>
+        
+        <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] pb-16">
+            τελευταία ενημέρωση: <span id="update-time" class="text-blue-400">--:--:--</span>
+        </div>
     </div>
 
-    <div class="data-row">
-        <span class="label">Πίεση</span>
-        <span class="value">
-            <span id="pressure">--</span><span class="unit">hPa</span>
-            <span id="arrow"></span>
-        </span>
-    </div>
+    <script>
+        Chart.register(ChartDataLabels);
 
-    <div class="data-row">
-        <span class="label">Άνεμος</span>
-        <span class="value"><span id="wind">--</span><span class="unit">km/h</span></span>
-    </div>
-
-    <div class="data-row">
-        <span class="label">Βροχή</span>
-        <span class="value"><span id="rain">--</span><span class="unit">mm</span></span>
-    </div>
-
-    <div class="update-time">
-        Τελευταία ενημέρωση: <span id="update-time">--:--:--</span>
-    </div>
-</div>
-
-<script>
-    async function updateWeather() {
-        try {
-            const response = await fetch('data.json?v=' + Math.random());
-            const data = await response.json();
-            
-            document.getElementById('temp').innerText = data.temperature;
-            document.getElementById('pressure').innerText = data.pressure;
-            document.getElementById('wind').innerText = data.wind_speed;
-            document.getElementById('rain').innerText = data.rain !== undefined ? data.rain : "0.0";
-            document.getElementById('update-time').innerText = data.last_update;
-
-            const statusBox = document.getElementById('weather-status');
-            const arrowBox = document.getElementById('arrow');
-            const status = data.status;
-
-            if (status === "ΕΠΙΔΕΙΝΩΣΗ") {
-                statusBox.innerText = "ΕΠΙΔΕΙΝΩΣΗ";
-                statusBox.style.color = "#ff4444";
-                arrowBox.innerHTML = "↓";
-                arrowBox.className = "down";
-            } else if (status === "ΑΙΘΡΙΟΣ") {
-                statusBox.innerText = "ΑΙΘΡΙΟΣ";
-                statusBox.style.color = "#44ff44";
-                arrowBox.innerHTML = "↑";
-                arrowBox.className = "up";
-            } else if (status === "ΛΙΑΚΑΔΑ ΜΕ ΣΥΝΝΕΦΑ") {
-                statusBox.innerText = "ΛΙΑΚΑΔΑ ΜΕ ΣΥΝΝΕΦΑ";
-                statusBox.style.color = "#ffcc00";
-                arrowBox.innerHTML = "→";
-                arrowBox.className = "stable";
-            } else {
-                statusBox.innerText = status;
-                statusBox.style.color = "#00d2ff";
-                arrowBox.innerHTML = "→";
-                arrowBox.className = "stable";
-            }
-        } catch (e) {
-            console.error("Σφάλμα στην ανάγνωση των δεδομένων:", e);
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-main').innerText = now.toLocaleTimeString('el-GR', {hour12: false});
+            document.getElementById('date-main').innerText = now.toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
         }
-    }
 
-    // Ανανέωση κάθε 30 δευτερόλεπτα
-    setInterval(updateWeather, 30000);
-    updateWeather();
-</script>
+        function getMoonPhase() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const c = Math.floor(365.25 * year);
+            const e = Math.floor(30.6 * month);
+            const jd = c + e + day - 694039.09; 
+            const b = jd / 29.5305882;
+            const phase = b - Math.floor(b);
+            if (phase < 0.06) return ["Νέα Σελήνη", "🌑"];
+            if (phase < 0.19) return ["Αύξων Μηνίσκος", "🌒"];
+            if (phase < 0.31) return ["Πρώτο Τέταρτο", "🌓"];
+            if (phase < 0.44) return ["Αύξων Αμφίκυρτος", "🌔"];
+            if (phase < 0.56) return ["Πανσέληνος", "🌕"];
+            if (phase < 0.69) return ["Φθίνων Αμφίκυρτος", "🌖"];
+            if (phase < 0.81) return ["Τελευταίο Τέταρτο", "🌗"];
+            if (phase < 0.94) return ["Φθίνων Μηνίσκος", "🌘"];
+            return ["Νέα Σελήνη", "🌑"];
+        }
 
+        function getWeatherIcon(code, hourStr) {
+            let isNight = false;
+            if (hourStr) {
+                const hour = parseInt(hourStr.split(':')[0]);
+                if (hour < 7 || hour >= 18) isNight = true;
+            }
+            if (code === 0) return isNight ? '🌙' : '☀️';
+            if (code === 1) return isNight ? '☁️' : '🌤️';
+            if (code === 2) return isNight ? '☁️' : '⛅';
+            if (code === 3) return '☁️';
+            if (code <= 48) return '🌫️';
+            if (code <= 65) return '🌧️';
+            if (code <= 77) return '❄️';
+            if (code <= 82) return '🚿';
+            return '⛈️';
+        }
+
+        async function loadData() {
+            try {
+                const res = await fetch('data.json?nocache=' + new Date().getTime());
+                const data = await res.json();
+                
+                document.getElementById('temp-main').innerText = data.temperature + "°";
+                document.getElementById('hum-val').innerText = data.humidity + "%";
+                let trendIcon = " →"; // Σταθερό
+                if (data.status === "ΕΠΙΔΕΙΝΩΣΗ") trendIcon = " ↓"; // Πέφτει
+                if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; // Ανεβαίνει
+                document.getElementById('pres-val').innerText = data.pressure + trendIcon;
+                document.getElementById('wind-val').innerText = data.wind_speed;
+                if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
+
+                const alertBox = document.getElementById('alert-box');
+                alertBox.innerText = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
+                alertBox.className = (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
+
+                const [mName, mIcon] = getMoonPhase();
+                document.getElementById('moon-icon').innerText = mIcon;
+                document.getElementById('moon-name').innerText = mName;
+                loadForecast();
+            } catch(e) { console.log("Waiting for data..."); }
+        }
+
+        async function loadForecast() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
+                const data = await res.json();
+                
+                if (data.daily.sunrise[0]) document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
+                if (data.daily.sunset[0]) document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
+
+                const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
+                const temps = data.hourly.temperature_2m.slice(0, 24);
+                const codes = data.hourly.weathercode.slice(0, 24);
+
+                const ctx = document.getElementById('tempChart').getContext('2d');
+                if(window.myChart) window.myChart.destroy();
+                
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: hours,
+                        datasets: [{
+                            data: temps,
+                            borderColor: '#fb923c',
+                            backgroundColor: 'rgba(251, 146, 60, 0.1)',
+                            borderWidth: 5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, datalabels: {
+                            display: true, align: 'top', offset: 10,
+                            formatter: (value, ctx) => ctx.dataIndex % 3 === 0 ? getWeatherIcon(codes[ctx.dataIndex], hours[ctx.dataIndex]) : null,
+                            font: { size: 30 }, color: '#ffffff'
+                        }},
+                        scales: { x: { grid: { display: false }, ticks: { color: '#64748b' } }, y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                    }
+                });
+
+                const container = document.getElementById('forecast-container');
+                container.innerHTML = '';
+                for(let i=1; i<6; i++) {
+                    const dayName = new Date(data.daily.time[i]).toLocaleDateString('el-GR', {weekday: 'short'}).toUpperCase();
+                    container.innerHTML += `
+                        <div class="bg-white/5 p-4 text-center rounded-[2rem] border border-white/5">
+                            <div class="text-[10px] font-black text-blue-300/60 mb-2">${dayName}</div>
+                            <div class="text-3xl mb-2">${getWeatherIcon(data.daily.weathercode[i], null)}</div>
+                            <div class="text-xl font-black text-white">${Math.round(data.daily.temperature_2m_max[i])}°</div>
+                            <div class="text-xs font-bold text-blue-400/50">${Math.round(data.daily.temperature_2m_min[i])}°</div>
+                        </div>`;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        setInterval(updateClock, 1000);
+        setInterval(loadData, 60000);
+        updateClock(); loadData();
+    </script>
 </body>
 </html>
