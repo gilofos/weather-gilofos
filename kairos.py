@@ -2,65 +2,47 @@ import requests
 import json
 from datetime import datetime
 
-def get_wind_dir(deg):
-    if 337.5 <= deg or deg < 22.5: return "Β"
-    if 22.5 <= deg < 67.5: return "ΒΑ"
-    if 67.5 <= deg < 112.5: return "Α"
-    if 112.5 <= deg < 157.5: return "ΝΑ"
-    if 157.5 <= deg < 202.5: return "Ν"
-    if 202.5 <= deg < 247.5: return "ΝΔ"
-    if 247.5 <= deg < 292.5: return "Δ"
-    if 292.5 <= deg < 337.5: return "ΒΔ"
-    return ""
+# Συντεταγμένες για Γήλοφο (Υψόμετρο ~1050μ)
+LAT = 39.88
+LON = 21.80
 
 def get_weather():
-    # URL με προσθήκη snowfall για το αποψινό χιόνι
-    url = "https://api.open-meteo.com/v1/forecast?latitude=40.00&longitude=21.45&current_weather=true&hourly=surface_pressure,precipitation,snowfall"
-    
     try:
+        # Παίρνουμε τα δεδομένα από το Open-Meteo
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m&timezone=auto"
         response = requests.get(url)
-        data = response.json()
+        response.raise_for_status()
+        data = response.json()['current']
         
-        current = data['current_weather']
-        temp = current['temperature']
-        wind = current['windspeed']
-        wind_deg = current['winddirection']
-        wind_dir_text = get_wind_dir(wind_deg)
+        temp = data['temperature_2m']
+        precip = data['precipitation']
         
-        # Παίρνουμε την τρέχουσα ώρα
-        current_hour = datetime.now().hour
-        pressure = data['hourly']['surface_pressure'][current_hour]
-        
-        # ΑΘΡΟΙΣΜΑ ΒΡΟΧΗΣ ΚΑΙ ΧΙΟΝΙΟΥ
-        rain_val = data['hourly']['precipitation'][current_hour]
-        snow_val = data['hourly']['snowfall'][current_hour]
-        total_precip = rain_val + snow_val
-
-        # Πρόγνωση status βάσει πίεσης
-        if pressure <= 1007:
-            status = "ΕΠΙΔΕΙΝΩΣΗ"
-        elif pressure > 1020:
-            status = "ΑΙΘΡΙΟΣ"
+        # ΛΟΓΙΚΗ ΓΙΑ ΧΙΟΝΙ/ΒΡΟΧΗ
+        if temp <= 1.5 and precip > 0:
+            weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
+        elif temp <= 3.0 and precip > 0:
+            weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
+        elif precip > 0:
+            weather_type = "ΒΡΟΧΗ 💧"
         else:
-            status = "ΣΥΝΝΕΦΙΑ - ΗΛΙΟΣ"
+            weather_type = "ΣΥΝΝΕΦΙΑ ☁️" if temp < 10 else "ΚΑΘΑΡΟΣ ☀️"
 
-        # Το πακέτο δεδομένων για το GitHub
+        # Προετοιμασία των δεδομένων για το site
         weather_data = {
             "temperature": temp,
-            "humidity": 65,
-            "pressure": pressure,
-            "wind_speed": wind,
-            "wind_dir": wind_dir_text,
-            "rain": total_precip, # Εδώ μπαίνει το σύνολο (βροχή + χιόνι)
-            "status": status,
-            "last_update": datetime.now().strftime("%H:%M:%S")
+            "pressure": data['surface_pressure'],
+            "wind_speed": data['wind_speed_10m'],
+            "wind_dir": data['wind_direction_10m'],
+            "rain": precip,
+            "weather_label": weather_type,
+            "time": datetime.now().strftime("%H:%M:%S")
         }
-
-        # Αποθήκευση στο data.json
+        
+        # Αποθήκευση στο data.json για να το διαβάσει το site
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Ενημερώθηκε! Τελευταία μέτρηση: {temp}°C, {wind_dir_text} {wind}km/h, Κατακρήμνιση: {total_precip}mm")
+        print(f"Ενημερώθηκε: {weather_type} με {temp}°C")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
