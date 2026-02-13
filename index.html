@@ -80,7 +80,11 @@
                 <div class="flex flex-col gap-1">
                     <h3 id="wind-val" class="text-xl font-black text-white">--</h3>
                     <div class="h-px bg-white/10 w-1/2 mx-auto my-1"></div>
-                    <h3 class="text-2xl font-black text-blue-400"><span id="rain-val">--</span> <span class="text-xs font-light text-slate-500 uppercase">mm</span></h3>
+                    <h3 class="text-2xl font-black text-blue-400">
+                        <span class="text-[10px] font-light text-slate-500 lowercase mr-1">βροχή</span>
+                        <span id="rain-val">--</span> 
+                        <span class="text-[10px] font-light text-slate-500 lowercase ml-1">mm</span>
+                    </h3>
                 </div>
             </div>
         </div>
@@ -165,7 +169,6 @@
                 if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
                 
-                // ΑΝΕΜΟΣ & ΒΡΟΧΗ
                 document.getElementById('wind-val').innerText = data.wind_speed + " km/h " + (data.wind_dir || "");
                 document.getElementById('rain-val').innerText = (data.rain !== undefined ? data.rain : "0.0");
                 
