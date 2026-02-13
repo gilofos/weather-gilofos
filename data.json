@@ -1,13 +1,14 @@
 {
-    "temperature": 7.4,
+    "temperature": 7.3,
     "humidity": 80,
-    "pressure": 913.3,
-    "wind_speed": 3.3,
-    "wind_dir": 276,
+    "pressure": 913.4,
+    "wind_speed": 2.9,
+    "wind_dir": 277,
     "rain": 0.0,
-    "weather_label": "ΣΥΝΝΕΦΙΑ ☁️",
-    "condition": "ΣΥΝΝΕΦΙΑ ☁️",
-    "time": "22:39:55",
-    "last_update": "22:39:55",
-    "updated_at": "22:39:55"
+    "weather_label": "ΞΑΣΤΕΡΙΑ 🌌",
+    "description": "ΞΑΣΤΕΡΙΑ 🌌",
+    "condition": "ΞΑΣΤΕΡΙΑ 🌌",
+    "time": "22:46:31",
+    "last_update": "22:46:31",
+    "updated_at": "22:46:31"
 }
