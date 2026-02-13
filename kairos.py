@@ -14,7 +14,7 @@ def get_wind_dir(deg):
     return ""
 
 def get_weather():
-    # Συντεταγμένες για Γήλοφο
+    # Συντεταγμένες Γήλοφος
     url = "https://api.open-meteo.com/v1/forecast?latitude=40.00&longitude=21.45&current_weather=true&hourly=surface_pressure,precipitation"
     
     try:
@@ -27,11 +27,11 @@ def get_weather():
         wind_deg = current['winddirection']
         wind_dir_text = get_wind_dir(wind_deg)
         
-        # Εδώ παίρνουμε την Πίεση και τη Βροχή
+        # Πίεση και Βροχή από τα hourly δεδομένα
         pressure = data['hourly']['surface_pressure'][0]
-        rain = data['hourly']['precipitation'][0] # Η ΤΑΚΤΙΚΗ ΠΟΥ ΛΕΓΑΜΕ
+        rain = data['hourly']['precipitation'][0]
 
-        # Πρόγνωση status
+        # Πρόγνωση status βάσει πίεσης
         if pressure <= 1007:
             status = "ΕΠΙΔΕΙΝΩΣΗ"
         elif pressure > 1020:
@@ -39,6 +39,7 @@ def get_weather():
         else:
             status = "ΣΥΝΝΕΦΙΑ - ΗΛΙΟΣ"
 
+        # Το πακέτο που πάει στο site
         weather_data = {
             "temperature": temp,
             "humidity": 65,
@@ -50,10 +51,11 @@ def get_weather():
             "last_update": datetime.now().strftime("%H:%M:%S")
         }
 
+        # Γράψιμο στο data.json
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Ενημερώθηκε: {wind_dir_text} {wind}km/h, Βροχή: {rain}mm")
+        print(f"Ενημερώθηκε! Τελευταία μέτρηση: {temp}°C, {wind_dir_text} {wind}km/h, Βροχή: {rain}mm")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
