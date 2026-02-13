@@ -5,8 +5,8 @@ from datetime import datetime, timedelta, timezone
 # Συντεταγμένες για Γήλοφο
 LAT, LON = 40.06, 21.80
 
-# URL για λήψη δεδομένων από Open-Meteo
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&timezone=auto"
+# URL για λήψη δεδομένων - Προσθέσαμε το "rain"
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,rain&timezone=auto"
 
 def get_weather():
     try:
@@ -19,15 +19,20 @@ def get_weather():
             current_time = now_gr.strftime("%H:%M:%S")
             
             pressure = round(data["pressure_msl"], 1)
+            rain = data.get("rain", 0.0) # Λήψη βροχής σε mm
 
-            # Λογική ειδοποίησης status
-            status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ" if pressure < 1007 else "ΚΑΙΡΟΣ ΣΤΑΘΕΡΟΣ"
+            # --- ΝΕΑ ΛΟΓΙΚΗ ΠΡΟΓΝΩΣΗΣ (Status) ---
+            if pressure >= 1022:
+                status = "ΑΙΘΡΙΟΣ"
+            elif 1008 <= pressure < 1022:
+                status = "ΣΥΝΝΕΦΙΑ ΜΕ ΗΛΙΟ"
+            else:
+                status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
 
             # --- Λογική για το Βελάκι Πίεσης ---
             try:
                 with open("data.json", "r", encoding="utf-8") as f:
                     old_data = json.load(f)
-                    # Παίρνουμε μόνο το νούμερο από το παλιό string "1006.1 hPa ↑"
                     old_p_str = str(old_data.get("pressure", pressure)).split()[0]
                     old_p_val = float(old_p_str)
             except:
@@ -40,19 +45,14 @@ def get_weather():
             else:
                 trend = "→"
 
-            # --- Μετατροπή Μοιρών σε Ελληνικά Γράμματα ---
-            deg = data["wind_direction_10m"]
-            directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
-            ix = int((deg + 22.5) / 45) % 8
-            wind_dir_cardinal = directions[ix]
-
-            # Σύνθεση δεδομένων - Εδώ είναι η αλλαγή για το hPa και το βελάκι
+            # Σύνθεση δεδομένων
             weather_data = {
                 "temperature": round(data["temperature_2m"], 1),
                 "humidity": data["relative_humidity_2m"],
                 "pressure": f"{pressure} hPa {trend}", 
                 "status": status,
-                "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h {wind_dir_cardinal}",
+                # Εδώ σβήσαμε την κατεύθυνση και βάλαμε τη Βροχήmm
+                "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h Βροχή{rain}mm",
                 "last_update": current_time
             }
             
@@ -60,7 +60,7 @@ def get_weather():
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-            print(f"Update Success: {pressure} hPa {trend}")
+            print(f"Update Success: {pressure} hPa {status}")
         else:
             print(f"API Error: {response.status_code}")
     except Exception as e:
