@@ -169,7 +169,8 @@
 if (data.status === "ΕΠΙΔΕΙΝΩΣΗ") trendIcon = " ↓"; 
 if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
-                document.getElementById('wind-val').innerText = data.wind_speed;
+                document.getElementById('wind-val').innerText = data.wind_speed + " km/h " + (data.wind_direction || "");
+document.getElementById('rain-val').innerText = (data.rain || "0.0") + " mm";
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
 
                 const alertBox = document.getElementById('alert-box');
@@ -244,5 +245,6 @@ document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIc
     </script>
 </body>
 </html>
+
 
 
