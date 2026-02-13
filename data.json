@@ -1,14 +1,14 @@
 {
-    "temperature": 7.2,
-    "humidity": 80,
-    "pressure": 913.5,
-    "wind_speed": 2.9,
-    "wind_dir": 277,
+    "temperature": 7.3,
+    "humidity": 79,
+    "pressure": 913.9,
+    "wind_speed": 2.2,
+    "wind_dir": "279° (Δ)",
     "rain": 0.0,
     "status": "ΞΑΣΤΕΡΙΑ 🌌",
     "weather_label": "ΞΑΣΤΕΡΙΑ 🌌",
     "condition": "ΞΑΣΤΕΡΙΑ 🌌",
-    "time": "23:02:59",
-    "last_update": "23:02:59",
-    "updated_at": "23:02:59"
+    "time": "23:33:25",
+    "last_update": "23:33:25",
+    "updated_at": "23:33:25"
 }
