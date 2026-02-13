@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 # Συντεταγμένες για Γήλοφο
 LAT, LON = 40.06, 21.80
 
-# URL για λήψη δεδομένων - Προσθέσαμε το "rain"
+# URL για λήψη δεδομένων - Με βροχή
 URL = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,rain&timezone=auto"
 
 def get_weather():
@@ -19,9 +19,9 @@ def get_weather():
             current_time = now_gr.strftime("%H:%M:%S")
             
             pressure = round(data["pressure_msl"], 1)
-            rain = data.get("rain", 0.0) # Λήψη βροχής σε mm
+            rain = data.get("rain", 0.0)
 
-            # --- ΝΕΑ ΛΟΓΙΚΗ ΠΡΟΓΝΩΣΗΣ (Status) ---
+            # Λογική Πρόγνωσης
             if pressure >= 1022:
                 status = "ΑΙΘΡΙΟΣ"
             elif 1008 <= pressure < 1022:
@@ -29,7 +29,7 @@ def get_weather():
             else:
                 status = "ΕΠΙΔΕΙΝΩΣΗ ΚΑΙΡΟΥ"
 
-            # --- Λογική για το Βελάκι Πίεσης ---
+            # Λογική Τάσης Πίεσης
             try:
                 with open("data.json", "r", encoding="utf-8") as f:
                     old_data = json.load(f)
@@ -38,25 +38,19 @@ def get_weather():
             except:
                 old_p_val = pressure
 
-            if pressure > old_p_val:
-                trend = "↑"
-            elif pressure < old_p_val:
-                trend = "↓"
-            else:
-                trend = "→"
+            trend = "↑" if pressure > old_p_val else "↓" if pressure < old_p_val else "→"
 
-            # Σύνθεση δεδομένων
+            # Σύνθεση δεδομένων - ΕΔΩ ΚΑΘΑΡΙΣΑΜΕ ΤΟΝ ΑΝΕΜΟ
             weather_data = {
                 "temperature": round(data["temperature_2m"], 1),
                 "humidity": data["relative_humidity_2m"],
                 "pressure": f"{pressure} hPa {trend}", 
                 "status": status,
-                # Εδώ σβήσαμε την κατεύθυνση και βάλαμε τη Βροχήmm
-                "wind_speed": f"{round(data['wind_speed_10m'], 1)} km/h Βροχή{rain}mm",
+                # Μόνο ταχύτητα και βροχή, χωρίς τη λέξη "Διεύθυνση"
+                "wind_speed": f"{round(data['wind_speed_10m'], 1)}km/h - Βροχή:{rain}mm",
                 "last_update": current_time
             }
             
-            # Αποθήκευση στο data.json
             with open("data.json", "w", encoding="utf-8") as f:
                 json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
