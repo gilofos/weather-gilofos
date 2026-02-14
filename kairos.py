@@ -25,17 +25,16 @@ def get_weather():
         hum = data['relative_humidity_2m']
         pres = data['surface_pressure']
         wind_spd = data['wind_speed_10m']
-        wind_deg = data['wind_direction_10m'] # Ο αριθμός των μοιρών
+        wind_deg = data['wind_direction_10m']
         time_now = datetime.now().strftime("%H:%M:%S")
         
-        # Μετατροπή διεύθυνσης ανέμου σε γράμμα
         wind_cardinal = get_direction(wind_deg)
         
         # 2. Έλεγχος Μέρας/Νύχτας
         ora = datetime.now().hour
         is_night = ora >= 18 or ora <= 7
         
-        # 3. Λογική Πρόγνωσης για τον Γήλοφο
+        # 3. Λογική Πρόγνωσης
         if temp <= 1.5 and precip > 0:
             weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
         elif temp <= 3.0 and precip > 0:
@@ -50,15 +49,27 @@ def get_weather():
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # 4. Αποστολή στο data.json (Διορθωμένο για την πυξίδα)
+        # 4. Αποστολή στο data.json
         weather_data = {
             "temperature": temp,
             "humidity": hum,
             "pressure": pres,
             "wind_speed": wind_spd,
-            "wind_dir": wind_deg,        # Μόνο ο αριθμός για να δουλεύει η πυξίδα
-            "wind_text": wind_cardinal,  # Το γράμμα για το κείμενο
+            "wind_dir": wind_deg,
+            "wind_text": wind_cardinal,
             "rain": precip,
             "status": weather_type,
-            "weather_label": weather_type,
-            "condition": weather
+            "time": time_now,
+            "last_update": time_now
+        }
+        
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(weather_data, f, ensure_ascii=False, indent=4)
+            
+        print("Ενημερώθηκε επιτυχώς!")
+
+    except Exception as e:
+        print(f"Σφάλμα: {e}")
+
+if __name__ == "__main__":
+    get_weather()
