@@ -1,12 +1,12 @@
 {
-    "temperature": 7.0,
-    "humidity": 74,
-    "pressure": 915.4,
-    "wind_speed": 4.0,
-    "wind_dir": 180,
-    "wind_text": "Ν",
+    "temperature": 4.9,
+    "humidity": 82,
+    "pressure": 916.5,
+    "wind_speed": 4.8,
+    "wind_dir": 153,
+    "wind_text": "ΝΑ",
     "rain": 0.0,
     "status": "ΑΣΤΕΡΟΣ 🌙",
-    "time": "03:03:51",
-    "last_update": "03:03:51"
+    "time": "05:01:36",
+    "last_update": "05:01:36"
 }
