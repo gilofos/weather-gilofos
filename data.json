@@ -1,12 +1,12 @@
 {
     "temperature": 7.9,
     "humidity": 72,
-    "pressure": 914.6,
-    "wind_speed": 2.7,
-    "wind_dir": 247,
+    "pressure": 914.7,
+    "wind_speed": 2.9,
+    "wind_dir": 240,
     "wind_text": "ΝΔ",
     "rain": 0.0,
     "status": "ΞΑΣΤΕΡΙΑ 🌌",
-    "time": "00:52:44",
-    "last_update": "00:52:44"
+    "time": "01:14:09",
+    "last_update": "01:14:09"
 }
