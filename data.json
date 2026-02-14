@@ -1,12 +1,12 @@
 {
-    "temperature": 10.9,
-    "humidity": 75,
-    "pressure": 919.2,
-    "wind_speed": 9.4,
-    "wind_dir": 113,
-    "wind_text": "ΝΑ",
-    "rain": 0.0,
-    "status": "ΑΙΘΡΙΟΣ ☀️",
-    "time": "15:52:32",
-    "last_update": "15:52:32"
+    "temperature": 10.7,
+    "humidity": 77,
+    "pressure": 1022.2,
+    "wind_speed": 9.0,
+    "wind_dir": 106,
+    "wind_dir_text": "ΑΝΑ",
+    "rain": 0.1,
+    "status": "ΒΡΟΧΗ 💧",
+    "time": "16:04:12",
+    "last_update": "16:04:12"
 }
