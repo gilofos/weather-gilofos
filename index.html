@@ -181,10 +181,6 @@
                 </div>
             </div>
         `;
-    });
-        <div style="font-size: 0.9em; opacity: 0.8;">${windDeg}°</div>
-    </div>
-`;
                 document.getElementById('rain-val').innerText = (data.rain !== undefined ? data.rain : "0.0");
                 
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
@@ -262,6 +258,7 @@
     </script>
 </body>
 </html>
+
 
 
 
