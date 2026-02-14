@@ -1,12 +1,12 @@
 {
     "temperature": 9.4,
-    "humidity": 85,
-    "pressure": 1021.7,
-    "wind_speed": 10.1,
-    "wind_dir": 107,
+    "humidity": 82,
+    "pressure": 1021.6,
+    "wind_speed": 10.6,
+    "wind_dir": 108,
     "wind_text": "Α",
     "rain": 0.0,
-    "status": "ΔΙΑΣΤΗΜΑΤΑ ΗΛΙΟΦΑΝΕΙΑΣ ⛅",
-    "time": "17:55:16",
-    "last_update": "17:55:16"
+    "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
+    "time": "18:12:36",
+    "last_update": "18:12:36"
 }
