@@ -182,9 +182,9 @@
             </div>
         `;
     });
-                document.getElementById('rain-val').innerText = (data.rain !== undefined ? data.rain : "0.0");
-                
-                if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
+               document.getElementById('rain-val').innerText = data.rain_rate || "0.0";
+        document.getElementById('uv-val').innerText = data.uv || "0";
+    });
 
                 const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
@@ -259,6 +259,7 @@
     </script>
 </body>
 </html>
+
 
 
 
