@@ -180,8 +180,8 @@
                     <div style="position: absolute; top: 50%; left: 50%; width: 2px; height: 28px; background: red; transform-origin: bottom center; transform: translate(-50%, -100%) rotate(${windDeg}deg); z-index: 10;"></div>
                 </div>
             </div>
-        `;
-Τι άλλαξα και θα δουλέψει:
+    `;
+    });
                 document.getElementById('rain-val').innerText = (data.rain !== undefined ? data.rain : "0.0");
                 
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
@@ -259,6 +259,7 @@
     </script>
 </body>
 </html>
+
 
 
 
