@@ -2,14 +2,14 @@ import requests
 import json
 from datetime import datetime
 
-# Συντεταγμένες για Γήλοφο
+# Συντεταγμένες για Γήλοφο (1050μ υψόμετρο)
 LAT = 39.88
 LON = 21.80
 
 def get_direction(degrees):
-    """Μετατρέπει τις μοίρες σε ορίζοντα (Β, Ν, Α, Δ)"""
-    directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
-    idx = int((degrees + 22.5) / 45) % 8
+    """Μετατρέπει τις μοίρες σε πλήρη ορίζοντα (16 σημεία)"""
+    directions = ["Β", "ΒΒΑ", "ΒΑ", "ΑΒΑ", "Α", "ΑΝΑ", "ΝΑ", "ΝΝΑ", "Ν", "ΝΝΔ", "ΝΔ", "ΔΝΔ", "Δ", "ΔΒΔ", "ΒΔ", "ΒΒΔ"]
+    idx = int((degrees + 11.25) / 22.5) % 16
     return directions[idx]
 
 def get_weather():
@@ -23,7 +23,11 @@ def get_weather():
         temp = data['temperature_2m']
         precip = data['precipitation']
         hum = data['relative_humidity_2m']
-        pres = data['surface_pressure']
+        pres_station = data['surface_pressure']
+        
+        # ΑΝΑΓΩΓΗ ΠΙΕΣΗΣ: Από 918 (σταθμού) σε ~1021 (θάλασσας) για 1050μ υψόμετρο
+        pres_sea = pres_station + 103 
+        
         wind_spd = data['wind_speed_10m']
         wind_deg = data['wind_direction_10m']
         time_now = datetime.now().strftime("%H:%M:%S")
@@ -34,7 +38,7 @@ def get_weather():
         ora = datetime.now().hour
         is_night = ora >= 18 or ora <= 7
         
-        # 3. Λογική Πρόγνωσης
+        # 3. Λογική Πρόγνωσης (με βάση τη διορθωμένη πίεση)
         if temp <= 1.5 and precip > 0:
             weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
         elif temp <= 3.0 and precip > 0:
@@ -42,21 +46,23 @@ def get_weather():
         elif precip > 0:
             weather_type = "ΒΡΟΧΗ 💧"
         else:
-            if pres >= 915:
-                weather_type = "ΑΣΤΕΡΟΣ 🌙" if is_night else "ΑΙΘΡΙΟΣ ☀️"
-            elif pres >= 905:
-                weather_type = "ΞΑΣΤΕΡΙΑ 🌌" if is_night else "ΣΥΝΝΕΦΙΑ ΜΕ ΗΛΙΟ ⛅"
-            else:
+            if pres_sea >= 1022:
+                weather_type = "ΞΑΣΤΕΡΙΑ 🌌" if is_night else "ΑΙΘΡΙΟΣ ☀️"
+            elif pres_sea >= 1016:
+                weather_type = "ΞΑΣΤΕΡΙΑ 🌌" if is_night else "ΔΙΑΣΤΗΜΑΤΑ ΗΛΙΟΦΑΝΕΙΑΣ ⛅"
+            elif pres_sea >= 1008:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
+            else:
+                weather_type = "ΒΑΡΙΑ ΣΥΝΝΕΦΙΑ ☁️☁️"
 
         # 4. Αποστολή στο data.json
         weather_data = {
             "temperature": temp,
             "humidity": hum,
-            "pressure": pres,
+            "pressure": round(pres_sea, 1), # Στέλνουμε τη σωστή πίεση στο site
             "wind_speed": wind_spd,
             "wind_dir": wind_deg,
-            "wind_text": wind_cardinal,
+            "wind_dir_text": wind_cardinal, # Ελληνικά γράμματα
             "rain": precip,
             "status": weather_type,
             "time": time_now,
@@ -66,7 +72,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print("Ενημερώθηκε επιτυχώς!")
+        print(f"Ενημερώθηκε! Πίεση: {round(pres_sea, 1)} hPa, Πρόγνωση: {weather_type}")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
