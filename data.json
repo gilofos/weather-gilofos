@@ -1,12 +1,12 @@
 {
-    "temperature": 9.8,
-    "humidity": 82,
-    "pressure": 1022.0,
-    "wind_speed": 9.3,
-    "wind_dir": 103,
+    "temperature": 9.4,
+    "humidity": 85,
+    "pressure": 1021.7,
+    "wind_speed": 10.1,
+    "wind_dir": 107,
     "wind_text": "Α",
     "rain": 0.0,
-    "status": "ΑΙΘΡΙΟΣ ☀️",
-    "time": "17:01:07",
-    "last_update": "17:01:07"
+    "status": "ΔΙΑΣΤΗΜΑΤΑ ΗΛΙΟΦΑΝΕΙΑΣ ⛅",
+    "time": "17:55:16",
+    "last_update": "17:55:16"
 }
