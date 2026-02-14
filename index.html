@@ -169,7 +169,7 @@
                 if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
                 
-         const windDeg = parseInt(data.wind_dir) || 0;
+        const windDeg = parseInt(data.wind_dir) || 0;
         document.getElementById('wind-val').innerHTML = `
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px;">
                 <div style="display: flex; flex-direction: column; align-items: flex-start;">
@@ -182,7 +182,6 @@
             </div>
         `;
     });
-        </div>
         <div style="font-size: 0.9em; opacity: 0.8;">${windDeg}°</div>
     </div>
 `;
@@ -263,6 +262,7 @@
     </script>
 </body>
 </html>
+
 
 
 
