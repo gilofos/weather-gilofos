@@ -191,7 +191,7 @@
                 </div>
             </div>
         `;
-                
+           document.getElementById('rain-val').innerText = data.rain + " mm";     
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
 
                 const alertBox = document.getElementById('alert-box');
@@ -267,6 +267,7 @@
     </script>
 </body>
 </html>
+
 
 
 
