@@ -169,7 +169,26 @@
                 if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
                 
-                document.getElementById('wind-val').innerText = data.wind_speed + " km/h " + (data.wind_dir || "");
+                const windDeg = parseInt(data.wind_dir) || 0;
+document.getElementById('wind-val').innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div style="font-weight: bold; font-size: 1.1em;">${data.wind_speed} <span style="font-size: 0.8em;">km/h</span></div>
+        <div style="position: relative; width: 100px; height: 100px; background: url('img/compass.png') no-repeat center; background-size: contain;">
+            <div id="wind-arrow" style="
+                position: absolute; 
+                top: 50%; left: 50%; 
+                width: 3px; height: 45px; 
+                background: red; 
+                transform-origin: bottom center; 
+                transform: translate(-50%, -100%) rotate(${windDeg}deg);
+                transition: transform 1.5s ease-out;
+                clip-path: polygon(50% 0%, 100% 100%, 50% 80%, 0% 100%);
+                z-index: 5;">
+            </div>
+        </div>
+        <div style="font-size: 0.9em; opacity: 0.8;">${windDeg}°</div>
+    </div>
+`;
                 document.getElementById('rain-val').innerText = (data.rain !== undefined ? data.rain : "0.0");
                 
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
@@ -247,3 +266,4 @@
     </script>
 </body>
 </html>
+
