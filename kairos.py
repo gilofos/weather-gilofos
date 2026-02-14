@@ -26,7 +26,6 @@ def get_weather():
         pres_station = data['surface_pressure']
         
         # --- ΔΙΟΡΘΩΣΗ ΠΙΕΣΗΣ ΓΙΑ 1050μ ΥΨΟΜΕΤΡΟ ---
-        # Προσθέτουμε ~103 hPa για να έχουμε πίεση επιφάνειας θάλασσας
         pres_sea = pres_station + 103 
         
         wind_spd = data['wind_speed_10m']
@@ -36,25 +35,25 @@ def get_weather():
         # Ονομασία ανέμου (Β, ΝΑ, κτλ)
         wind_cardinal = get_direction(wind_deg)
         
-        # 2. Έλεγχος Μέρας/Νύχτας
+        # 2. Έλεγχος Μέρας/Νύχτας (Νύχτα: 18:00 έως 07:00)
         ora = datetime.now().hour
         is_night = ora >= 18 or ora <= 7
         
-        # 3. Λογική Πρόγνωσης (με βάση τη σωστή πίεση)
-        if temp <= 1.5 and precip > 0:
-            weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
-        elif temp <= 3.0 and precip > 0:
-            weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
-        elif precip > 0:
-            weather_type = "ΒΡΟΧΗ 💧"
+        # 3. Λογική Πρόγνωσης (Σφραγισμένη!)
+        if precip > 0:
+            if temp <= 1.5:
+                weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
+            elif temp <= 3.0:
+                weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
+            else:
+                weather_type = "ΒΡΟΧΗ 💧"
         else:
-            # Όταν η πίεση είναι υψηλή (>1022)
-            if pres_sea >= 1022:
-                weather_type = "ΞΑΣΤΕΡΙΑ 🌌" if is_night else "ΑΙΘΡΙΟΣ ☀️"
-            # Όταν η πίεση είναι μέτρια (1016-1022)
-            elif pres_sea >= 1016:
-                weather_type = "ΞΑΣΤΕΡΙΑ 🌌" if is_night else "ΔΙΑΣΤΗΜΑΤΑ ΗΛΙΟΦΑΝΕΙΑΣ ⛅"
-            # Όταν η πίεση πέφτει (<1016)
+            # Όταν ΔΕΝ βρέχει, κοιτάμε την πίεση και την ώρα
+            if pres_sea >= 1016:
+                if is_night:
+                    weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌"
+                else:
+                    weather_type = "ΗΛΙΟΦΑΝΕΙΑ ☀️" if pres_sea >= 1022 else "ΔΙΑΣΤΗΜΑΤΑ ΗΛΙΟΦΑΝΕΙΑΣ ⛅"
             elif pres_sea >= 1008:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
             else:
@@ -77,7 +76,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Ενημερώθηκε! Πίεση: {round(pres_sea, 1)} hPa | Πρόγνωση: {weather_type}")
+        print(f"[{time_now}] Ενημερώθηκε! Πρόγνωση: {weather_type}")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
