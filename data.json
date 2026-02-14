@@ -1,12 +1,12 @@
 {
-    "temperature": 10.4,
-    "humidity": 79,
-    "pressure": 1022.2,
-    "wind_speed": 8.9,
-    "wind_dir": 104,
+    "temperature": 10.2,
+    "humidity": 80,
+    "pressure": 1022.1,
+    "wind_speed": 9.3,
+    "wind_dir": 103,
     "wind_text": "Α",
     "rain": 0.1,
     "status": "ΒΡΟΧΗ 💧",
-    "time": "16:19:22",
-    "last_update": "16:19:22"
+    "time": "16:37:33",
+    "last_update": "16:37:33"
 }
