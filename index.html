@@ -137,15 +137,7 @@
             const jd = c + e + day - 694039.09;
             const b = jd / 29.5305882;
             const phase = b - Math.floor(b);
-            if (phase < 0.06) return ["Νέα Σελήνη", "🌑"];
-            if (phase < 0.19) return ["Αύξων Μηνίσκος", "🌒"];
-            if (phase < 0.31) return ["Πρώτο Τέταρτο", "🌓"];
-            if (phase < 0.44) return ["Αύξων Αμφίκυρτος", "🌔"];
-            if (phase < 0.56) return ["Πανσέληνος", "🌕"];
-            if (phase < 0.69) return ["Φθίνων Αμφίκυρτος", "🌖"];
-            if (phase < 0.81) return ["Τελευταίο Τέταρτο", "🌗"];
-            if (phase < 0.94) return ["Φθίνων Μηνίσκος", "🌘"];
-            return ["Νέα Σελήνη", "🌑"];
+           
         }
 
         function getWeatherIcon(code, hourStr) {
@@ -154,15 +146,15 @@
                 const hour = parseInt(hourStr.split(':')[0]);
                 if (hour < 7 || hour >= 18) isNight = true;
             }
-            if (code === 0) return isNight ? '🌙' : '☀️';
-            if (code === 1) return isNight ? '☁️' : '🌤️';
-            if (code === 2) return isNight ? '☁️' : '⛅';
-            if (code === 3) return '☁️';
-            if (code <= 48) return '🌫️';
-            if (code <= 65) return '🌧️';
-            if (code <= 77) return '❄️';
-            if (code <= 82) return '🚿';
-            return '⛈️';
+           if (phase < 0.06) return ["ΝΕΑ ΣΕΛΗΝΗ", "🌑"];
+            if (phase < 0.19) return ["ΓΕΜΙΣΗ ΦΕΓΓΑΡΙΟΥ", "🌒"];
+            if (phase < 0.31) return ["ΓΕΜΙΣΗ ΦΕΓΓΑΡΙΟΥ", "🌓"];
+            if (phase < 0.44) return ["ΓΕΜΙΣΗ ΦΕΓΓΑΡΙΟΥ", "🌔"];
+            if (phase < 0.56) return ["ΠΑΝΣΕΛΗΝΟΣ", "🌕"];
+            if (phase < 0.69) return ["ΧΑΣΗ ΦΕΓΓΑΡΙΟΥ", "🌖"];
+            if (phase < 0.81) return ["ΧΑΣΗ ΦΕΓΓΑΡΙΟΥ", "🌗"];
+            if (phase < 0.94) return ["ΧΑΣΗ ΦΕΓΓΑΡΙΟΥ", "🌘"];
+            return ["ΝΕΑ ΣΕΛΗΝΗ", "🌑"];
         }
 
         async function loadData() {
@@ -273,4 +265,5 @@
     </script>
 </body>
 </html>
+
 
