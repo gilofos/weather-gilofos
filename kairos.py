@@ -14,7 +14,6 @@ def get_direction(degrees):
 
 def get_weather():
     try:
-        # Λήψη δεδομένων
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,cloud_cover&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
@@ -31,14 +30,13 @@ def get_weather():
         
         wind_cardinal = get_direction(wind_deg)
         
-        # Υπολογισμός φάσης σελήνης (Μόνο αυτό χρειαζόταν)
+        # Υπολογισμός σελήνης - Μόνο αυτό προσθέτουμε
         diff = time.time() - 947116800 
         moon_phase = round((diff % 2551443) / 2551443, 2)
 
         ora = datetime.now().hour
         is_night = ora >= 18 or ora <= 7
         
-        # Λογική Πρόγνωσης
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
@@ -51,7 +49,6 @@ def get_weather():
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # Αποστολή στο data.json
         weather_data = {
             "temperature": round(temp, 1),
             "humidity": hum,
@@ -62,7 +59,7 @@ def get_weather():
             "rain": precip,
             "clouds": clouds,
             "status": weather_type,
-            "moon_phase": moon_phase,
+            "phase": moon_phase, # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΘΑ ΕΠΑΝΑΦΕΡΕΙ ΤΟΥΣ ΑΡΙΘΜΟΥΣ
             "time": time_now,
             "last_update": time_now
         }
@@ -70,7 +67,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"[{time_now}] Update OK | Σελήνη: {moon_phase}")
+        print(f"[{time_now}] Update OK")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
