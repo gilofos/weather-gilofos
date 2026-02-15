@@ -1,13 +1,13 @@
 {
-    "temperature": 7.6,
+    "temperature": 7.7,
     "humidity": 81,
-    "pressure": 1021.5,
-    "wind_speed": 4.7,
-    "wind_dir": 157,
+    "pressure": 1021.9,
+    "wind_speed": 5.2,
+    "wind_dir": 155,
     "wind_text": "ΝΑ",
     "rain": 0.0,
     "clouds": 100,
     "status": "ΣΥΝΝΕΦΙΑ ☁️",
-    "time": "19:52:20",
-    "last_update": "19:52:20"
+    "time": "20:55:43",
+    "last_update": "20:55:43"
 }
