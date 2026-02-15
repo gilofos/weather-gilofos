@@ -1,7 +1,6 @@
 import requests
 import json
 from datetime import datetime
-import time
 
 # Συντεταγμένες για Γήλοφο
 LAT = 39.88
@@ -30,28 +29,24 @@ def get_weather():
         time_now = datetime.now().strftime("%H:%M:%S")
         
         wind_cardinal = get_direction(wind_deg)
-        
-        # 2. Υπολογισμός φάσης σελήνης για την οθόνη
-        diff = time.time() - 947116800 
-        moon_val = round((diff % 2551443) / 2551443, 2)
-
         ora = datetime.now().hour
         is_night = ora >= 18 or ora <= 7
         
-        # 3. Λογική Πρόγνωσης (Προστέθηκε το ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ)
+        # Λογική Πρόγνωσης
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
             else: weather_type = "ΒΡΟΧΗ 💧"
         else:
-            if clouds <= 20:
+            if clouds <= 20: 
+                # Εδώ μπήκε το ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ όπως το ήθελες
                 weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
             elif clouds <= 60:
                 weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # 4. Αποστολή στο data.json (Εδώ είναι όλο το παιχνίδι για να δουλέψει η οθόνη)
+        # Αποστολή στο data.json
         weather_data = {
             "temperature": round(temp, 1),
             "humidity": hum,
@@ -62,7 +57,6 @@ def get_weather():
             "rain": precip,
             "clouds": clouds,
             "status": weather_type,
-            "phase": moon_val,  # ΑΥΤΟ ΧΡΕΙΑΖΕΤΑΙ Η JS ΓΙΑ ΝΑ ΔΕΙΞΕΙ ΤΟΥΣ ΑΡΙΘΜΟΥΣ
             "time": time_now,
             "last_update": time_now
         }
@@ -70,7 +64,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"[{time_now}] Ενημέρωση OK | Φάση: {moon_val}")
+        print(f"[{time_now}] Σύννεφα: {clouds}% | Πρόγνωση: {weather_type}")
 
     except Exception as e:
         print(f"Σφάλμα: {e}")
