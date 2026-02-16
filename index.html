@@ -10,9 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+        .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.08); transition: all 0.3s ease; }
         .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.15); }
         .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
+        
+        /* Νέο στυλ για αναβόσβημα ανέμου */
+        .wind-alert { animation: wind-blink 1s infinite; border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.2) !important; }
+        @keyframes wind-blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
         @keyframes alert-blink { 0% { opacity: 1; color: #ef4444; } 50% { opacity: 0.4; color: #ffffff; } 100% { opacity: 1; color: #ef4444; } }
         @media (max-width: 640px) { .temp-text { font-size: 5rem !important; } .hero-padding { padding: 1.5rem !important; } }
     </style>
@@ -81,7 +86,7 @@
                 </div>
                 <p id="moon-name" class="text-[10px] font-bold text-white/50 uppercase">--</p>
             </div>
-            <div class="card p-6 md:p-7 text-center border-b-8 border-orange-600">
+            <div id="wind-card" class="card p-6 md:p-7 text-center border-b-8 border-orange-600">
                 <p class="text-[10px] font-black text-orange-400 tracking-[0.3em] mb-2 uppercase">ΑΝΕΜΟΣ & ΒΡΟΧΗ</p>
                 <div id="wind-val" class="flex flex-col gap-1">--</div>
                 <div class="h-px bg-white/10 w-1/2 mx-auto my-1"></div>
@@ -163,16 +168,27 @@
                 if (data.status === "ΕΠΙΔΕΙΝΩΣΗ") trendIcon = " ↓"; 
                 if (data.status === "ΑΙΘΡΙΟΣ") trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
+                
+                // ΕΔΩ ΕΓΙΝΕ Η ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟ ΔΙΠΛΟ 274 ΚΑΙ ΤΟ BLINK
                 document.getElementById('wind-val').innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 95px; padding: 0 5px;">
                         <div style="text-align: left; line-height: 1.5;">
                             <div style="font-weight: bold; font-size: 1.4em; color: white;">${data.wind_speed} <span style="font-size: 0.7em;">km/h</span></div>
-                            <div style="font-size: 1.2em; font-weight: bold; color: #ffa500; margin-top: 5px;">${data.wind_dir}° &nbsp; ${data.wind_text}</div>
+                            <div style="font-size: 1.2em; font-weight: bold; color: #ffa500; margin-top: 5px;">${data.wind_text}</div>
                         </div>
                         <div style="position: relative; width: 85px; height: 85px; background: url('compass.png') no-repeat center; background-size: contain;">
                             <div style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 32px solid #ff4500; transform: translate(-50%, -100%) rotate(${data.wind_dir}deg); transform-origin: 50% 100%; z-index: 10; filter: drop-shadow(0px 0px 2px black);"></div>
                         </div>
                     </div>`;
+
+                // ΛΟΓΙΚΗ ΓΙΑ ΤΟ ΑΝΑΒΟΣΒΗΣΜΑ
+                const windCard = document.getElementById('wind-card');
+                if (data.wind_speed >= 35) { // Αν είναι πάνω από 35 km/h
+                    windCard.classList.add('wind-alert');
+                } else {
+                    windCard.classList.remove('wind-alert');
+                }
+
                 document.getElementById('rain-val').innerText = data.rain;     
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
                 const alertBox = document.getElementById('alert-box');
