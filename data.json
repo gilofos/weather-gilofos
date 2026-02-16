@@ -4,12 +4,10 @@
     "pressure": 1020.6,
     "wind_speed": 10.1,
     "wind_dir": 274,
-    "wind_text": "274° Δ (2 Μπφ)",
+    "wind_text": "Δ (2 Μπφ)",
     "rain": 0.0,
     "clouds": 100,
     "status": "ΣΥΝΝΕΦΙΑ ☁️",
-    "time": "18:31:58",
-    "sunrise": "07:24",
-    "sunset": "18:09",
-    "last_update": "18:31:58"
+    "time": "18:39:41",
+    "last_update": "18:39:41"
 }
