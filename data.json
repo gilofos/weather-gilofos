@@ -1,13 +1,13 @@
 {
-    "temperature": 5.3,
+    "temperature": 4.8,
     "humidity": 74,
-    "pressure": 1019.2,
-    "wind_speed": 4.5,
-    "wind_dir": 166,
+    "pressure": 1018.2,
+    "wind_speed": 4.8,
+    "wind_dir": 167,
     "wind_text": "Ν (1 Μπφ)",
     "rain": 0.0,
-    "clouds": 8,
-    "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
-    "time": "23:02:40",
-    "last_update": "23:02:40"
+    "clouds": 78,
+    "status": "ΣΥΝΝΕΦΙΑ ☁️",
+    "time": "23:59:08",
+    "last_update": "23:59:08"
 }
