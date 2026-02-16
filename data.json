@@ -1,13 +1,13 @@
 {
-    "temperature": 9.9,
-    "humidity": 74,
-    "pressure": 1023.7,
-    "wind_speed": 6.9,
-    "wind_dir": 264,
-    "wind_text": "Δ",
+    "temperature": 11.9,
+    "humidity": 60,
+    "pressure": 1022.9,
+    "wind_speed": 14.5,
+    "wind_dir": 297,
+    "wind_text": "ΒΔ",
     "rain": 0.0,
-    "clouds": 0,
+    "clouds": 9,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
-    "time": "08:04:02",
-    "last_update": "08:04:02"
+    "time": "11:10:12",
+    "last_update": "11:10:12"
 }
