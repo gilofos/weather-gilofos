@@ -45,6 +45,9 @@
                     </div>
                     <div class="text-center md:text-left">
                         <div id="temp-main" class="text-7xl md:text-8xl font-black tracking-tighter leading-none temp-text">--°</div>
+                        <div id="weather-alert" class="hidden text-red-600 font-black animate-pulse text-center mb-2">
+    ⚠️ ΚΑΚΟΚΑΙΡΙΑ
+</div>
                         <div class="flex gap-4 font-bold text-xl mt-1">
     <span class="text-red-500">▲ <span id="t-max">--</span>°</span>
     <span class="text-blue-400">▼ <span id="t-min">--</span>°</span>
@@ -172,6 +175,12 @@ document.getElementById('t-min').innerText = data.temp_min;
                 if (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) trendIcon = " ↓"; 
                 if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
+                const alertDiv = document.getElementById('weather-alert');
+if (parseFloat(data.pressure) < 1007) {
+    alertDiv.classList.remove('hidden');
+} else {
+    alertDiv.classList.add('hidden');
+}
 
                 // ΔΙΟΡΘΩΣΗ ΑΝΕΜΟΥ & ΡΙΠΗΣ [cite: 2026-02-14]
                 document.getElementById('wind-val').innerHTML = `
@@ -264,6 +273,7 @@ document.getElementById('t-min').innerText = data.temp_min;
     </script>
 </body>
 </html>
+
 
 
 
