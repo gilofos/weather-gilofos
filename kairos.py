@@ -38,8 +38,8 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        # URL με wind_gusts_10m
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset&timezone=auto"
+        # Ενημερωμένο URL με Max/Min θερμοκρασίες [cite: 2026-02-14]
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
         res_json = response.json()
@@ -79,8 +79,11 @@ def get_weather():
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
+        # Προσθήκη temp_max και temp_min στο data.json [cite: 2026-02-14]
         weather_data = {
             "temperature": round(temp, 1),
+            "temp_max": round(daily['temperature_2m_max'][0], 1),
+            "temp_min": round(daily['temperature_2m_min'][0], 1),
             "humidity": hum,
             "pressure": round(pres_sea, 1),
             "wind_speed": wind_spd,
@@ -98,7 +101,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Update Success: {time_now_str}")
+        print(f"Update Success: {time_now_str} | Max: {weather_data['temp_max']} Min: {weather_data['temp_min']}")
 
     except Exception as e:
         print(f"Error: {e}")
