@@ -24,13 +24,12 @@ def get_beaufort(kmh):
     else: return 8
 
 def get_moon_phase_image():
-    # Υπολογισμός φάσης σελήνης
+    # Υπολογισμός φάσης σελήνης για τα αρχεία moon0-moon7
     diff = datetime.now() - datetime(2001, 1, 1)
     days = diff.days + diff.seconds / 86400
     lunations = 0.20439731 + (days * 0.03386319269)
     phase = lunations % 1
     
-    # Αντιστοίχιση με τα αρχεία moon0-moon7
     if phase < 0.06 or phase > 0.94: return "moon0.png"
     elif phase < 0.19: return "moon7.png"
     elif phase < 0.31: return "moon2.png"
@@ -42,6 +41,7 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
+        # Λήψη δεδομένων
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,cloud_cover&daily=sunrise,sunset&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
@@ -60,7 +60,7 @@ def get_weather():
         time_now_dt = datetime.now()
         time_now_str = time_now_dt.strftime("%H:%M:%S")
         
-        # 1. Εμπλουτισμός Ανέμου (Μοίρες + Κατεύθυνση + Μποφόρ)
+        # 1. Άνεμος (Μοίρες + Κατεύθυνση + Μποφόρ)
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
@@ -68,13 +68,13 @@ def get_weather():
         # 2. Φάση Σελήνης
         moon_img = get_moon_phase_image()
         
-        # 3. Δυναμικός έλεγχος Νύχτας
+        # 3. Έλεγχος Νύχτας για εικονίδια
         sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
         sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
-        # 4. Λογική Πρόγνωσης & Διόρθωση Ορολογίας
+        # 4. Λογική Πρόγνωσης με σωστά εικονίδια νύχτας
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
@@ -83,11 +83,12 @@ def get_weather():
             if clouds <= 20: 
                 weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
             elif clouds <= 60:
-                weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
+                # Σκέτο σύννεφο τη νύχτα, με ήλιο την ημέρα
+                weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # Αποστολή στο data.json
+        # Αποθήκευση στο data.json
         weather_data = {
             "temperature": round(temp, 1),
             "humidity": hum,
