@@ -1,3 +1,4 @@
+ΙΝΔΕΧ 17-2-2026
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -161,18 +162,102 @@
                 document.getElementById('temp-main').innerText = data.temperature + "°";
                 document.getElementById('hum-val').innerText = data.humidity + "%";
                 
+                // Τάση Πίεσης
                 let trendIcon = " →";
                 if (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) trendIcon = " ↓"; 
                 if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
 
-                // ΔΙΟΡΘΩΣΗ: ΚΑΘΑΡΟΣ ΑΝΕΜΟΣ ΧΩΡΙΣ ΔΙΠΛΕΣ ΜΟΙΡΕΣ
+                // ΔΙΟΡΘΩΣΗ ΑΝΕΜΟΥ & ΡΙΠΗΣ [cite: 2026-02-14]
                 document.getElementById('wind-val').innerHTML = `
-                    <div class="flex items-center justify-between px-1 h-[95px] w-full text-white">
+                    <div class="flex items-center justify-between px-1 h-[95px] w-full">
                         <div class="text-left leading-tight">
-                            <div class="text-2xl font-black">${data.wind_speed} <span class="text-xs font-normal">km/h</span></div>
-                            <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir} ${data.wind_text}</div>
+                            <div class="text-2xl font-black text-white">${data.wind_speed} <span class="text-xs font-normal">km/h</span></div>
+                            <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir}° ${data.wind_text}</div>
                             <div class="text-[10px] text-white/50 uppercase font-black mt-1">ΡΙΠΗ: ${data.wind_gust || '--'} <span class="text-[8px]">km/h</span></div>
                         </div>
                         <div class="relative w-[85px] h-[85px]" style="background: url('compass.png') no-repeat center; background-size: contain;">
-                            <div style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 30px solid #ff4500; transform: translate(-50%, -100
+                            <div style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 30px solid #ff4500; transform: translate(-50%, -100%) rotate(${data.wind_dir}deg); transform-origin: 50% 100%; z-index: 10; filter: drop-shadow(0px 0px 2px black);"></div>
+                        </div>
+                    </div>`;
+
+                document.getElementById('rain-val').innerText = data.rain;     
+                if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
+
+                // ΔΙΟΡΘΩΣΗ STATUS (ΑΣΤΕΡΟΣ -> ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ) [cite: 2026-02-14]
+                let statusFinal = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
+                if (statusFinal.toUpperCase() === "ΑΣΤΕΡΟΣ") {
+                    statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ";
+                }
+
+                const alertBox = document.getElementById('alert-box');
+                alertBox.innerText = statusFinal;
+                alertBox.className = (statusFinal.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse text-red-500" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
+
+                updateMoon();
+                loadForecast();
+            } catch(e) { console.log("Waiting for data..."); }
+        }
+
+        async function loadForecast() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.06&longitude=21.80&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto');
+                const data = await res.json();
+                if (data.daily.sunrise[0]) document.getElementById('sunrise-val').innerText = data.daily.sunrise[0].split('T')[1];
+                if (data.daily.sunset[0]) document.getElementById('sunset-val').innerText = data.daily.sunset[0].split('T')[1];
+                
+                const hours = data.hourly.time.slice(0, 24).map(t => t.split('T')[1]);
+                const temps = data.hourly.temperature_2m.slice(0, 24);
+                const codes = data.hourly.weathercode.slice(0, 24);
+                
+                const ctx = document.getElementById('tempChart').getContext('2d');
+                if(window.myChart) window.myChart.destroy();
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: hours,
+                        datasets: [{
+                            data: temps,
+                            borderColor: '#fb923c',
+                            backgroundColor: 'rgba(251, 146, 60, 0.1)',
+                            borderWidth: 5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, datalabels: {
+                            display: true, align: 'top', offset: 10,
+                            formatter: (value, ctx) => ctx.dataIndex % 3 === 0 ? getWeatherIcon(codes[ctx.dataIndex], hours[ctx.dataIndex]) : null,
+                            font: { size: window.innerWidth < 640 ? 20 : 30 }, color: '#ffffff'
+                        }},
+                        scales: { x: { grid: { display: false }, ticks: { color: '#64748b', maxRotation: 0, font: { size: 10 } } }, y: {grace: '25%', ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                    }
+                });
+
+                const container = document.getElementById('forecast-container');
+                container.innerHTML = '';
+                for(let i=1; i<6; i++) {
+                    const dayName = new Date(data.daily.time[i]).toLocaleDateString('el-GR', {weekday: 'short'}).toUpperCase();
+                    container.innerHTML += `
+                        <div class="bg-white/5 p-3 md:p-4 text-center rounded-[1.5rem] md:rounded-[2rem] border border-white/5">
+                            <div class="text-[9px] md:text-[10px] font-black text-blue-300/60 mb-2">${dayName}</div>
+                            <div class="text-2xl md:text-3xl mb-2">${getWeatherIcon(data.daily.weathercode[i], null)}</div>
+                            <div class="text-lg md:text-xl font-black text-white">${Math.round(data.daily.temperature_2m_max[i])}°</div>
+                            <div class="text-[10px] font-bold text-blue-400/50">${Math.round(data.daily.temperature_2m_min[i])}°</div>
+                        </div>`;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        setInterval(updateClock, 1000);
+        setInterval(loadData, 60000);
+        updateClock();
+        loadData();
+    </script>
+</body>
+</html>
+
+
