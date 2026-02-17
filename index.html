@@ -45,6 +45,10 @@
                     </div>
                     <div class="text-center md:text-left">
                         <div id="temp-main" class="text-7xl md:text-8xl font-black tracking-tighter leading-none temp-text">--°</div>
+                        <div class="flex gap-4 font-bold text-xl mt-1">
+    <span class="text-red-500">▲ <span id="t-max">--</span>°</span>
+    <span class="text-blue-400">▼ <span id="t-min">--</span>°</span>
+</div>
                         <div id="date-main" class="text-blue-200 font-bold uppercase text-[10px] mt-2 tracking-widest bg-blue-500/20 px-4 py-1 rounded-full w-fit mx-auto md:mx-0">--</div>
                         <div class="flex flex-row md:flex-col gap-4 md:gap-1 mt-4 justify-center md:justify-start">
                              <div class="flex items-center gap-2 text-[10px] md:text-[11px] font-black text-orange-300 tracking-wider uppercase">
@@ -159,6 +163,8 @@
                 const data = await res.json();
                 
                 document.getElementById('temp-main').innerText = data.temperature + "°";
+                document.getElementById('t-max').innerText = data.temp_max;
+document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
                 
                 // Τάση Πίεσης
@@ -258,6 +264,7 @@
     </script>
 </body>
 </html>
+
 
 
 
