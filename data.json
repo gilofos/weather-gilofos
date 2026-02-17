@@ -1,14 +1,14 @@
 {
-    "temperature": 5.4,
-    "humidity": 78,
-    "pressure": 1015.0,
-    "wind_speed": 7.9,
-    "wind_dir": 141,
-    "wind_text": "141° ΝΑ (2 Μπφ)",
-    "rain": 0.0,
+    "temperature": 6.4,
+    "humidity": 79,
+    "pressure": 1012.2,
+    "wind_speed": 11.3,
+    "wind_dir": 149,
+    "wind_text": "149° ΝΑ (2 Μπφ)",
+    "rain": 0.1,
     "clouds": 100,
-    "status": "ΣΥΝΝΕΦΙΑ ☁️",
+    "status": "ΒΡΟΧΗ 💧",
     "moon_icon": "moon0.png",
-    "time": "02:39:37",
-    "last_update": "02:39:37"
+    "time": "05:15:16",
+    "last_update": "05:15:16"
 }
