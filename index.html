@@ -149,8 +149,8 @@
                     <div class="flex items-center justify-between px-2 h-[85px]">
                         <div class="text-left leading-tight">
                             <div class="text-2xl font-black text-white">${data.wind_speed} <span class="text-xs font-normal">km/h</span></div>
-                            <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir}° ${data.wind_text}</div>
-                           <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir}° ${data.wind_text} (2 Μπφ)</div>
+                            <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir}° ${data.wind_text} (2 Μπφ)</div>
+<div class="text-[10px] text-white/40 uppercase font-black mt-1">ΡΙΠΗ: ${data.wind_gust || '--'}</div>
                         </div>
                         <div class="relative w-16 h-16" style="background: url('compass.png') no-repeat center; background-size: contain;">
                             <div style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 24px solid #ff4500; transform: translate(-50%, -100%) rotate(${data.wind_dir}deg); transform-origin: 50% 100%;"></div>
@@ -222,5 +222,6 @@
     </script>
 </body>
 </html>
+
 
 
