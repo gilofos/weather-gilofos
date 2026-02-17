@@ -161,17 +161,16 @@
                 document.getElementById('temp-main').innerText = data.temperature + "°";
                 document.getElementById('hum-val').innerText = data.humidity + "%";
                 
-                // Τάση Πίεσης
                 let trendIcon = " →";
                 if (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) trendIcon = " ↓"; 
                 if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
 
-                // ΔΙΟΡΘΩΣΗ ΑΝΕΜΟΥ & ΡΙΠΗΣ [cite: 2026-02-14]
+                // ΔΙΟΡΘΩΣΗ: ΜΙΑ ΦΟΡΑ ΟΙ ΜΟΙΡΕΣ ΚΑΙ ΡΙΠΗ ΑΠΟ ΚΑΤΩ
                 document.getElementById('wind-val').innerHTML = `
-                    <div class="flex items-center justify-between px-1 h-[95px] w-full">
+                    <div class="flex items-center justify-between px-1 h-[95px] w-full text-white">
                         <div class="text-left leading-tight">
-                            <div class="text-2xl font-black text-white">${data.wind_speed} <span class="text-xs font-normal">km/h</span></div>
+                            <div class="text-2xl font-black">${data.wind_speed} <span class="text-xs font-normal">km/h</span></div>
                             <div class="text-orange-400 font-bold text-sm mt-1">${data.wind_dir}° ${data.wind_text}</div>
                             <div class="text-[10px] text-white/50 uppercase font-black mt-1">ΡΙΠΗ: ${data.wind_gust || '--'} <span class="text-[8px]">km/h</span></div>
                         </div>
@@ -183,7 +182,6 @@
                 document.getElementById('rain-val').innerText = data.rain;     
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
 
-                // ΔΙΟΡΘΩΣΗ STATUS (ΑΣΤΕΡΟΣ -> ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ) [cite: 2026-02-14]
                 let statusFinal = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
                 if (statusFinal.toUpperCase() === "ΑΣΤΕΡΟΣ") {
                     statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ";
