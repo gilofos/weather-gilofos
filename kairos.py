@@ -28,7 +28,7 @@ def get_moon_phase_image():
     lunations = 0.20439731 + (days * 0.03386319269)
     phase = lunations % 1
     # Εδώ είναι η αλλαγή: από 0.06 το κάναμε 0.01
-    if phase < 0.01 or phase > 0.99: return "moon0.png"
+    if phase < 0.01 or phase > 0.999: return "moon0.png"
     elif phase < 0.19: return "moon7.png"
     elif phase < 0.31: return "moon2.png"
     elif phase < 0.44: return "moon5.png"
@@ -109,5 +109,6 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
+
 
 
