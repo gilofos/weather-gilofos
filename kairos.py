@@ -27,7 +27,7 @@ def get_moon_phase_image():
     days = diff.days + diff.seconds / 86400
     lunations = 0.20439731 + (days * 0.03386319269)
     phase = lunations % 1
-    # Διόρθωση: Μειώσαμε το όριο στο 0.01 για να δείχνει αμέσως τον Μηνίσκο (moon7.png)
+    # Εδώ είναι η αλλαγή: από 0.06 το κάναμε 0.01
     if phase < 0.01 or phase > 0.99: return "moon0.png"
     elif phase < 0.19: return "moon7.png"
     elif phase < 0.31: return "moon2.png"
@@ -109,4 +109,5 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
+
 
