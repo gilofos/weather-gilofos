@@ -1,17 +1,17 @@
 {
-    "temperature": 6.8,
-    "temp_max": 8.2,
+    "temperature": 7.6,
+    "temp_max": 7.9,
     "temp_min": 1.7,
-    "humidity": 44,
-    "pressure": 1026.4,
-    "wind_speed": 28.6,
-    "wind_gust": 59.4,
-    "wind_dir": 318,
-    "wind_text": "318° ΒΔ (4 Μπφ)",
+    "humidity": 33,
+    "pressure": 1028.2,
+    "wind_speed": 21.6,
+    "wind_gust": 45.4,
+    "wind_dir": 327,
+    "wind_text": "327° ΒΔ (4 Μπφ)",
     "rain": 0.0,
     "clouds": 0,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
-    "moon_icon": "moon0.png",
-    "time": "10:29:46",
-    "last_update": "10:29:46"
+    "moon_icon": "moon7.png",
+    "time": "14:48:07",
+    "last_update": "14:48:07"
 }
