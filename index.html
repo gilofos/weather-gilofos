@@ -46,9 +46,13 @@
                         <i class="fa-solid fa-mountain-sun text-orange-400"></i> υψόμετρο: 1050μ
                     </div>
                 </div>
-                <div class="bg-white/10 p-3 md:p-4 rounded-[2rem] md:rounded-[2.5rem] border border-white/20 shadow-2xl backdrop-blur-md">
-                    <img src="logo.png" alt="Logo" class="h-20 md:h-36 w-auto object-contain" onerror="this.src='https://via.placeholder.com/200?text=GHILOFOS'">
-                </div>
+                <div class="bg-white/10 p-3 md:p-4 rounded-full border border-white/20 shadow-2xl backdrop-blur-md overflow-hidden" style="width: fit-content; margin: 0 auto;">
+    <style>
+        .roda-spin { animation: spin-left 15s linear infinite; }
+        @keyframes spin-left { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    </style>
+    <img src="roda.png" class="h-24 md:h-44 w-24 md:w-44 object-contain roda-spin" onerror="this.src='https://via.placeholder.com/200?text=RODA'">
+</div>
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-8">
@@ -290,6 +294,7 @@ if (parseFloat(data.pressure) < 1007) {
     </div>
 </body>
 </html>
+
 
 
 
