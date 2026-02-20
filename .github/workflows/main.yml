@@ -2,8 +2,8 @@ name: Update Weather Data
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Το αλλάζουμε σε 15 λεπτά για να ενημερώνεται πιο συχνά!
-  workflow_dispatch: 
+    - cron: '*/15 * * * *' # Ενημέρωση κάθε 15 λεπτά [cite: 2026-02-18]
+  workflow_dispatch: # Σου επιτρέπει να το τρέχεις και χειροκίνητα [cite: 2026-02-18]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Παίρνει όλο το ιστορικό για να μην κολλάει το push
+          fetch-depth: 0 # Παίρνει όλο το ιστορικό για να αποφύγει σφάλματα στο push [cite: 2026-02-18]
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -29,7 +29,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json
+          git add --all
           git commit -m "Auto update weather data" || exit 0
-          git pull --rebase # Αυτό διορθώνει το "κόλλημα" αν έχεις αλλάξει κάτι από το PC
+          git pull --rebase
           git push
