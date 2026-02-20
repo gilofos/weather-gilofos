@@ -32,13 +32,14 @@
     .roda-spin {
             position: absolute;
             left: 50%;
-            top: 50%;
+            top: 55%;
             transform: translate(-50%, -50%);
             width: 380px;
             z-index: 100;
             pointer-events: none;
             animation: rotate-wheel 20s linear infinite;
         }
+
         @keyframes rotate-wheel {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -318,3 +319,4 @@ if (parseFloat(data.pressure) < 1007) {
 
 
     
+
