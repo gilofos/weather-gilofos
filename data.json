@@ -1,8 +1,10 @@
 {
-    "temp": "8°C",
-    "hum": "70%",
-    "press": "926 hPa",
-    "wind": "ΝΔ (225°) 6 km/h",
+    "temperature": "8°C",
+    "humidity": "70%",
+    "pressure": "926 hPa",
+    "wind_speed": "6 km/h",
+    "wind_deg": "225°",
+    "wind_full": "ΝΔ (225°) 6 km/h",
     "status": "ΣΥΝΝΕΦΙΑ / ΑΙΘΡΙΟΣ",
-    "last_update": "17:31:12"
+    "last_update": "17:35:15"
 }
