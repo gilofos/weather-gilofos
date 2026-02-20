@@ -29,6 +29,20 @@
         @keyframes alert-blink { 0% { opacity: 1; color: #ef4444; } 50% { opacity: 0.4; color: #ffffff; } 100% { opacity: 1; color: #ef4444; } }
         @media (max-width: 640px) { .temp-text { font-size: 5rem !important; } .hero-padding { padding: 1.5rem !important; } }
     </style>
+    .roda-spin {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            z-index: 100;
+            pointer-events: none;
+            animation: rotate-wheel 20s linear infinite;
+        }
+        @keyframes rotate-wheel {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 </head>
 <body class="p-3 md:p-8 min-h-screen">
     <div class="max-w-6xl mx-auto space-y-6">
@@ -44,24 +58,13 @@
                     </h1>
                     <div class="flex items-center gap-3 text-blue-200/80 font-bold text-sm tracking-widest bg-white/5 px-4 py-2 rounded-2xl w-fit uppercase italic mx-auto md:mx-0">
                         <i class="fa-solid fa-mountain-sun text-orange-400"></i> υψόμετρο: 1050μ
-                    </div> <div class="flex justify-center items-center px-2">
-            <img src="https://i.ibb.co/6R6878S/roda.png" 
-                 class="roda-spin h-32 md:h-64 w-auto object-contain">
-        </div>
-
-        <div class="bg-white/10 p-3 md:p-4 rounded-[2rem] ..."> ```
-
-### Γιατί έτσι είναι το σωστό:
-* **Θέση:** Θα κάτσει "σφήνα" ανάμεσα στα δύο λευκά ημιδιαφανή πλαίσια, όπως ακριβώς το ζωγράφισες.
-* **Όχι Παραμόρφωση:** Επειδή μπαίνει στην ίδια σειρά με τα άλλα δύο, δεν θα σπρώξει το "Μια καλημέρα από τον όμορφο Γήλοφο" προς τα κάτω.
-* **Κίνηση:** Μην ξεχάσεις το CSS `roda-spin` στην αρχή για να γυρίζει.
-
-**Αχιλλέα, δοκίμασε να την "καρφώσεις" ανάμεσα στα δύο `div` και θα δεις ότι θα κάτσει ακριβώς εκεί που δείχνει η εικόνα σου!**
+                    </div>
+                </div>
                 <div class="bg-white/10 p-3 md:p-4 rounded-[2rem] md:rounded-[2.5rem] border border-white/20 shadow-2xl backdrop-blur-md">
                     <img src="logo.png" alt="Logo" class="h-20 md:h-36 w-auto object-contain" onerror="this.src='https://via.placeholder.com/200?text=GHILOFOS'">
                 </div>
             </div>
-
+<img src="roda.png" class="roda-spin">
             <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-8">
                 <div class="flex flex-col md:flex-row items-center gap-6">
                     <div class="bg-orange-500/10 p-5 rounded-full border border-orange-500/30 hidden md:block">
@@ -313,3 +316,5 @@ if (parseFloat(data.pressure) < 1007) {
 
 
 
+
+    
