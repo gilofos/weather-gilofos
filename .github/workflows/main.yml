@@ -2,8 +2,8 @@ name: Update Weather Data
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Τρέχει κάθε 15 λεπτά
-  workflow_dispatch: # Για να το τρέχεις εσύ με το χέρι
+    - cron: '17,32,47,02 * * * *'
+  workflow_dispatch:
 
 jobs:
   build:
