@@ -27,7 +27,6 @@ def get_moon_phase_image():
     days = diff.days + diff.seconds / 86400
     lunations = 0.20439731 + (days * 0.03386319269)
     phase = lunations % 1
-    # Εδώ είναι η αλλαγή: από 0.06 το κάναμε 0.01
     if phase < 0.01 or phase > 0.999: return "moon0.png"
     elif phase < 0.19: return "moon7.png"
     elif phase < 0.31: return "moon2.png"
@@ -39,7 +38,7 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        # Ενημερωμένο URL με Max/Min θερμοκρασίες [cite: 2026-02-14]
+        # URL για Open-Meteo (Δεδομένα βάσης)
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
@@ -59,6 +58,7 @@ def get_weather():
         time_now_dt = datetime.now()
         time_now_str = time_now_dt.strftime("%H:%M:%S")
         
+        # Μορφοποίηση Ανέμου (Όπως στην εικόνα σου) [cite: 2026-02-14]
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
@@ -68,11 +68,13 @@ def get_weather():
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
+        # ΛΟΓΙΚΗ KAIROSRADAR: Έλεγχος για ΞΑΣΤΕΡΙΑ ή ΒΡΟΧΗ βάσει δορυφόρου [cite: 2026-02-14]
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
             else: weather_type = "ΒΡΟΧΗ 💧"
         else:
+            # Αν τα σύννεφα είναι λίγα, βάζουμε ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ [cite: 2026-02-14]
             if clouds <= 20: 
                 weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
             elif clouds <= 60:
@@ -80,7 +82,6 @@ def get_weather():
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # Προσθήκη temp_max και temp_min στο data.json [cite: 2026-02-14]
         weather_data = {
             "temperature": round(temp, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
@@ -102,13 +103,10 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Update Success: {time_now_str} | Max: {weather_data['temp_max']} Min: {weather_data['temp_min']}")
+        print(f"Update Success: {time_now_str} | Status: {weather_type}")
 
     except Exception as e:
         print(f"Error: {e}")
 
 if __name__ == "__main__":
     get_weather()
-
-
-
