@@ -28,7 +28,7 @@
         .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
         @keyframes alert-blink { 0% { opacity: 1; color: #ef4444; } 50% { opacity: 0.4; color: #ffffff; } 100% { opacity: 1; color: #ef4444; } }
         @media (max-width: 640px) { .temp-text { font-size: 5rem !important; } .hero-padding { padding: 1.5rem !important; } }
-    </style>
+    
     .roda-spin {
             position: absolute;
             left: 50%;
@@ -44,6 +44,7 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+  </style>      
 </head>
 <body class="p-3 md:p-8 min-h-screen">
     <div class="max-w-6xl mx-auto space-y-6">
@@ -319,4 +320,5 @@ if (parseFloat(data.pressure) < 1007) {
 
 
     
+
 
