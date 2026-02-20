@@ -1,11 +1,11 @@
 {
     "temperature": "8",
-    "humidity": "70",
-    "pressure": "926",
+    "humidity": "71",
+    "pressure": "927",
     "wind_speed": "6",
-    "wind_deg": "225",
+    "wind_deg": "220",
     "wind_dir": "ΝΔ",
     "rain": "0.0",
     "status": "ΣΥΝΝΕΦΙΑ / ΑΙΘΡΙΟΣ",
-    "last_update": "17:42:02"
+    "last_update": "17:47:01"
 }
