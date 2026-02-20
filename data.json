@@ -1,11 +1,16 @@
 {
     "temperature": "8",
+    "temp": "8",
     "humidity": "71",
+    "hum": "71",
     "pressure": "927",
+    "press": "927",
     "wind_speed": "6",
     "wind_deg": "220",
     "wind_dir": "ΝΔ",
+    "wind": "ΝΔ (220°) 6 km/h",
     "rain": "0.0",
-    "status": "ΣΥΝΝΕΦΙΑ / ΑΙΘΡΙΟΣ",
-    "last_update": "17:47:01"
+    "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
+    "description": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
+    "last_update": "17:50:24"
 }
