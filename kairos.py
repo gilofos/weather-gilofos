@@ -51,26 +51,26 @@ def get_weather():
         sunset = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M")
         is_night = now >= sunset or now <= sunrise
 
-        # 2. Κατάσταση από Radar (ΜΕ ΕΞΥΠΝΟ ΕΛΕΓΧΟ ΣΤΗ ΡΙΖΑ)
+        # 2. Κατάσταση από Radar (ΜΕ ΑΝΕΒΑΣΜΕΝΟ ΟΡΙΟ ΓΙΑ ΞΑΣΤΕΡΙΑ)
         weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
         try:
             r = requests.get("https://www.kairosradar.gr/", timeout=10)
             soup = BeautifulSoup(r.text, 'html.parser')
             radar_raw = soup.find("div", {"class": "current-condition"}).text.strip()
             
-            # Αν το radar λέει Αίθριος Η αν τα σύννεφα είναι κάτω από 40, επιβάλλουμε ΞΑΣΤΕΡΙΑ
-            if "Αίθριος" in radar_raw or "Καθαρός" in radar_raw or data['cloud_cover'] < 40:
+            # Αλλαγή ορίου από 40 σε 80 για να νικήσουμε την απόκλιση
+            if "Αίθριος" in radar_raw or "Καθαρός" in radar_raw or data['cloud_cover'] < 80:
                 weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
             else:
                 weather_type = radar_raw.upper()
-                # Διόρθωση για την περίπτωση που το radar επιστρέφει "ΑΣΤΕΡΟΣ"
                 if "ΑΣΤΕΡΟΣ" in weather_type:
                     weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌"
         except:
             if data['precipitation'] > 0:
                 weather_type = "ΒΡΟΧΗ 💧"
             else:
-                if data['cloud_cover'] < 40:
+                # Αλλαγή ορίου και εδώ σε 80
+                if data['cloud_cover'] < 80:
                     weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
                 else:
                     weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
