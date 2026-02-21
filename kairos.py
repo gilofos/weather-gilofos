@@ -1,6 +1,5 @@
 import requests
-from datetime import datetime
-import pytz
+from datetime import datetime, timedelta
 
 # Στοιχεία για Γήλοφο
 LAT = 40.0000  
@@ -8,7 +7,6 @@ LON = 21.0000
 STATION_NAME = "ΓΗΛΟΦΟΣ"
 
 def get_weather():
-    # API με αυτόματο timezone
     url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto"
     
     try:
@@ -23,10 +21,9 @@ def get_weather():
         clouds = data['cloud_cover']
         is_day = data['is_day']
 
-        # ΑΥΤΟΜΑΤΗ ΩΡΑ ΑΘΗΝΑΣ (Πιάνει και θερινή/χειμερινή)
-        athens_tz = pytz.timezone('Europe/Athens')
-        athens_time = datetime.now(athens_tz)
-        time_str = athens_time.strftime("%H:%M:%S")
+        # ΧΕΙΡΟΚΙΝΗΤΗ ΩΡΑ ΕΛΛΑΔΟΣ (UTC +2) - Δεν χρειάζεται έξτρα βιβλιοθήκες
+        greece_time = datetime.utcnow() + timedelta(hours=2)
+        time_str = greece_time.strftime("%H:%M:%S")
         
         # --- ΠΡΟΣΔΙΟΡΙΣΜΟΣ ΚΑΤΕΥΘΥΝΣΗΣ ΑΝΕΜΟΥ ---
         directions = ["ΒΟΡΙΑΣ", "ΒΑ", "ΑΝΑΤΟΛΙΚΟΣ", "ΝΑ", "ΝΟΤΙΑΣ", "ΝΔ", "ΔΥΤΙΚΟΣ", "ΒΔ"]
@@ -37,10 +34,7 @@ def get_weather():
         if clouds <= 25:
             weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         elif 25 < clouds <= 60:
-            if hum < 70:
-                weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-            else:
-                weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+            weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ" if hum >= 70 else ("ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ")
         else:
             weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ" if hum < 50 else "ΣΥΝΝΕΦΙΑ"
 
@@ -70,7 +64,7 @@ def get_weather():
                 <div class="stat">💧 Υγρασία: {hum}%</div>
                 <div class="stat">⏲️ Πίεση: {pressure} hPa</div>
                 <div class="wind-info">💨 {wind_text} | {wind_speed} km/h ({wind_dir}°)</div>
-                <div class="update">Τελευταία ενημέρωση: {time_str} (Ώρα Αθήνας)</div>
+                <div class="update">Τελευταία ενημέρωση: {time_str} (Ώρα Ελλάδος)</div>
             </div>
         </body>
         </html>
@@ -84,3 +78,4 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
+    
