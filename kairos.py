@@ -1,115 +1,81 @@
 import requests
-import json
-from datetime import datetime
 
-# Συντεταγμένες για Γήλοφο
-LAT = 39.88
-LON = 21.80
-
-def get_direction(degrees):
-    directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
-    idx = int((degrees + 22.5) / 45) % 8
-    return directions[idx]
-
-def get_beaufort(kmh):
-    if kmh < 1: return 0
-    elif kmh < 6: return 1
-    elif kmh < 12: return 2
-    elif kmh < 20: return 3
-    elif kmh < 29: return 4
-    elif kmh < 39: return 5
-    elif kmh < 50: return 6
-    elif kmh < 62: return 7
-    else: return 8
-
-def get_moon_phase_image():
-    diff = datetime.now() - datetime(2001, 1, 1)
-    days = diff.days + diff.seconds / 86400
-    lunations = 0.20439731 + (days * 0.03386319269)
-    phase = lunations % 1
-    # Εδώ είναι η αλλαγή: από 0.06 το κάναμε 0.01
-    if phase < 0.01 or phase > 0.999: return "moon0.png"
-    elif phase < 0.19: return "moon7.png"
-    elif phase < 0.31: return "moon2.png"
-    elif phase < 0.44: return "moon5.png"
-    elif phase < 0.56: return "moon4.png"
-    elif phase < 0.69: return "moon3.png"
-    elif phase < 0.81: return "moon6.png"
-    else: return "moon1.png"
+# Στοιχεία για Γήλοφο
+LAT = 40.0000  # Αντικατάστησε με τις ακριβείς συντεταγμένες σου αν διαφέρουν
+LON = 21.0000
+STATION_NAME = "ΓΗΛΟΦΟΣ"
 
 def get_weather():
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto"
+    
     try:
-        # Ενημερωμένο URL με Max/Min θερμοκρασίες [cite: 2026-02-14]
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
         response = requests.get(url)
-        response.raise_for_status()
-        res_json = response.json()
-        
-        data = res_json['current']
-        daily = res_json['daily']
+        data = response.json()['current']
         
         temp = data['temperature_2m']
-        precip = data['precipitation']
         hum = data['relative_humidity_2m']
-        pres_sea = data['surface_pressure'] + 103 
-        wind_spd = data['wind_speed_10m']
-        wind_gust = data.get('wind_gusts_10m', 0)
-        wind_deg = data['wind_direction_10m']
+        wind_speed = data['wind_speed_10m']
+        wind_dir = data['wind_direction_10m']
+        pressure = data['surface_pressure']
         clouds = data['cloud_cover']
-        time_now_dt = datetime.now()
-        time_now_str = time_now_dt.strftime("%H:%M:%S")
+        is_day = data['is_day']
         
-        wind_cardinal = get_direction(wind_deg)
-        bft = get_beaufort(wind_spd)
-        wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
-        
-        sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
-        sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
-        current_time = time_now_dt.time()
-        is_night = current_time >= sunset_time or current_time <= sunrise_time
-        
-        if precip > 0:
-            if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
-            elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
-            else: weather_type = "ΒΡΟΧΗ 💧"
-        else:
-            if clouds <= 20: 
-                weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
-            elif clouds <= 60:
-                weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
+        # --- ΞΕΚΟΚΑΛΙΣΜΑ ΚΑΙ ΔΙΟΡΘΩΣΗ ΑΠΟΚΛΙΣΗΣ ---
+        # Αν η υγρασία είναι χαμηλή, αγνοούμε την υπερβολική συννεφιά του API
+        if clouds <= 25:
+            if is_day:
+                weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ"
             else:
-                weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
+                weather_desc = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        elif 25 < clouds <= 60:
+            if hum < 70:
+                weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            else:
+                weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+        else:
+            # Ακόμα και με πολύ σύννεφο, αν η υγρασία είναι πολύ χαμηλή, δεν μπορεί να είναι κλειστός ο καιρός
+            if hum < 50:
+                weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+            else:
+                weather_desc = "ΣΥΝΝΕΦΙΑ"
 
-        # Προσθήκη temp_max και temp_min στο data.json [cite: 2026-02-14]
-        weather_data = {
-            "temperature": round(temp, 1),
-            "temp_max": round(daily['temperature_2m_max'][0], 1),
-            "temp_min": round(daily['temperature_2m_min'][0], 1),
-            "humidity": hum,
-            "pressure": round(pres_sea, 1),
-            "wind_speed": wind_spd,
-            "wind_gust": wind_gust,
-            "wind_dir": wind_deg,
-            "wind_text": wind_info,
-            "rain": precip,
-            "clouds": clouds,
-            "status": weather_type,
-            "moon_icon": get_moon_phase_image(),
-            "time": time_now_str,
-            "last_update": time_now_str
-        }
+        # Δημιουργία της σελίδας (HTML)
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="el">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="900">
+            <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΥ</title>
+            <style>
+                body {{ font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; }}
+                .container {{ border: 2px solid #444; display: inline-block; padding: 20px; border-radius: 15px; background: #1e1e1e; }}
+                h1 {{ color: #00acee; margin-bottom: 5px; }}
+                .stat {{ font-size: 24px; margin: 10px 0; }}
+                .desc {{ font-size: 28px; font-weight: bold; color: #ffcc00; margin: 20px 0; }}
+                .wind-info {{ font-size: 18px; color: #aaa; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>{STATION_NAME}</h1>
+                <div class="desc">{weather_desc}</div>
+                <div class="stat">Θερμοκρασία: {temp}°C</div>
+                <div class="stat">Υγρασία: {hum}%</div>
+                <div class="stat">Πίεση: {pressure} hPa</div>
+                <div class="wind-info">Άνεμος: {wind_speed} km/h | Κατεύθυνση: {wind_dir}°</div>
+                <hr>
+                <div style="font-size: 12px; color: #666;">Τελευταία ενημέρωση: Αυτόματη ανά 15 λεπτά</div>
+            </div>
+        </body>
+        </html>
+        """
         
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(weather_data, f, ensure_ascii=False, indent=4)
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(html_content)
             
-        print(f"Update Success: {time_now_str} | Max: {weather_data['temp_max']} Min: {weather_data['temp_min']}")
-
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
     get_weather()
-
-
-
-
