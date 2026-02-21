@@ -1,7 +1,6 @@
 import requests
 import json
 from datetime import datetime
-from bs4 import BeautifulSoup
 
 # Συντεταγμένες για Γήλοφο
 LAT = 39.88
@@ -28,6 +27,7 @@ def get_moon_phase_image():
     days = diff.days + diff.seconds / 86400
     lunations = 0.20439731 + (days * 0.03386319269)
     phase = lunations % 1
+    # Εδώ είναι η αλλαγή: από 0.06 το κάναμε 0.01
     if phase < 0.01 or phase > 0.999: return "moon0.png"
     elif phase < 0.19: return "moon7.png"
     elif phase < 0.31: return "moon2.png"
@@ -39,59 +39,60 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        # 1. Δεδομένα από Open-Meteo
+        # Ενημερωμένο URL με Max/Min θερμοκρασίες [cite: 2026-02-14]
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
-        res_json = requests.get(url).json()
+        response = requests.get(url)
+        response.raise_for_status()
+        res_json = response.json()
         
         data = res_json['current']
         daily = res_json['daily']
         
-        now = datetime.now()
-        sunrise = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M")
-        sunset = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M")
-        is_night = now >= sunset or now <= sunrise
-
-        # 2. Κατάσταση από Radar (ΜΕ ΑΝΕΒΑΣΜΕΝΟ ΟΡΙΟ ΓΙΑ ΞΑΣΤΕΡΙΑ)
-        weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
-        try:
-            r = requests.get("https://www.kairosradar.gr/", timeout=10)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            radar_raw = soup.find("div", {"class": "current-condition"}).text.strip()
-            
-            # Αλλαγή ορίου από 40 σε 80 για να νικήσουμε την απόκλιση
-            if "Αίθριος" in radar_raw or "Καθαρός" in radar_raw or data['cloud_cover'] < 80:
-                weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
-            else:
-                weather_type = radar_raw.upper()
-                if "ΑΣΤΕΡΟΣ" in weather_type:
-                    weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌"
-        except:
-            if data['precipitation'] > 0:
-                weather_type = "ΒΡΟΧΗ 💧"
-            else:
-                # Αλλαγή ορίου και εδώ σε 80
-                if data['cloud_cover'] < 80:
-                    weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
-                else:
-                    weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
-
-        # 3. Ανεμος
-        time_now_str = now.strftime("%H:%M:%S")
+        temp = data['temperature_2m']
+        precip = data['precipitation']
+        hum = data['relative_humidity_2m']
+        pres_sea = data['surface_pressure'] + 103 
+        wind_spd = data['wind_speed_10m']
+        wind_gust = data.get('wind_gusts_10m', 0)
         wind_deg = data['wind_direction_10m']
-        wind_info = f"{wind_deg}° {get_direction(wind_deg)} ({get_beaufort(data['wind_speed_10m'])} Μπφ)"
+        clouds = data['cloud_cover']
+        time_now_dt = datetime.now()
+        time_now_str = time_now_dt.strftime("%H:%M:%S")
+        
+        wind_cardinal = get_direction(wind_deg)
+        bft = get_beaufort(wind_spd)
+        wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
+        
+        sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
+        sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
+        current_time = time_now_dt.time()
+        is_night = current_time >= sunset_time or current_time <= sunrise_time
+        
+        if precip > 0:
+            if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
+            elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
+            else: weather_type = "ΒΡΟΧΗ 💧"
+        else:
+            if clouds <= 20: 
+                weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
+            elif clouds <= 60:
+                weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
+            else:
+                weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
+        # Προσθήκη temp_max και temp_min στο data.json [cite: 2026-02-14]
         weather_data = {
-            "temperature": round(data['temperature_2m'], 1),
+            "temperature": round(temp, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
-            "humidity": data['relative_humidity_2m'],
-            "pressure": round(data['surface_pressure'] + 103, 1),
-            "wind_speed": data['wind_speed_10m'],
-            "wind_gust": data.get('wind_gusts_10m', 0),
+            "humidity": hum,
+            "pressure": round(pres_sea, 1),
+            "wind_speed": wind_spd,
+            "wind_gust": wind_gust,
             "wind_dir": wind_deg,
             "wind_text": wind_info,
-            "rain": data['precipitation'],
-            "clouds": data['cloud_cover'],
+            "rain": precip,
+            "clouds": clouds,
             "status": weather_type,
             "moon_icon": get_moon_phase_image(),
             "time": time_now_str,
@@ -100,10 +101,15 @@ def get_weather():
         
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
-        print(f"Ενημέρωση επιτυχής! Κατάσταση: {weather_type}")
+            
+        print(f"Update Success: {time_now_str} | Max: {weather_data['temp_max']} Min: {weather_data['temp_min']}")
 
     except Exception as e:
         print(f"Error: {e}")
 
 if __name__ == "__main__":
     get_weather()
+
+
+
+
