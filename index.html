@@ -27,24 +27,8 @@
         .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.15); }
         .alert-pulse { animation: alert-blink 1.2s infinite; font-weight: 900; }
         @keyframes alert-blink { 0% { opacity: 1; color: #ef4444; } 50% { opacity: 0.4; color: #ffffff; } 100% { opacity: 1; color: #ef4444; } }
-        @media (max-width: 640px) { .temp-text { font-size: 5rem !important; } .hero-padding { padding: 1.5rem !important; }.roda-spin { width: 80px !important; left: 79% !important; top: 35% !important; } }
-    
-    .roda-spin {
-            position: absolute;
-            left: 45%;
-            top: 38%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            z-index: 100;
-            pointer-events: none;
-            animation: rotate-wheel 20s linear infinite;
-        }
-
-        @keyframes rotate-wheel {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-  </style>      
+        @media (max-width: 640px) { .temp-text { font-size: 5rem !important; } .hero-padding { padding: 1.5rem !important; } }
+    </style>
 </head>
 <body class="p-3 md:p-8 min-h-screen">
     <div class="max-w-6xl mx-auto space-y-6">
@@ -66,7 +50,7 @@
                     <img src="logo.png" alt="Logo" class="h-20 md:h-36 w-auto object-contain" onerror="this.src='https://via.placeholder.com/200?text=GHILOFOS'">
                 </div>
             </div>
-<img src="roda.png" class="roda-spin">
+
             <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-8">
                 <div class="flex flex-col md:flex-row items-center gap-6">
                     <div class="bg-orange-500/10 p-5 rounded-full border border-orange-500/30 hidden md:block">
@@ -226,19 +210,16 @@ if (parseFloat(data.pressure) < 1007) {
 
                 document.getElementById('rain-val').innerText = data.rain;     
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
-// ΕΞΥΠΝΗ ΔΙΟΡΘΩΣΗ STATUS (ΒΑΣΕΙ ΣΥΝΝΕΦΙΑΣ)
+
+                // ΔΙΟΡΘΩΣΗ STATUS (ΑΣΤΕΡΟΣ -> ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ) [cite: 2026-02-14]
                 let statusFinal = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
-                if (data.clouds < 70) {
-                    const hours = new Date().getHours();
-                    statusFinal = (hours >= 18 || hours < 7) ? "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" : "ΗΛΙΟΦΑΝΕΙΑ ☀️";
-                } 
-                else if (statusFinal.toUpperCase().includes("ΑΣΤΕΡΟΣ")) {
-                    statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌";
+                if (statusFinal.toUpperCase() === "ΑΣΤΕΡΟΣ") {
+                    statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ";
                 }
 
-                // ΕΜΦΑΝΙΣΗ ΣΤΗΝ ΟΘΟΝΗ
                 const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = statusFinal;
+                alertBox.className = (statusFinal.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse text-red-500" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
 
                 updateMoon();
                 loadForecast();
@@ -309,26 +290,6 @@ if (parseFloat(data.pressure) < 1007) {
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
 
 
 
