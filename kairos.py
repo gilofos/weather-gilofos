@@ -46,13 +46,12 @@ def get_weather():
         data = res_json['current']
         daily = res_json['daily']
         
-        # Υπολογισμός αν είναι νύχτα
         now = datetime.now()
         sunrise = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M")
         sunset = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M")
         is_night = now >= sunset or now <= sunrise
 
-        # 2. Κατάσταση από Radar
+        # 2. Κατάσταση από Radar (Με την ΞΑΣΤΕΡΙΑ που ζήτησες)
         weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
         try:
             r = requests.get("https://www.kairosradar.gr/", timeout=10)
@@ -64,13 +63,16 @@ def get_weather():
             else:
                 weather_type = radar_raw.upper()
         except:
-            # Αν αποτύχει το radar, πάμε με τα σύννεφα
             if data['precipitation'] > 0:
                 weather_type = "ΒΡΟΧΗ 💧"
             else:
-                weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night and data['cloud_cover'] < 30 else "ΣΥΝΝΕΦΙΑ ☁️"
+                # Χρήση cloud_cover αν το radar αποτύχει
+                if data['cloud_cover'] < 30:
+                    weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
+                else:
+                    weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # 3. Φτιάχνουμε το data.json (Backup Style)
+        # 3. Ανεμος (ΟΠΩΣ ΗΤΑΝ - ΔΕΝ ΤΟ ΑΓΓΙΞΑ)
         time_now_str = now.strftime("%H:%M:%S")
         wind_deg = data['wind_direction_10m']
         wind_info = f"{wind_deg}° {get_direction(wind_deg)} ({get_beaufort(data['wind_speed_10m'])} Μπφ)"
@@ -95,7 +97,7 @@ def get_weather():
         
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
-        print(f"Σύνδεση με ήλιο επιτυχής! Κατάσταση: {weather_type}")
+        print(f"Ενημέρωση επιτυχής! Κατάσταση: {weather_type}")
 
     except Exception as e:
         print(f"Error: {e}")
