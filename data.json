@@ -1,15 +1,15 @@
 {
-    "temperature": 9.5,
+    "temperature": 9.1,
     "temp_max": 11.9,
     "temp_min": 4.0,
-    "humidity": 59,
-    "pressure": 950.2,
-    "wind_speed": 9.7,
+    "humidity": 60,
+    "pressure": 950.3,
+    "wind_speed": 9.2,
     "wind_gust": 40.0,
-    "wind_dir": 22,
-    "wind_text": "22°",
+    "wind_dir": 26,
+    "wind_text": "26°",
     "rain": 0.1,
     "status": "ΣΥΝΝΕΦΙΑ",
-    "last_update": "16:12:52",
-    "time": "16:12:52"
+    "last_update": "16:15:24",
+    "time": "16:15:24"
 }
