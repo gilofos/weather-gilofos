@@ -1,4 +1,5 @@
 import requests
+import json
 from datetime import datetime
 
 # Στοιχεία για Γήλοφο
@@ -21,21 +22,33 @@ def get_weather():
         clouds = data['cloud_cover']
         is_day = data['is_day']
 
-        # ΩΡΑ UTC (ΑΚΡΙΒΩΣ ΟΠΩΣ ΧΘΕΣ)
+        # ΩΡΑ UTC
         time_str = datetime.utcnow().strftime("%H:%M:%S")
 
         # --- ΚΑΤΑΣΤΑΣΗ ΚΑΙΡΟΥ ---
         if clouds <= 25:
             weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         elif 25 < clouds <= 60:
-            if hum < 70:
-                weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-            else:
-                weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+            weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day and hum < 70 else "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+            if not is_day and hum < 70: weather_desc = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         else:
             weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ" if hum < 50 else "ΣΥΝΝΕΦΙΑ"
 
-        # Δημιουργία της σελίδας (HTML)
+        # 1. ΕΝΗΜΕΡΩΣΗ DATA.JSON (Για το καλό site) 📊
+        weather_data = {
+            "temperature": temp,
+            "humidity": hum,
+            "pressure": pressure,
+            "wind_speed": wind_speed,
+            "wind_dir": wind_dir,
+            "status": weather_desc,
+            "last_update": time_str,
+            "time": time_str
+        }
+        with open("data.json", "w", encoding="utf-8") as f:
+            json.dump(weather_data, f, ensure_ascii=False, indent=4)
+
+        # 2. ΕΝΗΜΕΡΩΣΗ INDEX.HTML (Η απλή σελίδα) 📄
         html_content = f"""
         <!DOCTYPE html>
         <html lang="el">
@@ -66,7 +79,6 @@ def get_weather():
         </body>
         </html>
         """
-        
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
             
