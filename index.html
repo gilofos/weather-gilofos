@@ -228,7 +228,7 @@ if (parseFloat(data.pressure) < 1007) {
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
 // ΕΞΥΠΝΗ ΔΙΟΡΘΩΣΗ STATUS (ΒΑΣΕΙ ΣΥΝΝΕΦΙΑΣ)
                 let statusFinal = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
-                if (data.clouds < 20) {
+                if (data.clouds < 40) {
                     const hours = new Date().getHours();
                     statusFinal = (hours >= 18 || hours < 7) ? "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" : "ΗΛΙΟΦΑΝΕΙΑ ☀️";
                 } 
@@ -236,9 +236,9 @@ if (parseFloat(data.pressure) < 1007) {
                     statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌";
                 }
 
+                // ΕΜΦΑΝΙΣΗ ΣΤΗΝ ΟΘΟΝΗ
                 const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = statusFinal;
-                alertBox.className = (statusFinal.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse text-red-500" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
 
                 updateMoon();
                 loadForecast();
@@ -323,6 +323,7 @@ if (parseFloat(data.pressure) < 1007) {
 
 
     
+
 
 
 
