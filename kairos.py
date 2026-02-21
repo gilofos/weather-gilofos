@@ -3,82 +3,67 @@ import json
 from datetime import datetime
 
 # Στοιχεία για Γήλοφο
-LAT = 40.0000  
-LON = 21.0000
+LAT = 40.06
+LON = 21.80
 STATION_NAME = "ΓΗΛΟΦΟΣ"
 
 def get_weather():
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto"
+    # URL που ζητάει ΚΑΙ τα ημερήσια (daily) για max/min και βροχή
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max&timezone=auto"
     
     try:
         response = requests.get(url)
-        data = response.json()['current']
+        res_data = response.json()
+        current = res_data['current']
+        daily = res_data['daily']
         
-        temp = data['temperature_2m']
-        hum = data['relative_humidity_2m']
-        wind_speed = data['wind_speed_10m']
-        wind_dir = data['wind_direction_10m']
-        pressure = data['surface_pressure']
-        clouds = data['cloud_cover']
-        is_day = data['is_day']
+        # Μεταβλητές
+        temp = current['temperature_2m']
+        hum = current['relative_humidity_2m']
+        pres = current['surface_pressure']
+        wind_s = current['wind_speed_10m']
+        wind_d = current['wind_direction_10m']
+        clouds = current['cloud_cover']
+        is_day = current['is_day']
+        
+        # Max/Min, Βροχή και Ριπή από τα ημερήσια
+        t_max = daily['temperature_2m_max'][0]
+        t_min = daily['temperature_2m_min'][0]
+        rain_sum = daily['precipitation_sum'][0]
+        gust = daily['wind_gusts_10m_max'][0]
 
-        # ΩΡΑ UTC
         time_str = datetime.utcnow().strftime("%H:%M:%S")
 
-        # --- ΚΑΤΑΣΤΑΣΗ ΚΑΙΡΟΥ ---
+        # Κατάσταση
         if clouds <= 25:
             weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         elif 25 < clouds <= 60:
-            weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day and hum < 70 else "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
-            if not is_day and hum < 70: weather_desc = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
         else:
-            weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ" if hum < 50 else "ΣΥΝΝΕΦΙΑ"
+            weather_desc = "ΣΥΝΝΕΦΙΑ"
 
-        # 1. ΕΝΗΜΕΡΩΣΗ DATA.JSON (Για το καλό site) 📊
+        # ΤΟ ΑΡΧΕΙΟ DATA.JSON ΜΕ ΟΛΑ ΤΑ ΠΕΔΙΑ ΠΟΥ ΘΕΛΕΙ ΤΟ SITE
         weather_data = {
             "temperature": temp,
+            "temp_max": t_max,
+            "temp_min": t_min,
             "humidity": hum,
-            "pressure": pressure,
-            "wind_speed": wind_speed,
-            "wind_dir": wind_dir,
+            "pressure": pres,
+            "wind_speed": wind_s,
+            "wind_gust": gust,
+            "wind_dir": wind_d,
+            "wind_text": f"{wind_d}°",
+            "rain": rain_sum,
             "status": weather_desc,
             "last_update": time_str,
             "time": time_str
         }
+
         with open("data.json", "w", encoding="utf-8") as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
 
-        # 2. ΕΝΗΜΕΡΩΣΗ INDEX.HTML (Η απλή σελίδα) 📄
-        html_content = f"""
-        <!DOCTYPE html>
-        <html lang="el">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="refresh" content="900">
-            <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΥ</title>
-            <style>
-                body {{ font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; }}
-                .container {{ border: 2px solid #444; display: inline-block; padding: 20px; border-radius: 15px; background: #1e1e1e; }}
-                h1 {{ color: #00acee; margin-bottom: 5px; }}
-                .stat {{ font-size: 24px; margin: 10px 0; }}
-                .desc {{ font-size: 28px; font-weight: bold; color: #ffcc00; margin: 20px 0; }}
-                .wind-info {{ font-size: 18px; color: #aaa; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>{STATION_NAME}</h1>
-                <div class="desc">{weather_desc}</div>
-                <div class="stat">Θερμοκρασία: {temp}°C</div>
-                <div class="stat">Υγρασία: {hum}%</div>
-                <div class="stat">Πίεση: {pressure} hPa</div>
-                <div class="wind-info">Άνεμος: {wind_speed} km/h | Κατεύθυνση: {wind_dir}°</div>
-                <hr>
-                <div style="font-size: 14px; color: #888;">Τελευταία ενημέρωση (UTC): {time_str}</div>
-            </div>
-        </body>
-        </html>
-        """
+        # Δημιουργία index.html
+        html_content = f"<html><body style='background:#121212;color:white;text-align:center;'><h1>{STATION_NAME}</h1><h2>{weather_desc}</h2><p>{temp}°C - {hum}%</p></body></html>"
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
             
