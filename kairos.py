@@ -21,16 +21,11 @@ def get_weather():
         clouds = data['cloud_cover']
         is_day = data['is_day']
 
-        # ΧΕΙΡΟΚΙΝΗΤΗ ΩΡΑ ΕΛΛΑΔΟΣ (UTC +2) - Δεν χρειάζεται έξτρα βιβλιοθήκες
+        # ΔΙΟΡΘΩΣΗ ΜΟΝΟ ΣΤΗΝ ΩΡΑ (Προσθήκη +2 ώρες)
         greece_time = datetime.utcnow() + timedelta(hours=2)
         time_str = greece_time.strftime("%H:%M:%S")
-        
-        # --- ΠΡΟΣΔΙΟΡΙΣΜΟΣ ΚΑΤΕΥΘΥΝΣΗΣ ΑΝΕΜΟΥ ---
-        directions = ["ΒΟΡΙΑΣ", "ΒΑ", "ΑΝΑΤΟΛΙΚΟΣ", "ΝΑ", "ΝΟΤΙΑΣ", "ΝΔ", "ΔΥΤΙΚΟΣ", "ΒΔ"]
-        idx = int((wind_dir + 22.5) / 45) % 8
-        wind_text = directions[idx]
 
-        # --- ΞΕΚΟΚΑΛΙΣΜΑ ΚΑΙ ΔΙΟΡΘΩΣΗ ΑΠΟΚΛΙΣΗΣ ---
+        # --- ΚΑΤΑΣΤΑΣΗ ΚΑΙΡΟΥ ---
         if clouds <= 25:
             weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         elif 25 < clouds <= 60:
@@ -48,23 +43,23 @@ def get_weather():
             <title>ΚΑΙΡΟΣ ΓΗΛΟΦΟΥ</title>
             <style>
                 body {{ font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; }}
-                .container {{ border: 2px solid #444; display: inline-block; padding: 20px; border-radius: 15px; background: #1e1e1e; min-width: 320px; }}
-                h1 {{ color: #00acee; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }}
-                .desc {{ font-size: 32px; font-weight: bold; color: #ffcc00; margin: 20px 0; border-bottom: 1px solid #333; padding-bottom: 10px; }}
+                .container {{ border: 2px solid #444; display: inline-block; padding: 20px; border-radius: 15px; background: #1e1e1e; }}
+                h1 {{ color: #00acee; margin-bottom: 5px; }}
                 .stat {{ font-size: 24px; margin: 10px 0; }}
-                .wind-info {{ font-size: 20px; color: #00ffcc; margin-top: 15px; font-weight: bold; background: #2a2a2a; padding: 10px; border-radius: 8px; }}
-                .update {{ font-size: 14px; color: #888; margin-top: 20px; font-style: italic; }}
+                .desc {{ font-size: 28px; font-weight: bold; color: #ffcc00; margin: 20px 0; }}
+                .wind-info {{ font-size: 18px; color: #aaa; }}
             </style>
         </head>
         <body>
             <div class="container">
                 <h1>{STATION_NAME}</h1>
                 <div class="desc">{weather_desc}</div>
-                <div class="stat">🌡️ {temp}°C</div>
-                <div class="stat">💧 Υγρασία: {hum}%</div>
-                <div class="stat">⏲️ Πίεση: {pressure} hPa</div>
-                <div class="wind-info">💨 {wind_text} | {wind_speed} km/h ({wind_dir}°)</div>
-                <div class="update">Τελευταία ενημέρωση: {time_str} (Ώρα Ελλάδος)</div>
+                <div class="stat">Θερμοκρασία: {temp}°C</div>
+                <div class="stat">Υγρασία: {hum}%</div>
+                <div class="stat">Πίεση: {pressure} hPa</div>
+                <div class="wind-info">Άνεμος: {wind_speed} km/h | Κατεύθυνση: {wind_dir}°</div>
+                <hr>
+                <div style="font-size: 14px; color: #888;">Τελευταία ενημέρωση: {time_str} (Ώρα Ελλάδος)</div>
             </div>
         </body>
         </html>
@@ -78,4 +73,3 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
-    
