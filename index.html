@@ -226,11 +226,14 @@ if (parseFloat(data.pressure) < 1007) {
 
                 document.getElementById('rain-val').innerText = data.rain;     
                 if (data.last_update) document.getElementById('update-time').innerText = data.last_update;
-
-                // ΔΙΟΡΘΩΣΗ STATUS (ΑΣΤΕΡΟΣ -> ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ) [cite: 2026-02-14]
+// ΕΞΥΠΝΗ ΔΙΟΡΘΩΣΗ STATUS (ΒΑΣΕΙ ΣΥΝΝΕΦΙΑΣ)
                 let statusFinal = data.status || "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ";
-                if (statusFinal.toUpperCase() === "ΑΣΤΕΡΟΣ") {
-                    statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ";
+                if (data.clouds < 20) {
+                    const hours = new Date().getHours();
+                    statusFinal = (hours >= 18 || hours < 7) ? "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" : "ΗΛΙΟΦΑΝΕΙΑ ☀️";
+                } 
+                else if (statusFinal.toUpperCase().includes("ΑΣΤΕΡΟΣ")) {
+                    statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌";
                 }
 
                 const alertBox = document.getElementById('alert-box');
@@ -320,6 +323,7 @@ if (parseFloat(data.pressure) < 1007) {
 
 
     
+
 
 
 
