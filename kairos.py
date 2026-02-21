@@ -8,7 +8,7 @@ LON = 21.80
 STATION_NAME = "ΓΗΛΟΦΟΣ"
 
 def get_weather():
-    # URL που ζητάει ΚΑΙ τα ημερήσια (daily) για max/min και βροχή
+    # Ζητάμε τρέχοντα και ημερήσια στοιχεία (max/min, βροχή, ριπές)
     url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max&timezone=auto"
     
     try:
@@ -17,7 +17,7 @@ def get_weather():
         current = res_data['current']
         daily = res_data['daily']
         
-        # Μεταβλητές
+        # Βασικές μετρήσεις
         temp = current['temperature_2m']
         hum = current['relative_humidity_2m']
         pres = current['surface_pressure']
@@ -26,7 +26,7 @@ def get_weather():
         clouds = current['cloud_cover']
         is_day = current['is_day']
         
-        # Max/Min, Βροχή και Ριπή από τα ημερήσια
+        # Ημερήσια στοιχεία
         t_max = daily['temperature_2m_max'][0]
         t_min = daily['temperature_2m_min'][0]
         rain_sum = daily['precipitation_sum'][0]
@@ -34,15 +34,18 @@ def get_weather():
 
         time_str = datetime.utcnow().strftime("%H:%M:%S")
 
-        # Κατάσταση
+        # --- ΚΑΤΑΣΤΑΣΗ ΜΕ ΕΙΚΟΝΙΔΙΑ ---
         if clouds <= 25:
-            weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            weather_desc = "ΛΙΑΚΑΔΑ.ΑΙΘΡΙΟΣ ☀️" if is_day else "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌙"
         elif 25 < clouds <= 60:
-            weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ"
+            weather_desc = "ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ 🌤️"
         else:
-            weather_desc = "ΣΥΝΝΕΦΙΑ"
+            weather_desc = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # ΤΟ ΑΡΧΕΙΟ DATA.JSON ΜΕ ΟΛΑ ΤΑ ΠΕΔΙΑ ΠΟΥ ΘΕΛΕΙ ΤΟ SITE
+        # --- ΔΙΑΜΟΡΦΩΣΗ ΑΝΕΜΟΥ: Α, [ταχύτητα] ΝΔΜΒ Α ---
+        wind_label = f"Α, {wind_s} ΝΔΜΒ Α"
+
+        # ΤΟ ΠΛΗΡΕΣ ΠΑΚΕΤΟ ΓΙΑ ΤΟ SITE
         weather_data = {
             "temperature": temp,
             "temp_max": t_max,
@@ -52,7 +55,7 @@ def get_weather():
             "wind_speed": wind_s,
             "wind_gust": gust,
             "wind_dir": wind_d,
-            "wind_text": f"{wind_d}°",
+            "wind_text": wind_label,
             "rain": rain_sum,
             "status": weather_desc,
             "last_update": time_str,
@@ -62,8 +65,8 @@ def get_weather():
         with open("data.json", "w", encoding="utf-8") as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
 
-        # Δημιουργία index.html
-        html_content = f"<html><body style='background:#121212;color:white;text-align:center;'><h1>{STATION_NAME}</h1><h2>{weather_desc}</h2><p>{temp}°C - {hum}%</p></body></html>"
+        # Απλή σελίδα index.html
+        html_content = f"<html><body style='background:#121212;color:white;text-align:center;'><h1>{STATION_NAME}</h1><h2>{weather_desc}</h2><p>{temp}°C - {hum}%</p><p>{wind_label}</p></body></html>"
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
             
@@ -71,4 +74,4 @@ def get_weather():
         print(f"Σφάλμα: {e}")
 
 if __name__ == "__main__":
-    get_weather()
+    get_weather(
