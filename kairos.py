@@ -38,7 +38,7 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        # Το API που φέρνει τα πάντα (τρέχοντα και ημερήσια)
+        # Το API που φέρνει τα πάντα
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
@@ -62,15 +62,16 @@ def get_weather():
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
         
-        # Εδώ φτιάχνουμε το κείμενο του ανέμου όπως το ζήτησες
+        # Ενισχυμένη πληροφορία ανέμου [cite: 2026-02-14]
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
         
+        # Υπολογισμός μέρας/νύχτας βάσει API
         sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
         sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
-        # Καθορισμός κατάστασης
+        # Καθορισμός κατάστασης με τα νέα λεκτικά [cite: 2026-02-14]
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
@@ -83,7 +84,6 @@ def get_weather():
             else:
                 weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # ΕΔΩ ΓΙΝΕΤΑΙ Η ΣΥΝΔΕΣΗ ΜΕ ΤΟ DATA.JSON 🔗
         weather_data = {
             "temperature": round(temp, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
@@ -102,11 +102,10 @@ def get_weather():
             "last_update": time_now_str
         }
         
-        # Γράψιμο στο αρχείο
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Update Success: {time_now_str}")
+        print(f"Update Success: {time_now_str} | Status: {weather_type}")
 
     except Exception as e:
         print(f"Error: {e}")
