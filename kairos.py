@@ -38,7 +38,6 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        # Το API φέρνει δεδομένα και το τοπικό UTC offset
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
         response = requests.get(url)
         response.raise_for_status()
@@ -47,7 +46,7 @@ def get_weather():
         data = res_json['current']
         daily = res_json['daily']
         
-        # Διόρθωση ώρας UTC σε τοπική ώρα Ελλάδας
+        # Διορθωμένη λήψη ώρας για να μην βγάζει κόκκινο
         utc_offset_sec = res_json.get('utc_offset_seconds', 7200)
         time_now_dt = datetime.utcnow() + timedelta(seconds=utc_offset_sec)
         time_now_str = time_now_dt.strftime("%H:%M:%S")
@@ -63,16 +62,12 @@ def get_weather():
         
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
-        
-        # Πλήρης πληροφορία ανέμου [cite: 2026-02-14]
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
         
-        # Ώρες Ανατολής/Δύσης από το API
         sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
         sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
         current_time = time_now_dt.time()
         
-        # Έλεγχος αν είναι νύχτα για το σωστό λεκτικό
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
         if precip > 0:
