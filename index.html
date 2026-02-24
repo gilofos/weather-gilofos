@@ -149,9 +149,13 @@
             const res = Math.floor(phase / (24 * 3600));
             let name = ""; let img = "";
             if (res < 2 || res > 27) { name = "ΝΕΑ ΣΕΛΗΝΗ"; img = "moon0.png"; }
-            else if (res < 13) { name = "ΑΥΞΩΝ"; img = "moon1.png"; }
-            else if (res < 16) { name = "ΠΑΝΣΕΛΗΝΟΣ"; img = "moon2.png"; }
-            else { name = "ΦΘΙΝΩΝ"; img = "moon3.png"; }
+            else if (res < 7) { name = "ΑΥΞΩΝ ΜΗΝΙΣΚΟΣ"; img = "moon1.png"; }
+            else if (res < 10) { name = "ΠΡΩΤΟ ΤΕΤΑΡΤΟ"; img = "moon2.png"; }
+            else if (res < 14) { name = "ΑΥΞΩΝ Αμφίκυρτος"; img = "moon3.png"; }
+            else if (res < 17) { name = "ΠΑΝΣΕΛΗΝΟΣ"; img = "moon4.png"; }
+            else if (res < 21) { name = "ΦΘΙΝΩΝ Αμφίκυρτος"; img = "moon5.png"; }
+            else if (res < 24) { name = "ΤΕΛΕΥΤΑΙΟ ΤΕΤΑΡΤΟ"; img = "moon6.png"; }
+            else { name = "ΦΘΙΝΩΝ Μηνίσκος"; img = "moon7.png"; }
             document.getElementById('moon-pic').src = img;
             document.getElementById('moon-name').innerText = name;
         }
@@ -290,6 +294,7 @@ if (parseFloat(data.pressure) < 1007) {
     </div>
 </body>
 </html>
+
 
 
 
