@@ -1,5 +1,5 @@
 {
-    "temperature": 10.7,
+    "temperature": 10.8,
     "temp_max": 10.8,
     "temp_min": 4.1,
     "humidity": 37,
@@ -12,6 +12,6 @@
     "clouds": 0,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
     "moon_icon": "moon2.png",
-    "time": "14:45:25",
-    "last_update": "14:45:25"
+    "time": "15:00:38",
+    "last_update": "15:00:38"
 }
