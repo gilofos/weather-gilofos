@@ -141,7 +141,7 @@
             document.getElementById('date-main').innerText = now.toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
         }
 
-        function updateMoon() {
+       function updateMoon() {
             const lp = 2551443; 
             const now = new Date();
             const new_moon = new Date(1970, 0, 7, 20, 35, 0);
@@ -156,10 +156,14 @@
             else if (res < 21) { name = "ΦΘΙΝΩΝ Αμφίκυρτος"; img = "moon5.png"; }
             else if (res < 24) { name = "ΤΕΛΕΥΤΑΙΟ ΤΕΤΑΡΤΟ"; img = "moon6.png"; }
             else { name = "ΦΘΙΝΩΝ Μηνίσκος"; img = "moon7.png"; }
-            document.getElementById('moon-pic').src = img;
+            
+            const mImg = document.getElementById('moon-pic');
+            if (mImg) {
+                mImg.src = img;
+                mImg.style.mixBlendMode = "lighten";
+            }
             document.getElementById('moon-name').innerText = name;
         }
-
         function getWeatherIcon(code, hourStr) {
             let isNight = false;
             if (hourStr) {
@@ -294,6 +298,7 @@ if (parseFloat(data.pressure) < 1007) {
     </div>
 </body>
 </html>
+
 
 
 
