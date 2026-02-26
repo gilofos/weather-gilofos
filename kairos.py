@@ -46,7 +46,6 @@ def get_weather():
         data = res_json['current']
         daily = res_json['daily']
         
-        # Διορθωμένη λήψη ώρας για να μην βγάζει κόκκινο
         utc_offset_sec = res_json.get('utc_offset_seconds', 7200)
         time_now_dt = datetime.utcnow() + timedelta(seconds=utc_offset_sec)
         time_now_str = time_now_dt.strftime("%H:%M:%S")
@@ -54,12 +53,14 @@ def get_weather():
         temp = data['temperature_2m']
         precip = data['precipitation']
         hum = data['relative_humidity_2m']
+        # Υπολογισμός πίεσης στη στάθμη της θάλασσας για Γήλοφο
         pres_sea = data['surface_pressure'] + 103 
         wind_spd = data['wind_speed_10m']
         wind_gust = data.get('wind_gusts_10m', 0)
         wind_deg = data['wind_direction_10m']
         clouds = data['cloud_cover']
         
+        # Πληροφορίες Ανέμου: Μοίρες, Κατεύθυνση και Μποφόρ
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
@@ -67,20 +68,24 @@ def get_weather():
         sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
         sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
         current_time = time_now_dt.time()
-        
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
+        # --- ΛΟΓΙΚΗ ΠΡΟΓΝΩΣΗΣ - ΤΕΛΙΚΗ ---
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
             else: weather_type = "ΒΡΟΧΗ 💧"
+        elif clouds <= 20: 
+            # Προτεραιότητα στον καθαρό ουρανό
+            weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
+        elif pres_sea < 1004:
+            weather_type = "ΚΑΚΟΚΑΙΡΙΑ ⚠️"
+        elif 1004 <= pres_sea < 1015:
+            weather_type = "ΣΥΝΝΕΦΙΑ / ΑΣΤΑΘΕΙΑ ☁️"
+        elif clouds <= 60:
+            weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
         else:
-            if clouds <= 20: 
-                weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
-            elif clouds <= 60:
-                weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
-            else:
-                weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
+            weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
         weather_data = {
             "temperature": round(temp, 1),
