@@ -197,7 +197,7 @@ document.getElementById('t-min').innerText = data.temp_min;
                 if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
                 document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
                 const alertDiv = document.getElementById('weather-alert');
-if (parseFloat(data.pressure) < 1007) {
+if (parseFloat(data.pressure) < 1004) {
     alertDiv.classList.remove('hidden');
 } else {
     alertDiv.classList.add('hidden');
@@ -225,9 +225,14 @@ if (parseFloat(data.pressure) < 1007) {
                     statusFinal = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ";
                 }
 
-                const alertBox = document.getElementById('alert-box');
+               const alertBox = document.getElementById('alert-box');
                 alertBox.innerText = statusFinal;
-                alertBox.className = (statusFinal.includes("ΕΠΙΔΕΙΝΩΣΗ")) ? "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse text-red-500" : "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
+
+                if (statusFinal.includes("ΚΑΚΟΚΑΙΡΙΑ")) {
+                    alertBox.className = "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase alert-pulse";
+                } else {
+                    alertBox.className = "mt-4 text-xl md:text-2xl font-black tracking-widest uppercase text-yellow-400 italic";
+                }
 
                 updateMoon();
                 loadForecast();
@@ -298,6 +303,7 @@ if (parseFloat(data.pressure) < 1007) {
     </div>
 </body>
 </html>
+
 
 
 
