@@ -295,13 +295,13 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-    <div style="width: 100%; height: 450px; margin-top: 20px; margin-bottom: 20px;">
+   <div style="width: 100%; height: 350px; margin-top: 20px; margin-bottom: 20px;">
     <iframe 
-        src="https://www.windy.com/39.920/21.800?39.800,21.800,10,m:eX3agHS" 
         width="100%" 
         height="100%" 
-        frameborder="0" 
-        style="border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        frameborder="0" style="border-radius: 12px; border: 1px solid #ddd;"
+        src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY&center=39.920,21.800&zoom=12&maptype=tertiary" 
+        allowfullscreen>
     </iframe>
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
@@ -311,6 +311,7 @@ if (parseFloat(data.pressure) < 1004) {
     </div>
 </body>
 </html>
+
 
 
 
