@@ -1,17 +1,17 @@
 {
-    "temperature": 8.2,
+    "temperature": 7.8,
     "temp_max": 12.0,
     "temp_min": 1.7,
-    "humidity": 76,
+    "humidity": 77,
     "pressure": 1039.9,
-    "wind_speed": 7.1,
+    "wind_speed": 6.9,
     "wind_gust": 17.6,
-    "wind_dir": 150,
-    "wind_text": "150° ΝΑ (2 Μπφ)",
+    "wind_dir": 152,
+    "wind_text": "152° ΝΑ (2 Μπφ)",
     "rain": 0.0,
     "clouds": 45,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
     "moon_icon": "moon5.png",
-    "time": "18:30:29",
-    "last_update": "18:30:29"
+    "time": "18:45:24",
+    "last_update": "18:45:24"
 }
