@@ -295,18 +295,51 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-   <div style="width: 380px; height: 260px; margin: 10px auto; border: 2.5px solid yellow; border-radius: 15px; position: relative; overflow: hidden; background-color: #001f3f;">
+   <div style="width: 380px; height: 320px; margin: 15px auto; border: 2.5px solid yellow; border-radius: 15px; position: relative; overflow: hidden; background-color: #001f3f; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     
-    <img src="https://your-link-here.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;">
+    <iframe 
+        width="100%" 
+        height="100%" 
+        frameborder="0" 
+        scrolling="no" 
+        src="https://www.openstreetmap.org/export/embed.html?bbox=21.68,39.88,21.98,40.03&amp;layer=mapnik" 
+        style="border: 0; filter: contrast(1.1) brightness(0.95);">
+    </iframe>
 
-    <div style="position: absolute; top: 15px; left: 15px; color: white;">
-        <div style="font-size: 13px; font-weight: bold; text-shadow: 2px 2px 4px #000;">ΓΗΛΟΦΟΣ</div>
-        <div id="map-temp" style="font-size: 45px; font-weight: bold; text-shadow: 2px 2px 8px #000;">--°C</div>
+    <div style="position: absolute; top: 45%; left: 52%; text-align: center; transform: translate(-50%, -50%);">
+        <div id="map-icon-ghilofos" style="font-size: 24px; filter: drop-shadow(2px 2px 3px black);">☀️</div>
+        <div id="map-temp-ghilofos" style="color: white; font-size: 18px; font-weight: bold; background: rgba(255, 0, 0, 0.85); padding: 2px 6px; border-radius: 5px; border: 1px solid white; box-shadow: 2px 2px 5px rgba(0,0,0,0.5);">--°C</div>
+        <div style="color: #000; font-size: 11px; font-weight: bold; text-shadow: 1px 1px 0 #fff;">ΓΗΛΟΦΟΣ</div>
     </div>
+
+    <div style="position: absolute; bottom: 15%; right: 10%; text-align: center;">
+        <div id="map-temp-deskati" style="color: white; font-size: 14px; font-weight: bold; background: rgba(0, 0, 0, 0.6); padding: 2px 4px; border-radius: 4px;">--°C</div>
+        <div style="color: #000; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 0 #fff;">ΔΕΣΚΑΤΗ</div>
+    </div>
+
+    <div style="position: absolute; top: 10%; left: 10%; text-align: center;">
+        <div id="map-temp-grevena" style="color: white; font-size: 14px; font-weight: bold; background: rgba(0, 0, 0, 0.6); padding: 2px 4px; border-radius: 4px;">--°C</div>
+        <div style="color: #000; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 0 #fff;">ΓΡΕΒΕΝΑ</div>
+    </div>
+</div>
+
+<script>
+    // ΣΥΝΔΕΣΗ ΜΕ ΤΑ ΑΛΗΘΙΝΑ ΔΕΔΟΜΕΝΑ ΤΟΥ ΣΤΑΘΜΟΥ ΣΟΥ
+    function updateLiveMap() {
+        // Παίρνει τη θερμοκρασία που ήδη υπολογίζει το kairos.py
+        if (typeof currentTemp !== 'undefined') {
+            document.getElementById('map-temp-ghilofos').innerText = currentTemp + '°C';
+            document.getElementById('map-icon-ghilofos').innerHTML = weatherIcon; // Το αληθινό εικονίδιο (ΞΑΣΤΕΡΙΑ κτλ)
+        }
+        
+        // Εδώ μπορούμε αργότερα να τραβήξουμε και για Δεσκάτη/Γρεβενά
+        // document.getElementById('map-temp-deskati').innerText = deskatiTemp + '°C';
+    }
     
-    <div style="position: absolute; bottom: 15px; right: 15px; text-align: center;">
-        <div id="map-icon" style="font-size: 50px; filter: drop-shadow(2px 2px 5px black);">☀️</div>
-        <div style="color: yellow; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 4px #000;">ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ</div>
+    // Ενημέρωση κάθε 5 δευτερόλεπτα
+    setInterval(updateLiveMap, 5000);
+    setTimeout(updateLiveMap, 1000); // Πρώτη εκτέλεση
+</script>
     </div>
 </div>
 
@@ -324,6 +357,7 @@ if (parseFloat(data.pressure) < 1004) {
     </div>
 </body>
 </html>
+
 
 
 
