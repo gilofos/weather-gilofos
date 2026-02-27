@@ -295,30 +295,12 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-    <div style="width: 380px; height: 320px; margin: 15px auto; border: 2.5px solid yellow; border-radius: 15px; position: relative; overflow: hidden; background-color: #001f3f;">
-    <img src="https://static-maps.yandex.ru/1.x/?ll=21.83,39.95&z=11&l=sat,skl&size=450,450" style="width: 100%; height: 100%; object-fit: cover;">
-    <div style="position: absolute; top: 45%; left: 55%; text-align: center;">
-        <div id="map-icon" style="font-size: 35px; filter: drop-shadow(2px 2px 4px black);">☀️</div>
-        <div id="map-temp" style="color: white; font-size: 22px; font-weight: bold; background: rgba(255, 0, 0, 0.9); padding: 2px 8px; border-radius: 6px; border: 1.5px solid white;">--°C</div>
-        <div style="color: yellow; font-size: 11px; font-weight: bold; text-shadow: 1px 1px 3px black;">ΓΗΛΟΦΟΣ</div>
-    </div>
-</div>
-<script>
-    function refreshMap() {
-        if (typeof currentTemp !== 'undefined') {
-            document.getElementById('map-temp').innerText = currentTemp + '°C';
-            document.getElementById('map-icon').innerHTML = weatherIcon;
-        }
-    }
-    setInterval(refreshMap, 3000);
-</script>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
         <p style="margin: 5px 0 0 0; font-size: 1.2em; color: #000;"><strong>Developed by Achilleas Kotsiras</strong></p>
     </div>
 </body>
 </html>
-
 
 
 
