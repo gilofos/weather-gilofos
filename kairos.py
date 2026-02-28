@@ -1,68 +1,80 @@
-import subprocess
-import sys
-import os
+import requests
+import json
+from datetime import datetime, timedelta
+from PIL import Image, ImageDraw, ImageFont
 
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+# Ρυθμίσεις Γηλόφου
+LAT, LON = 39.88, 21.80
 
-try:
-    from PIL import Image, ImageDraw, ImageFont
-    import requests
-except ImportError:
-    install('Pillow')
-    install('requests')
-    from PIL import Image, ImageDraw, ImageFont
-    import requests
+# ΤΟΠΟΘΕΣΙΕΣ ΜΕ ΤΑ ΣΗΜΕΡΙΝΑ ΥΨΟΜΕΤΡΑ
+locations = [
+    {"name": "MAYRELI (1130m)", "lat": 39.84, "lon": 21.84, "x": 580, "y": 720},
+    {"name": "GHILOFOS (910m)", "lat": 40.06, "lon": 21.80, "x": 520, "y": 200},
+    {"name": "FOTINO (960m)", "lat": 39.91, "lon": 21.74, "x": 380, "y": 550},
+    {"name": "DESKATI (860m)", "lat": 39.92, "lon": 21.81, "x": 520, "y": 530},
+    {"name": "PARASKEYI (920m)", "lat": 39.90, "lon": 21.78, "x": 460, "y": 580},
+    {"name": "DASOCHORI (880m)", "lat": 39.94, "lon": 21.82, "x": 550, "y": 480},
+    {"name": "KERASOYLA (1050m)", "lat": 39.87, "lon": 21.73, "x": 350, "y": 650}
+]
 
-# 1. Τοποθεσίες με ΑΚΡΙΒΗ υψόμετρα (για να μην σου λέει λάθος θερμοκρασίες)
-locations = {
-    "ΜΑΥΡΕΛΙ":    {"lat": 39.8386, "lon": 21.8665, "alt": 1130, "pos": (900, 930)},
-    "ΓΗΛΟΦΟΣ":    {"lat": 39.8521, "lon": 21.7953, "alt": 1050, "pos": (530, 810)},
-    "ΦΩΤΕΙΝΟ":    {"lat": 39.8416, "lon": 21.7912, "alt": 1010, "pos": (490, 890)},
-    "ΔΕΣΚΑΤΗ":    {"lat": 39.9265, "lon": 21.8088, "alt": 880,  "pos": (610, 60)},
-    "ΠΑΡΑΣΚΕΥΗ":  {"lat": 39.9119, "lon": 21.7697, "alt": 780,  "pos": (380, 220)},
-    "ΔΑΣΟΧΩΡΙ":   {"lat": 39.8808, "lon": 21.8177, "alt": 740,  "pos": (650, 520)},
-    "ΚΕΡΑΣΟΥΛΑ":  {"lat": 39.8511, "lon": 21.7250, "alt": 720,  "pos": (120, 810)}
-}
+def get_direction(degrees):
+    directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
+    return directions[int((degrees + 22.5) / 45) % 8]
 
-def get_weather(lat, lon, alt):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&elevation={alt}&current_weather=True"
+def get_weather():
     try:
-        data = requests.get(url).json()['current_weather']
-        temp = f"{round(data['temperature'], 1)}°C"
-        status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ" if data['weathercode'] == 0 else "ΚΑΙΡΟΣ"
-        w_speed = data['windspeed']
-        w_dir = ['Β', 'ΒΑ', 'Α', 'ΝΑ', 'Ν', 'ΝΔ', 'Δ', 'ΒΔ'][round(data['winddirection'] / 45) % 8]
-        wind = f"{w_speed}km/h {w_dir} ({data['winddirection']}°)"
-        return temp, status, wind
-    except:
-        return "N/A", "N/A", "N/A"
+        # API CALL ΓΙΑ ΟΛΑ ΤΑ ΧΩΡΙΑ
+        lats = ",".join([str(l["lat"]) for l in locations])
+        lons = ",".join([str(l["lon"]) for l in locations])
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,cloud_cover&daily=sunrise,sunset&timezone=auto"
+        
+        res = requests.get(url, timeout=15).json()
 
-try:
-    # Ανοίγουμε τον χάρτη που ανέβασες
-    img = Image.open("map_ghilofos.png").convert("RGBA")
-    draw = ImageDraw.Draw(img)
-    font = ImageFont.load_default()
+        # ΔΕΔΟΜΕΝΑ ΓΙΑ ΤΟ JSON (ΓΗΛΟΦΟΣ - Index 1)
+        gh = res[1]['current']
+        gh_daily = res[1]['daily']
+        temp_gh = gh['temperature_2m']
+        
+        utc_off = res[1].get('utc_offset_seconds', 7200)
+        now = datetime.utcnow() + timedelta(seconds=utc_off)
+        is_night = now.time() >= datetime.strptime(gh_daily['sunset'][0], "%Y-%m-%dT%H:%M").time() or now.time() <= datetime.strptime(gh_daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
+        
+        # STATUS: ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ (ΟΠΩΣ ΤΟ ΖΗΤΗΣΕΣ)
+        status = "ΣΥΝΝΕΦΙΑ ☁️"
+        if gh['precipitation'] > 0:
+            status = "ΧΙΟΝΙ ❄️" if temp_gh <= 1.5 else "ΒΡΟΧΗ 💧"
+        elif gh['cloud_cover'] <= 20:
+            status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
 
-    for name, data in locations.items():
-        temp, status, wind = get_weather(data['lat'], data['lon'], data['alt'])
-        x, y = data['pos']
-        txt = f"{name}\n{temp}\n{status}\n{wind}" if name == "ΓΗΛΟΦΟΣ" else f"{name}\n{temp}"
+        # ΣΩΖΟΥΜΕ ΤΟ JSON
+        data = {
+            "temperature": round(temp_gh, 1),
+            "humidity": gh['relative_humidity_2m'],
+            "pressure": round(gh['surface_pressure'] + 103, 1),
+            "wind_text": f"{gh['wind_direction_10m']}° {get_direction(gh['wind_direction_10m'])}",
+            "status": status,
+            "last_update": now.strftime("%H:%M:%S")
+        }
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
-        # Σχεδίαση με περίγραμμα
-        for o in [(-2,-2), (2,-2), (-2,2), (2,2)]:
-            draw.text((x+o[0], y+o[1]), txt, fill="white", font=font)
-        draw.text((x, y), txt, fill="black", font=font)
+        # ΖΩΓΡΑΦΙΚΗ ΠΑΝΩ ΣΤΟΝ map_ghilofos.png
+        img = Image.open("map_ghilofos.png").convert("RGB")
+        draw = ImageDraw.Draw(img)
+        font = ImageFont.load_default()
 
-    # ΣΩΖΟΥΜΕ ΤΟΝ ΧΑΡΤΗ ΠΑΝΩ ΣΤΟ ΠΑΛΙΟ ΑΡΧΕΙΟ ΓΙΑ ΝΑ ΣΕ ΑΝΑΓΚΑΣΟΥΜΕ ΝΑ ΤΟ ΔΕΙΣ
-    img.save("205.jpg", "JPEG") # Το σώζουμε ως 205.jpg για να αντικαταστήσει τον πίνακα!
-    
-    # Εντολές για να ανέβει στο GitHub
-    os.system('git config --global user.name "github-actions"')
-    os.system('git config --global user.email "actions@github.com"')
-    os.system('git add 205.jpg')
-    os.system('git commit -m "Update Map over Table" || exit 0')
-    os.system('git push')
+        for i, loc in enumerate(locations):
+            t = round(res[i]['current']['temperature_2m'])
+            # Σχεδίαση
+            draw.text((loc["x"], loc["y"]), f"{loc['name']}", fill="black", font=font)
+            draw.text((loc["x"], loc["y"]+15), f"{t}°C", fill="blue", font=font)
 
-except Exception as e:
-    print(f"Error: {e}")
+        # ΑΠΟΘΗΚΕΥΣΗ ΤΟΥ ΤΕΛΙΚΟΥ ΧΑΡΤΗ
+        img.save("weather_output.png")
+        print("Success: Map and Data Updated!")
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    get_weather()
