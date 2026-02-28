@@ -295,32 +295,56 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-    <div style="position: relative; width: 100%; max-width: 1000px; margin: 20px auto; border: 3px solid #444; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #000;">
+   <div id="weather-map-container" style="position: relative; width: 100%; max-width: 1000px; margin: 20px auto; border: 3px solid #444; border-radius: 15px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.7);">
     
-    <img src="map_ghilofos.jpg" alt="3D Weather Map" style="width: 100%; height: auto; display: block; opacity: 0.9;">
+    <img src="map_ghilofos.jpg" style="width: 100%; height: auto; display: block; opacity: 0.95;">
 
-    <div style="position: absolute; top: 10px; left: 15px; background: rgba(0,0,0,0.7); color: #00d4ff; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; border: 1px solid #00d4ff;">
+    <div style="position: absolute; top: 10px; left: 15px; background: rgba(0,0,0,0.8); color: #00d4ff; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; border: 1px solid #00d4ff; z-index: 10;">
         📡 ΠΕΡΙΦΕΡΕΙΑΚΟΣ ΚΑΙΡΟΣ (LIVE)
     </div>
 
-    <div style="position: absolute; top: 15%; left: 88%; text-align: center;">
-        <div style="font-size: 11px; color: white; font-weight: bold; text-shadow: 2px 2px 4px black;">ΓΡΕΒΕΝΑ</div>
-        <div id="temp-grevena" style="background: rgba(0,0,0,0.6); color: #fff; padding: 2px 6px; border-radius: 5px; font-weight: bold; font-size: 18px;">☀️ 14°</div>
+    <div style="position: absolute; top: 55%; left: 25%; text-align: center; transform: translate(-50%, -50%);">
+        <div style="font-size: 13px; color: #ffcc00; font-weight: bold; text-shadow: 2px 2px 4px #000; margin-bottom: 2px;">ΓΗΛΟΦΟΣ</div>
+        <div style="background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 8px; border: 1px solid #ffcc00; font-weight: bold; font-size: 18px;">
+            <span class="weather-icon">🌙</span> <span id="map-temp-ghilofos">12.5°</span>
+        </div>
     </div>
 
-    <div style="position: absolute; top: 52%; left: 23%; text-align: center;">
-        <div style="font-size: 12px; color: yellow; font-weight: bold; text-shadow: 2px 2px 4px black;">ΓΗΛΟΦΟΣ</div>
-        <div id="temp-ghilofos" style="background: rgba(0,0,0,0.7); color: #ffcc00; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 24px; border: 1px solid yellow;">☀️ 12.5°</div>
+    <div style="position: absolute; top: 68%; left: 88%; text-align: center; transform: translate(-50%, -50%);">
+        <div style="font-size: 11px; color: white; font-weight: bold; text-shadow: 2px 2px 4px #000;">ΔΕΣΚΑΤΗ</div>
+        <div style="background: rgba(0,0,0,0.6); color: #00d4ff; padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 16px;">
+            <span class="weather-icon">🌙</span> <span id="map-temp-deskati">13.1°</span>
+        </div>
     </div>
 
-    <div style="position: absolute; top: 62%; left: 91%; text-align: center;">
-        <div style="font-size: 11px; color: white; font-weight: bold; text-shadow: 2px 2px 4px black;">ΔΕΣΚΑΤΗ</div>
-        <div id="temp-deskati" style="background: rgba(0,0,0,0.6); color: #00d4ff; padding: 2px 6px; border-radius: 5px; font-weight: bold; font-size: 20px;">☀️ 13°</div>
+    <div style="position: absolute; top: 18%; left: 85%; text-align: center; transform: translate(-50%, -50%);">
+        <div style="font-size: 10px; color: #ddd; font-weight: bold; text-shadow: 2px 2px 4px #000;">ΓΡΕΒΕΝΑ</div>
+        <div style="background: rgba(0,0,0,0.6); color: #fff; padding: 2px 5px; border-radius: 5px; font-weight: bold; font-size: 15px;">
+            <span class="weather-icon">🌙</span> <span id="map-temp-grevena">14.0°</span>
+        </div>
     </div>
 
-    <div style="position: absolute; top: 68%; left: 49%; text-align: center;">
-        <div style="font-size: 10px; color: white; font-weight: bold; text-shadow: 2px 2px 4px black;">ΔΑΣΟΧΩΡΙ</div>
-        <div id="temp-dasochori" style="background: rgba(0,0,0,0.6); color: #fff; padding: 2px 5px; border-radius: 5px; font-weight: bold; font-size: 16px;">⛅ 12°</div>
+    <div style="position: absolute; top: 52%; left: 12%; text-align: center; transform: translate(-50%, -50%);">
+        <div style="font-size: 10px; color: #eee; font-weight: bold; text-shadow: 1px 1px 3px #000;">ΦΩΤΕΙΝΟ</div>
+        <div style="background: rgba(0,0,0,0.5); color: #fff; padding: 2px 4px; border-radius: 4px; font-size: 14px;">
+            <span class="weather-icon">🌙</span> 12.2°
+        </div>
+    </div>
+</div>
+
+<script>
+// ΑΥΤΟΜΑΤΗ ΑΛΛΑΓΗ ΗΛΙΟΥ/ΦΕΓΓΑΡΙΟΥ ΑΝΑΛΟΓΑ ΜΕ ΤΗΝ ΩΡΑ
+function updateMapIcons() {
+    const hour = new Date().getHours();
+    const isNight = hour < 7 || hour > 19;
+    const icon = isNight ? "🌙" : "☀️";
+    const icons = document.querySelectorAll('.weather-icon');
+    icons.forEach(el => el.innerHTML = icon);
+}
+updateMapIcons();
+// Ανανέωση κάθε 30 λεπτά
+setInterval(updateMapIcons, 1800000);
+</script>
     </div>
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
@@ -332,6 +356,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
