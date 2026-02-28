@@ -295,50 +295,23 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-   <div id="weather-map-container" style="position: relative; width: 100%; max-width: 1000px; margin: 20px auto; border: 3px solid #444; border-radius: 15px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.7);">
+   <div id="map-container" style="position: relative; width: 100%; max-width: 1000px; margin: 20px auto; border-radius: 15px; overflow: hidden; background: #000; border: 2px solid #333;">
     
-    <img src="map_ghilofos.jpg" style="width: 100%; height: auto; display: block; opacity: 0.95;">
+    <img src="map_ghilofos.jpg" style="width: 100%; height: auto; display: block; opacity: 0.9;">
 
-    <div style="position: absolute; top: 10px; left: 15px; background: rgba(0,0,0,0.8); color: #00d4ff; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; border: 1px solid #00d4ff;">
-        📡 ΠΕΡΙΦΕΡΕΙΑΚΟΣ ΚΑΙΡΟΣ (LIVE)
-    </div>
+    <style>
+        .m-pt { position: absolute; transform: translate(-50%, -50%); text-align: center; color: white; font-weight: bold; text-shadow: 2px 2px 4px #000; font-family: Arial, sans-serif; }
+        .m-box { background: rgba(0,0,0,0.75); padding: 2px 6px; border-radius: 5px; font-size: 14px; border: 1px solid #444; display: inline-block; margin-top: 2px; }
+    </style>
 
-    <div style="position: absolute; top: 55%; left: 25%; text-align: center; transform: translate(-50%, -50%);">
-        <div style="font-size: 12px; color: yellow; font-weight: bold; text-shadow: 2px 2px 4px #000;">ΓΗΛΟΦΟΣ</div>
-        <div style="background: rgba(0,0,0,0.7); color: #fff; padding: 4px 8px; border-radius: 8px; border: 1px solid yellow; font-weight: bold; font-size: 20px;">
-            <span id="icon-ghilofos">☁️🌙</span> <span id="map-temp-ghilofos">1.9°</span>
-        </div>
-    </div>
-
-    <div style="position: absolute; top: 68%; left: 88%; text-align: center; transform: translate(-50%, -50%);">
-        <div style="font-size: 10px; color: white; font-weight: bold; text-shadow: 1px 1px 3px #000;">ΔΕΣΚΑΤΗ</div>
-        <div style="background: rgba(0,0,0,0.6); color: #00d4ff; padding: 2px 5px; border-radius: 5px; font-weight: bold; font-size: 16px;">
-            <span class="auto-icon">☁️🌙</span> <span id="map-temp-deskati">2.5°</span>
-        </div>
-    </div>
-
-    <div style="position: absolute; top: 72%; left: 52%; text-align: center; transform: translate(-50%, -50%);">
-        <div style="font-size: 10px; color: white; font-weight: bold;">ΔΑΣΟΧΩΡΙ</div>
-        <div style="background: rgba(0,0,0,0.6); color: #fff; padding: 2px 4px; border-radius: 4px; font-size: 14px;">
-            <span class="auto-icon">☁️🌙</span> <span id="map-temp-dasochori">2.1°</span>
-        </div>
-    </div>
-
-    <div style="position: absolute; top: 40%; left: 75%; text-align: center; transform: translate(-50%, -50%);">
-        <div style="font-size: 10px; color: white; font-weight: bold;">ΚΑΡΠΕΡΟ</div>
-        <div style="background: rgba(0,0,0,0.6); color: #fff; padding: 2px 4px; border-radius: 4px; font-size: 14px;">
-            <span class="auto-icon">☁️🌙</span> <span id="map-temp-karpero">3.0°</span>
-        </div>
-    </div>
-
-    <div style="position: absolute; top: 48%; left: 38%; text-align: center; transform: translate(-50%, -50%);">
-        <div style="font-size: 9px; color: white; font-weight: bold;">ΠΑΡΑΣΚΕΥΗ</div>
-        <div style="background: rgba(0,0,0,0.6); color: #fff; padding: 1px 3px; border-radius: 4px; font-size: 13px;">
-            <span class="auto-icon">☁️🌙</span> <span id="map-temp-paraskevi">1.8°</span>
-        </div>
-    </div>
+    <div class="m-pt" style="top: 58%; left: 21%;">ΓΗΛΟΦΟΣ<br><span class="m-box" style="color:yellow; border-color:yellow;">☁️🌙 1.9°</span></div>
+    <div class="m-pt" style="top: 15%; left: 88%;">ΓΡΕΒΕΝΑ<br><span class="m-box">☁️🌙 3.1°</span></div>
+    <div class="m-pt" style="top: 72%; left: 88%;">ΔΕΣΚΑΤΗ<br><span class="m-box" style="color:#00d4ff; border-color:#00d4ff;">☁️🌙 2.5°</span></div>
+    <div class="m-pt" style="top: 54%; left: 8%;">ΦΩΤΕΙΝΟ<br><span class="m-box">☁️🌙 1.8°</span></div>
+    <div class="m-pt" style="top: 76%; left: 52%;">ΔΑΣΟΧΩΡΙ<br><span class="m-box">☁️🌙 2.1°</span></div>
+    <div class="m-pt" style="top: 35%; left: 78%;">ΚΑΡΠΕΡΟ<br><span class="m-box">☁️🌙 3.0°</span></div>
+    <div class="m-pt" style="top: 48%; left: 42%;">ΠΑΡΑΣΚΕΥΗ<br><span class="m-box">☁️🌙 1.8°</span></div>
 </div>
-    </div>
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
@@ -349,6 +322,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
