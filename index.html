@@ -295,6 +295,56 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
+    <div class="card p-4 md:p-6 mt-6 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl">
+    <h4 class="text-center text-[10px] md:text-[12px] font-black text-white/40 tracking-[0.3em] mb-6 uppercase italic">ΚΑΤΑΣΤΑΣΗ ΠΕΡΙΟΧΗΣ ΑΝΑ ΥΨΟΜΕΤΡΟ</h4>
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="text-[10px] font-black text-blue-400 tracking-widest uppercase border-b border-white/10">
+                    <th class="py-3 px-2 text-left">ΤΟΠΟΘΕΣΙΑ</th>
+                    <th class="py-3 px-2 text-center">ΥΨΟΜ.</th>
+                    <th class="py-3 px-2 text-center">ΚΑΙΡΟΣ</th>
+                    <th class="py-3 px-2 text-right">TEMP. (MIN-MAX)</th>
+                </tr>
+            </thead>
+            <tbody id="table-body-new" class="font-bold uppercase text-sm">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function updateRegionalWeather() {
+        const spots = [
+            { name: "🏔️ ΜΑΥΡΕΛΙ", alt: 1129, lat: 39.844, lon: 21.848, color: "text-blue-200" },
+            { name: "📍 ΓΗΛΟΦΟΣ", alt: 1050, lat: 40.063, lon: 21.802, color: "text-yellow-400" },
+            { name: "🏡 ΦΩΤΕΙΝΟ", alt: 1011, lat: 39.916, lon: 21.745, color: "text-white" },
+            { name: "🏠 ΔΕΣΚΑΤΗ", alt: 876, lat: 39.923, lon: 21.810, color: "text-blue-300" },
+            { name: "🏡 ΠΑΡΑΣΚΕΥΗ", alt: 782, lat: 39.904, lon: 21.782, color: "text-white" },
+            { name: "🏡 ΔΑΣΟΧΩΡΙ", alt: 741, lat: 39.941, lon: 21.822, color: "text-white" },
+            { name: "🏙️ ΓΡΕΒΕΝΑ", alt: 534, lat: 40.084, lon: 21.427, color: "text-white" },
+            { name: "🏡 ΚΑΡΠΕΡΟ", alt: 505, lat: 39.940, lon: 21.611, color: "text-orange-400" }
+        ];
+        const lats = spots.map(s => s.lat).join(',');
+        const lons = spots.map(s => s.lon).join(',');
+        try {
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+            const d = await res.json();
+            let rows = "";
+            spots.forEach((s, i) => {
+                let data = Array.isArray(d) ? d[i] : d;
+                let min = Math.round(data.daily.temperature_2m_min[0]);
+                let max = Math.round(data.daily.temperature_2m_max[0]);
+                let code = data.current_weather.weathercode;
+                let icon = (typeof getWeatherIcon === 'function') ? getWeatherIcon(code, "12:00") : "☀️";
+                rows += `<tr class="border-b border-white/5"><td class="py-4 px-2 ${s.color}">${s.name}</td><td class="text-center text-[10px] text-white/30">${s.alt}μ</td><td class="text-center text-xl">${icon}</td><td class="text-right text-lg font-black uppercase"><span class="text-blue-400">${min}°</span><span class="text-white/10 mx-1">/</span><span class="text-red-500">${max}°</span></td></tr>`;
+            });
+            document.getElementById('table-body-new').innerHTML = rows;
+        } catch(e) { console.log(e); }
+    }
+    updateRegionalWeather();
+    setInterval(updateRegionalWeather, 600000);
+</script>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
         <p style="margin: 5px 0 0 0; font-size: 1.2em; color: #000;"><strong>Developed by Achilleas Kotsiras</strong></p>
@@ -304,6 +354,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
