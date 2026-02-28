@@ -1,118 +1,55 @@
 import requests
 import json
 from datetime import datetime, timedelta
+from PIL import Image, ImageDraw
 
-# Συντεταγμένες για Γήλοφο
-LAT = 39.88
-LON = 21.80
-
-def get_direction(degrees):
-    directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
-    idx = int((degrees + 22.5) / 45) % 8
-    return directions[idx]
-
-def get_beaufort(kmh):
-    if kmh < 1: return 0
-    elif kmh < 6: return 1
-    elif kmh < 12: return 2
-    elif kmh < 20: return 3
-    elif kmh < 29: return 4
-    elif kmh < 39: return 5
-    elif kmh < 50: return 6
-    elif kmh < 62: return 7
-    else: return 8
-
-def get_moon_phase_image():
-    diff = datetime.now() - datetime(2001, 1, 1)
-    days = diff.days + diff.seconds / 86400
-    lunations = 0.20439731 + (days * 0.03386319269)
-    phase = lunations % 1
-    if phase < 0.01 or phase > 0.999: return "moon0.png"
-    elif phase < 0.19: return "moon7.png"
-    elif phase < 0.31: return "moon2.png"
-    elif phase < 0.44: return "moon5.png"
-    elif phase < 0.56: return "moon4.png"
-    elif phase < 0.69: return "moon3.png"
-    elif phase < 0.81: return "moon6.png"
-    else: return "moon1.png"
+# Τοποθεσίες (X, Y συντεταγμένες για τον χάρτη σου)
+locations = [
+    {"name": "MAYRELI", "lat": 39.84, "lon": 21.84, "x": 580, "y": 720},
+    {"name": "GHILOFOS", "lat": 40.06, "lon": 21.80, "x": 520, "y": 200},
+    {"name": "FOTINO", "lat": 39.91, "lon": 21.74, "x": 380, "y": 550},
+    {"name": "DESKATI", "lat": 39.92, "lon": 21.81, "x": 520, "y": 530},
+    {"name": "PARASKEYI", "lat": 39.90, "lon": 21.78, "x": 460, "y": 580},
+    {"name": "DASOCHORI", "lat": 39.94, "lon": 21.82, "x": 550, "y": 480},
+    {"name": "KERASOYLA", "lat": 39.87, "lon": 21.73, "x": 350, "y": 650}
+]
 
 def get_weather():
     try:
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
-        response = requests.get(url)
-        response.raise_for_status()
-        res_json = response.json()
-        
-        data = res_json['current']
-        daily = res_json['daily']
-        
-        utc_offset_sec = res_json.get('utc_offset_seconds', 7200)
-        time_now_dt = datetime.utcnow() + timedelta(seconds=utc_offset_sec)
-        time_now_str = time_now_dt.strftime("%H:%M:%S")
-        
-        temp = data['temperature_2m']
-        precip = data['precipitation']
-        hum = data['relative_humidity_2m']
-        # Υπολογισμός πίεσης στη στάθμη της θάλασσας για Γήλοφο
-        pres_sea = data['surface_pressure'] + 103 
-        wind_spd = data['wind_speed_10m']
-        wind_gust = data.get('wind_gusts_10m', 0)
-        wind_deg = data['wind_direction_10m']
-        clouds = data['cloud_cover']
-        
-        # Πληροφορίες Ανέμου: Μοίρες, Κατεύθυνση και Μποφόρ
-        wind_cardinal = get_direction(wind_deg)
-        bft = get_beaufort(wind_spd)
-        wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
-        
-        sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
-        sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
-        current_time = time_now_dt.time()
-        is_night = current_time >= sunset_time or current_time <= sunrise_time
-        
-        # --- ΛΟΓΙΚΗ ΠΡΟΓΝΩΣΗΣ - ΤΕΛΙΚΗ ---
-        if precip > 0:
-            if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
-            elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
-            else: weather_type = "ΒΡΟΧΗ 💧"
-        elif clouds <= 20: 
-            # Προτεραιότητα στον καθαρό ουρανό
-            weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
-        elif pres_sea < 1004:
-            weather_type = "ΚΑΚΟΚΑΙΡΙΑ ⚠️"
-        elif 1004 <= pres_sea < 1015:
-            weather_type = "ΣΥΝΝΕΦΙΑ / ΑΣΤΑΘΕΙΑ ☁️"
-        elif clouds <= 60:
-            weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
-        else:
-            weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
+        lats = ",".join([str(l["lat"]) for l in locations])
+        lons = ",".join([str(l["lon"]) for l in locations])
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,cloud_cover&daily=sunrise,sunset&timezone=auto"
+        res = requests.get(url, timeout=15).json()
 
-        weather_data = {
-            "temperature": round(temp, 1),
-            "temp_max": round(daily['temperature_2m_max'][0], 1),
-            "temp_min": round(daily['temperature_2m_min'][0], 1),
-            "humidity": hum,
-            "pressure": round(pres_sea, 1),
-            "wind_speed": wind_spd,
-            "wind_gust": wind_gust,
-            "wind_dir": wind_deg,
-            "wind_text": wind_info,
-            "rain": precip,
-            "clouds": clouds,
-            "status": weather_type,
-            "moon_icon": get_moon_phase_image(),
-            "time": time_now_str,
-            "last_update": time_now_str
-        }
+        # Δεδομένα Γηλόφου
+        gh = res[1]['current']
+        now = datetime.utcnow() + timedelta(hours=2)
         
+        # JSON για τον πίνακα
+        data = {"temp": round(gh['temperature_2m'], 1), "updated": now.strftime("%H:%M")}
         with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(weather_data, f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False)
+
+        # --- ΕΔΩ ΕΙΝΑΙ Η ΖΩΓΡΑΦΙΚΗ ΜΕ ΤΑ ΛΕΥΚΑ ΠΛΑΙΣΙΑ ---
+        img = Image.open("map_ghilofos.png").convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+        for i, loc in enumerate(locations):
+            t = round(res[i]['current']['temperature_2m'], 1)
+            label = f"{loc['name']}: {t}C"
             
-        print(f"Update Success: {time_now_str} | Status: {weather_type}")
+            # 1. Σχεδιάζουμε το λευκό πλαίσιο (Label)
+            # [x_start, y_start, x_end, y_end]
+            draw.rectangle([loc["x"]-5, loc["y"]-2, loc["x"]+140, loc["y"]+18], fill="white", outline="black")
+            
+            # 2. Γράφουμε το κείμενο πάνω στο πλαίσιο
+            draw.text((loc["x"], loc["y"]), label, fill="black")
+
+        img.save("weather_output.png")
+        print("Success: Ο χάρτης με τα πλαίσια ετοιμάστηκε!")
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Lathos: {e}")
 
 if __name__ == "__main__":
     get_weather()
-
