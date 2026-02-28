@@ -2,7 +2,6 @@ import subprocess
 import sys
 import os
 
-# 1. Εγκατάσταση απαραίτητων εργαλείων
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
@@ -15,65 +14,55 @@ except ImportError:
     from PIL import Image, ImageDraw, ImageFont
     import requests
 
-# 2. Δεδομένα Χωριών (Συντεταγμένες και Θέσεις στον Χάρτη)
+# 1. Τοποθεσίες με ΑΚΡΙΒΗ υψόμετρα (για να μην σου λέει λάθος θερμοκρασίες)
 locations = {
-    "ΜΑΥΡΕΛΙ":    {"lat": 39.838570, "lon": 21.866529, "pos": (900, 930)},
-    "ΓΗΛΟΦΟΣ":    {"lat": 39.852063, "lon": 21.795340, "pos": (530, 810)},
-    "ΦΩΤΕΙΝΟ":    {"lat": 39.841578, "lon": 21.791211, "pos": (490, 890)},
-    "ΔΕΣΚΑΤΗ":    {"lat": 39.926464, "lon": 21.808788, "pos": (610, 60)},
-    "ΠΑΡΑΣΚΕΥΗ":  {"lat": 39.911870, "lon": 21.769719, "pos": (380, 220)},
-    "ΔΑΣΟΧΩΡΙ":   {"lat": 39.880756, "lon": 21.817734, "pos": (650, 520)},
-    "ΚΕΡΑΣΟΥΛΑ":  {"lat": 39.851116, "lon": 21.724994, "pos": (120, 810)}
+    "ΜΑΥΡΕΛΙ":    {"lat": 39.8386, "lon": 21.8665, "alt": 1130, "pos": (900, 930)},
+    "ΓΗΛΟΦΟΣ":    {"lat": 39.8521, "lon": 21.7953, "alt": 1050, "pos": (530, 810)},
+    "ΦΩΤΕΙΝΟ":    {"lat": 39.8416, "lon": 21.7912, "alt": 1010, "pos": (490, 890)},
+    "ΔΕΣΚΑΤΗ":    {"lat": 39.9265, "lon": 21.8088, "alt": 880,  "pos": (610, 60)},
+    "ΠΑΡΑΣΚΕΥΗ":  {"lat": 39.9119, "lon": 21.7697, "alt": 780,  "pos": (380, 220)},
+    "ΔΑΣΟΧΩΡΙ":   {"lat": 39.8808, "lon": 21.8177, "alt": 740,  "pos": (650, 520)},
+    "ΚΕΡΑΣΟΥΛΑ":  {"lat": 39.8511, "lon": 21.7250, "alt": 720,  "pos": (120, 810)}
 }
 
-def get_weather(lat, lon):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=True"
+def get_weather(lat, lon, alt):
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&elevation={alt}&current_weather=True"
     try:
         data = requests.get(url).json()['current_weather']
         temp = f"{round(data['temperature'], 1)}°C"
-        status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ" if data['weathercode'] == 0 else "ΣΥΝΝΕΦΙΑ"
-        # Ανεμος: Ταχύτητα, Κατεύθυνση και Μοίρες
+        status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ" if data['weathercode'] == 0 else "ΚΑΙΡΟΣ"
         w_speed = data['windspeed']
-        w_deg = data['winddirection']
-        dirs = ['Β', 'ΒΑ', 'Α', 'ΝΑ', 'Ν', 'ΝΔ', 'Δ', 'ΒΔ']
-        w_dir = dirs[round(w_deg / 45) % 8]
-        wind = f"{w_speed}km/h {w_dir} ({w_deg}°)"
+        w_dir = ['Β', 'ΒΑ', 'Α', 'ΝΑ', 'Ν', 'ΝΔ', 'Δ', 'ΒΔ'][round(data['winddirection'] / 45) % 8]
+        wind = f"{w_speed}km/h {w_dir} ({data['winddirection']}°)"
         return temp, status, wind
     except:
         return "N/A", "N/A", "N/A"
 
-# 3. Δημιουργία Εικόνας
 try:
-    # Ανοίγει τον χάρτη που ανέβασες
+    # Ανοίγουμε τον χάρτη που ανέβασες
     img = Image.open("map_ghilofos.png").convert("RGBA")
     draw = ImageDraw.Draw(img)
     font = ImageFont.load_default()
 
     for name, data in locations.items():
-        temp, status, wind = get_weather(data['lat'], data['lon'])
+        temp, status, wind = get_weather(data['lat'], data['lon'], data['alt'])
         x, y = data['pos']
-        
-        if name == "ΓΗΛΟΦΟΣ":
-            txt = f"{name}: {temp}\n{status}\nΑΝΕΜΟΣ: {wind}"
-        else:
-            txt = f"{name}: {temp}"
+        txt = f"{name}\n{temp}\n{status}\n{wind}" if name == "ΓΗΛΟΦΟΣ" else f"{name}\n{temp}"
 
-        # Σχεδίαση με λευκό περίγραμμα για να φαίνεται
-        for o in [(-1,-1), (1,-1), (-1,1), (1,1)]:
+        # Σχεδίαση με περίγραμμα
+        for o in [(-2,-2), (2,-2), (-2,2), (2,2)]:
             draw.text((x+o[0], y+o[1]), txt, fill="white", font=font)
         draw.text((x, y), txt, fill="black", font=font)
 
-    # Αποθήκευση της νέας εικόνας
-    img.save("weather_output.png")
+    # ΣΩΖΟΥΜΕ ΤΟΝ ΧΑΡΤΗ ΠΑΝΩ ΣΤΟ ΠΑΛΙΟ ΑΡΧΕΙΟ ΓΙΑ ΝΑ ΣΕ ΑΝΑΓΚΑΣΟΥΜΕ ΝΑ ΤΟ ΔΕΙΣ
+    img.save("205.jpg", "JPEG") # Το σώζουμε ως 205.jpg για να αντικαταστήσει τον πίνακα!
     
-    # ΑΥΤΟΜΑΤΟ PUSH ΣΤΟ GITHUB
+    # Εντολές για να ανέβει στο GitHub
     os.system('git config --global user.name "github-actions"')
     os.system('git config --global user.email "actions@github.com"')
-    os.system('git add weather_output.png')
-    os.system('git commit -m "Update Weather Map" || exit 0')
+    os.system('git add 205.jpg')
+    os.system('git commit -m "Update Map over Table" || exit 0')
     os.system('git push')
-    
-    print("ΤΕΛΟΣ! Ο χάρτης ενημερώθηκε.")
 
 except Exception as e:
-    print(f"Σφάλμα: {e}")
+    print(f"Error: {e}")
