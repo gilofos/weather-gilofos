@@ -295,77 +295,59 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-   <div class="card p-6 md:p-8 mt-6">
-    <h4 class="text-center text-[10px] md:text-[12px] font-black text-white/40 tracking-[0.3em] md:tracking-[0.5em] mb-6 uppercase italic">ΘΕΡΜΟΚΡΑΣΙΕΣ ΠΕΡΙΟΧΗΣ (1050μ - 450μ)</h4>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="border-b border-white/10 text-[10px] font-black text-blue-400 tracking-widest uppercase">
-                    <th class="py-3 px-2">ΠΕΡΙΟΧΗ</th>
-                    <th class="py-3 px-2 text-center">ΥΨΟΜΕΤΡΟ</th>
-                    <th class="py-3 px-2 text-right">ΘΕΡΜΟΚΡΑΣΙΑ</th>
-                </tr>
-            </thead>
-            <tbody class="font-bold text-sm md:text-base">
-                <tr class="border-b border-white/5 bg-white/5 text-yellow-400">
-                    <td class="py-4 px-2">📍 ΓΗΛΟΦΟΣ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">1050μ</td>
-                    <td class="py-4 px-2 text-right text-xl font-black"><span id="tab-ghilofos">--</span>°</td>
-                </tr>
-                <tr class="border-b border-white/5 text-blue-300">
-                    <td class="py-4 px-2">🏠 ΔΕΣΚΑΤΗ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">680μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-deskati">--</span>°</td>
-                </tr>
-                <tr class="border-b border-white/5">
-                    <td class="py-4 px-2">🏡 ΦΩΤΕΙΝΟ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">620μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-foteino">--</span>°</td>
-                </tr>
-                <tr class="border-b border-white/5">
-                    <td class="py-4 px-2">🏡 ΠΑΡΑΣΚΕΥΗ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">600μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-paraskevi">--</span>°</td>
-                </tr>
-                <tr class="border-b border-white/5">
-                    <td class="py-4 px-2">🏙️ ΓΡΕΒΕΝΑ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">530μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-grevena">--</span>°</td>
-                </tr>
-                <tr class="border-b border-white/5">
-                    <td class="py-4 px-2">🏡 ΔΑΣΟΧΩΡΙ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">500μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-dasochori">--</span>°</td>
-                </tr>
-                <tr class="text-orange-400">
-                    <td class="py-4 px-2">🏡 ΚΑΡΠΕΡΟ</td>
-                    <td class="py-4 px-2 text-center text-xs opacity-60">450μ</td>
-                    <td class="py-4 px-2 text-right font-black"><span id="tab-karpero">--</span>°</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+   <div class="card p-4 md:p-6 mt-6">
+            <h4 class="text-center text-[10px] md:text-[12px] font-black text-white/40 tracking-[0.3em] mb-6 uppercase italic">ΚΑΤΑΣΤΑΣΗ ΠΕΡΙΟΧΗΣ ΑΝΑ ΥΨΟΜΕΤΡΟ</h4>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="text-[10px] font-black text-blue-400 tracking-widest uppercase border-b border-white/10">
+                            <th class="py-3 px-2 text-left">ΤΟΠΟΘΕΣΙΑ</th>
+                            <th class="py-3 px-2 text-center">ΥΨΟΜ.</th>
+                            <th class="py-3 px-2 text-center">ΚΑΙΡΟΣ</th>
+                            <th class="py-3 px-2 text-right">TEMP.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="font-bold uppercase">
+                        </tbody>
+                </table>
+            </div>
+        </div>
 
-<script>
-// ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΕΝΗΜΕΡΩΝΕΙ ΤΟΝ ΠΙΝΑΚΑ ΑΥΤΟΜΑΤΑ
-function updateTableTemps() {
-    let mainT = parseFloat(document.getElementById('temp-main').innerText);
-    if (!isNaN(mainT)) {
-        document.getElementById('tab-ghilofos').innerText = mainT.toFixed(1);
-        document.getElementById('tab-deskati').innerText = (mainT + 0.9).toFixed(1);
-        document.getElementById('tab-foteino').innerText = (mainT + 1.1).toFixed(1);
-        document.getElementById('tab-paraskevi').innerText = (mainT + 1.2).toFixed(1);
-        document.getElementById('tab-grevena').innerText = (mainT + 1.5).toFixed(1);
-        document.getElementById('tab-dasochori').innerText = (mainT + 1.7).toFixed(1);
-        document.getElementById('tab-karpero').innerText = (mainT + 1.9).toFixed(1);
-    }
-}
-// Τρέχει κάθε 1 λεπτό για να είναι συγχρονισμένο
-setInterval(updateTableTemps, 60000);
-window.addEventListener('load', updateTableTemps);
-</script>
+        <div class="text-center text-[11px] text-white/20 font-bold uppercase tracking-[0.6em] py-10">
+            τελευταία ενημέρωση: <span id="update-time" class="text-blue-400">--:--:--</span><br>
+            <span class="text-[9px] opacity-50">Developed by Achilleas Kotsiras | Ghilofos 1050m</span>
+        </div>
+    </div>
+
+    <script>
+        // ΕΔΩ ΕΙΝΑΙ ΤΑ ΧΩΡΙΑ ΣΟΥ - ΤΟ "ΜΥΑΛΟ" ΤΟΥ ΠΙΝΑΚΑ
+        async function refreshTable(mainT) {
+            const locations = [
+                { name: "📍 ΓΗΛΟΦΟΣ", alt: "1050μ", diff: 0, lat: 40.06, lon: 21.80, color: "text-yellow-400" },
+                { name: "🏠 ΔΕΣΚΑΤΗ", alt: "860μ", diff: 1.2, lat: 39.92, lon: 21.81, color: "text-blue-300" },
+                { name: "🏡 ΦΩΤΕΙΝΟ", alt: "700μ", diff: 2.1, lat: 39.91, lon: 21.74, color: "text-white" },
+                { name: "🏡 ΠΑΡΑΣΚΕΥΗ", alt: "630μ", diff: 2.5, lat: 39.90, lon: 21.78, color: "text-white" },
+                { name: "🏡 ΔΑΣΟΧΩΡΙ", alt: "630μ", diff: 2.5, lat: 39.94, lon: 21.82, color: "text-white" },
+                { name: "🏙️ ΓΡΕΒΕΝΑ", alt: "530μ", diff: 3.1, lat: 40.08, lon: 21.42, color: "text-white" },
+                { name: "🏡 ΚΑΡΠΕΡΟ", alt: "450μ", diff: 3.6, lat: 39.94, lon: 21.61, color: "text-orange-400" }
+            ];
+            const lats = locations.map(l => l.lat).join(',');
+            const lons = locations.map(l => l.lon).join(',');
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+                const data = await res.json();
+                let html = "";
+                locations.forEach((loc, i) => {
+                    let d = Array.isArray(data) ? data[i] : data;
+                    let minT = (d.daily.temperature_2m_min[0] + (loc.diff * 0.5)).toFixed(0);
+                    let maxT = (d.daily.temperature_2m_max[0] + loc.diff).toFixed(0);
+                    let code = d.current_weather.weathercode;
+                    let icon = getWeatherIcon(code, new Date().getHours() + ":00");
+                    html += `<tr class="border-b border-white/5"><td class="py-4 px-2 ${loc.color}">${loc.name}</td><td class="text-center text-[10px] opacity-50">${loc.alt}</td><td class="text-center text-xl">${icon}</td><td class="text-right text-lg font-black"><span class="text-blue-400">${minT}</span>-<span class="text-red-500">${maxT}</span><span class="text-[10px] ml-1 opacity-30 italic">°C</span></td></tr>`;
+                });
+                document.getElementById('table-body').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
@@ -376,6 +358,7 @@ window.addEventListener('load', updateTableTemps);
 </p>
 </body>
 </html>
+
 
 
 
