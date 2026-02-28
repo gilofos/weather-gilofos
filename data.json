@@ -1,1 +1,6 @@
-{"temperature": 5.7, "humidity": 85, "pressure": 1064.0, "wind": "184° Ν", "status": "ΣΥΝΝΕΦΙΑ ☁️", "updated": "22:02"}
+{
+    "temperature": 3.5,
+    "wind_text": "151° ΝΑ (1 Μπφ)",
+    "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
+    "time": "22:17:19"
+}
