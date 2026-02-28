@@ -295,22 +295,77 @@ if (parseFloat(data.pressure) < 1004) {
         updateClock();
         loadData();
     </script>
-    <div style="position: relative; width: 100%; background: #000; border-top: 4px solid rgba(255,255,255,0.05);">
-    <img src="map_ghilofos.jpg" style="width: 100%; height: auto; display: block; opacity: 0.8;">
-
-    <style>
-        .m-pt { position: absolute; transform: translate(-50%, -50%); text-align: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 11px; text-shadow: 2px 2px 4px #000; }
-        .m-box { background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 4px; border: 1px solid #444; display: inline-block; margin-top: 2px; }
-    </style>
-
-    <div class="m-pt" style="top: 60%; left: 8%;">ΦΩΤΕΙΝΟ<br><span class="m-box">☁️ 3.0°</span></div>
-    <div class="m-pt" style="top: 63%; left: 23%; color:yellow;">ΓΗΛΟΦΟΣ<br><span class="m-box" style="border-color:yellow;">☁️ 1.9°</span></div>
-    <div class="m-pt" style="top: 53%; left: 45%;">ΠΑΡΑΣΚΕΥΗ<br><span class="m-box">☁️ 3.1°</span></div>
-    <div class="m-pt" style="top: 83%; left: 54%;">ΔΑΣΟΧΩΡΙ<br><span class="m-box">☁️ 3.6°</span></div>
-    <div class="m-pt" style="top: 35%; left: 80%;">ΚΑΡΠΕΡΟ<br><span class="m-box">☁️ 3.8°</span></div>
-    <div class="m-pt" style="top: 13%; left: 91%;">ΓΡΕΒΕΝΑ<br><span class="m-box">☁️ 3.4°</span></div>
-    <div class="m-pt" style="top: 78%; left: 91%; color:#00d4ff;">ΔΕΣΚΑΤΗ<br><span class="m-box" style="border-color:#00d4ff;">☁️ 2.8°</span></div>
+   <div class="card p-6 md:p-8 mt-6">
+    <h4 class="text-center text-[10px] md:text-[12px] font-black text-white/40 tracking-[0.3em] md:tracking-[0.5em] mb-6 uppercase italic">ΘΕΡΜΟΚΡΑΣΙΕΣ ΠΕΡΙΟΧΗΣ (1050μ - 450μ)</h4>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-white/10 text-[10px] font-black text-blue-400 tracking-widest uppercase">
+                    <th class="py-3 px-2">ΠΕΡΙΟΧΗ</th>
+                    <th class="py-3 px-2 text-center">ΥΨΟΜΕΤΡΟ</th>
+                    <th class="py-3 px-2 text-right">ΘΕΡΜΟΚΡΑΣΙΑ</th>
+                </tr>
+            </thead>
+            <tbody class="font-bold text-sm md:text-base">
+                <tr class="border-b border-white/5 bg-white/5 text-yellow-400">
+                    <td class="py-4 px-2">📍 ΓΗΛΟΦΟΣ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">1050μ</td>
+                    <td class="py-4 px-2 text-right text-xl font-black"><span id="tab-ghilofos">--</span>°</td>
+                </tr>
+                <tr class="border-b border-white/5 text-blue-300">
+                    <td class="py-4 px-2">🏠 ΔΕΣΚΑΤΗ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">680μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-deskati">--</span>°</td>
+                </tr>
+                <tr class="border-b border-white/5">
+                    <td class="py-4 px-2">🏡 ΦΩΤΕΙΝΟ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">620μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-foteino">--</span>°</td>
+                </tr>
+                <tr class="border-b border-white/5">
+                    <td class="py-4 px-2">🏡 ΠΑΡΑΣΚΕΥΗ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">600μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-paraskevi">--</span>°</td>
+                </tr>
+                <tr class="border-b border-white/5">
+                    <td class="py-4 px-2">🏙️ ΓΡΕΒΕΝΑ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">530μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-grevena">--</span>°</td>
+                </tr>
+                <tr class="border-b border-white/5">
+                    <td class="py-4 px-2">🏡 ΔΑΣΟΧΩΡΙ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">500μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-dasochori">--</span>°</td>
+                </tr>
+                <tr class="text-orange-400">
+                    <td class="py-4 px-2">🏡 ΚΑΡΠΕΡΟ</td>
+                    <td class="py-4 px-2 text-center text-xs opacity-60">450μ</td>
+                    <td class="py-4 px-2 text-right font-black"><span id="tab-karpero">--</span>°</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+// ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΕΝΗΜΕΡΩΝΕΙ ΤΟΝ ΠΙΝΑΚΑ ΑΥΤΟΜΑΤΑ
+function updateTableTemps() {
+    let mainT = parseFloat(document.getElementById('temp-main').innerText);
+    if (!isNaN(mainT)) {
+        document.getElementById('tab-ghilofos').innerText = mainT.toFixed(1);
+        document.getElementById('tab-deskati').innerText = (mainT + 0.9).toFixed(1);
+        document.getElementById('tab-foteino').innerText = (mainT + 1.1).toFixed(1);
+        document.getElementById('tab-paraskevi').innerText = (mainT + 1.2).toFixed(1);
+        document.getElementById('tab-grevena').innerText = (mainT + 1.5).toFixed(1);
+        document.getElementById('tab-dasochori').innerText = (mainT + 1.7).toFixed(1);
+        document.getElementById('tab-karpero').innerText = (mainT + 1.9).toFixed(1);
+    }
+}
+// Τρέχει κάθε 1 λεπτό για να είναι συγχρονισμένο
+setInterval(updateTableTemps, 60000);
+window.addEventListener('load', updateTableTemps);
+</script>
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
@@ -321,6 +376,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
