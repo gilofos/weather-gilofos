@@ -162,10 +162,10 @@
             }
             document.getElementById('moon-name').innerText = name;
         }
-        function getWeatherIcon(code, hourStr) {
+        function getWeatherIcon(code, isDay ) {
             let isNight = false;
             if (hourStr) {
-                const hour = parseInt(hourStr.split(':')[0]);
+                const isNight = isDay === 0;
                 if (hour < 7 || hour >= 18) isNight = true;
             }
             if (code === 0) return isNight ? '🌙' : '☀️';
@@ -313,7 +313,7 @@ if (parseFloat(data.pressure) < 1004) {
             <span id="map-temp-paraskevi" class="text-[#ff0000] font-[900] text-xl md:text-3xl drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">--°C</span>
         </div>
 
-        <div class="absolute flex flex-col items-center" style="top: 50%; left: 68%; transform: translate(-50%, -50%);">
+        <div class="absolute flex flex-col items-center" style="top: 50%; left: 70%; transform: translate(-50%, -50%);">
             <span id="map-icon-dasochori" class="text-4xl md:text-6xl filter drop-shadow(0 0 8px rgba(0,0,0,0.8))">--</span>
             <span id="map-temp-dasochori" class="text-[#ff0000] font-[900] text-xl md:text-3xl drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">--°C</span>
         </div>
@@ -356,7 +356,7 @@ if (parseFloat(data.pressure) < 1004) {
                 
                 if(tempEl) tempEl.innerText = Math.round(data.current.temperature_2m) + "°C";
                 if(iconEl && typeof getWeatherIcon === "function") {
-                    iconEl.innerText = getWeatherIcon(data.current.weather_code, null);
+                    iconEl.innerText = getWeatherIcon(data.current.weather_code, data.current.is_day);
                 } else if(iconEl) {
                     iconEl.innerText = "🌤️"; 
                 }
@@ -379,6 +379,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
