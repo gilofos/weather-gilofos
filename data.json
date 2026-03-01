@@ -1,17 +1,17 @@
 {
-    "temperature": 10.3,
+    "temperature": 10.5,
     "temp_max": 11.1,
     "temp_min": 1.9,
     "humidity": 56,
     "pressure": 1042.0,
     "wind_speed": 2.3,
-    "wind_gust": 9.0,
+    "wind_gust": 9.7,
     "wind_dir": 231,
     "wind_text": "231° ΝΔ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 43,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅",
     "moon_icon": "moon5.png",
-    "time": "13:39:03",
-    "last_update": "13:39:03"
+    "time": "13:45:24",
+    "last_update": "13:45:24"
 }
