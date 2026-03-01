@@ -353,7 +353,9 @@ if (parseFloat(data.pressure) < 1004) {
                 
                 if(tempEl) tempEl.innerText = Math.round(data.current.temperature_2m) + "°C";
                 if(iconEl && typeof getWeatherIcon === "function") {
-                    iconEl.innerText = getWeatherIcon(data.current.weather_code, data.current.is_day);
+                   const mapHour = new Date().getHours();
+const mapIsDay = (mapHour >= 7 && mapHour < 18) ? 1 : 0;
+iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
                 } else if(iconEl) {
                     iconEl.innerText = "🌤️"; 
                 }
@@ -376,6 +378,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
