@@ -166,8 +166,8 @@
     const isNight = isDay === 0 || isDay === "0";
        
             if (code === 0) return isNight ? '🌙' : '☀️';
-            if (code === 1) return isNight ? '☁️' : '🌤️';
-            if (code === 2) return isNight ? '☁️' : '⛅';
+            if (code === 1) return isNight ? '☁️🌙' : '🌤️';
+            if (code === 2) return isNight ? '☁️🌙' : '⛅';
             if (code === 3) return '☁️';
             if (code <= 48) return '🌫️';
             if (code <= 65) return '🌧️';
@@ -378,6 +378,7 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 </p>
 </body>
 </html>
+
 
 
 
