@@ -162,8 +162,8 @@
             }
             document.getElementById('moon-name').innerText = name;
         }
-        function getWeatherIcon(code, isDay ) {
-            let isNight = false;
+        function getWeatherIcon(code, isDay) {
+    const isNight = isDay === 0;
             if (hourStr) {
                 const isNight = isDay === 0;
                 if (hour < 7 || hour >= 18) isNight = true;
@@ -379,6 +379,7 @@ if (parseFloat(data.pressure) < 1004) {
 </p>
 </body>
 </html>
+
 
 
 
