@@ -1,17 +1,17 @@
 {
-    "temperature": 8.3,
+    "temperature": 8.0,
     "temp_max": 14.0,
     "temp_min": 3.8,
-    "humidity": 83,
+    "humidity": 84,
     "pressure": 1041.5,
     "wind_speed": 5.0,
-    "wind_gust": 17.3,
+    "wind_gust": 16.9,
     "wind_dir": 159,
     "wind_text": "159° Ν (1 Μπφ)",
     "rain": 0.0,
     "clouds": 17,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
     "moon_icon": "moon4.png",
-    "time": "20:15:31",
-    "last_update": "20:15:31"
+    "time": "20:30:34",
+    "last_update": "20:30:34"
 }
