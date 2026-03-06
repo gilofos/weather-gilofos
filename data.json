@@ -5,13 +5,13 @@
     "humidity": 77,
     "pressure": 1040.7,
     "wind_speed": 3.9,
-    "wind_gust": 9.4,
+    "wind_gust": 8.6,
     "wind_dir": 158,
     "wind_text": "158° Ν (1 Μπφ)",
     "rain": 0.0,
     "clouds": 51,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
     "moon_icon": "moon3.png",
-    "time": "01:00:33",
-    "last_update": "01:00:33"
+    "time": "01:15:27",
+    "last_update": "01:15:27"
 }
