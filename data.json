@@ -1,5 +1,5 @@
 {
-    "temperature": 2.2,
+    "temperature": 2.6,
     "temp_max": 10.7,
     "temp_min": 0.6,
     "humidity": 76,
@@ -12,6 +12,6 @@
     "clouds": 39,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅",
     "moon_icon": "moon6.png",
-    "time": "08:01:12",
-    "last_update": "08:01:12"
+    "time": "08:15:25",
+    "last_update": "08:15:25"
 }
