@@ -1,17 +1,17 @@
 {
-    "temperature": 2.8,
+    "temperature": 2.9,
     "temp_max": 12.7,
     "temp_min": 2.7,
     "humidity": 73,
-    "pressure": 1040.5,
+    "pressure": 1040.6,
     "wind_speed": 2.1,
-    "wind_gust": 5.4,
+    "wind_gust": 5.0,
     "wind_dir": 121,
     "wind_text": "121° ΝΑ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 0,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
     "moon_icon": "moon6.png",
-    "time": "07:30:30",
-    "last_update": "07:30:30"
+    "time": "07:45:25",
+    "last_update": "07:45:25"
 }
