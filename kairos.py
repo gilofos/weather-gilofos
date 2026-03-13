@@ -35,7 +35,31 @@ def get_moon_phase_image():
     elif phase < 0.69: return "moon3.png"
     elif phase < 0.81: return "moon6.png"
     else: return "moon1.png"
+def get_model_alert():
+    try:
+        # Ζητάμε το 3ήμερο από GFS και ECMWF
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
+        res = requests.get(url).json()
+        
+        # index 2 είναι η Κυριακή (αν σήμερα είναι Παρασκευή)
+        # index 3 είναι η Δευτέρα
+        precip_gfs = res['daily']['precipitation_sum_gfs_seamless']
+        precip_ecmwf = res['daily']['precipitation_sum_ecmwf_ifs']
+        dates = res['daily']['time']
+        
+        days_gr = {"Monday": "ΔΕΥΤΕΡΑ", "Tuesday": "ΤΡΙΤΗ", "Wednesday": "ΤΕΤΑΡΤΗ", 
+                   "Thursday": "ΠΕΜΠΤΗ", "Friday": "ΠΑΡΑΣΚΕΥΗ", "Saturday": "ΣΑΒΒΑΤΟ", "Sunday": "ΚΥΡΙΑΚΗ"}
 
+        for i in range(1, 4):  # Ελέγχουμε τις επόμενες 3 ημέρες
+            if precip_gfs[i] > 1.0 or precip_ecmwf[i] > 1.0:
+                dt = datetime.strptime(dates[i], "%Y-%m-%d")
+                day_name = days_gr.get(dt.strftime("%A"), dt.strftime("%A"))
+                model_name = "GFS" if precip_gfs[i] > precip_ecmwf[i] else "ECMWF"
+                return f"ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΑΝΑΜΕΝΕΤΑΙ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name}."
+        
+        return "ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+    except:
+        return "ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ: ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΕΔΟΜΕΝΑ"
 def get_weather():
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
@@ -88,6 +112,7 @@ def get_weather():
             weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
         weather_data = {
+            "model_forecast": get_model_alert(),
             "temperature": round(temp, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
