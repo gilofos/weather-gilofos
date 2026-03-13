@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
-    "temperature": 3.7,
+    "temperature": 3.6,
     "temp_max": 13.5,
     "temp_min": 3.0,
     "humidity": 85,
-    "pressure": 1032.2,
+    "pressure": 1032.1,
     "wind_speed": 4.2,
-    "wind_gust": 11.9,
+    "wind_gust": 11.5,
     "wind_dir": 160,
     "wind_text": "160° Ν (1 Μπφ)",
     "rain": 0.0,
     "clouds": 5,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
     "moon_icon": "moon1.png",
-    "time": "23:30:28",
-    "last_update": "23:30:28"
+    "time": "23:45:24",
+    "last_update": "23:45:24"
 }
