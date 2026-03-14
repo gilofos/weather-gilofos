@@ -1,6 +1,6 @@
 {
     "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
-    "temperature": 1.4,
+    "temperature": 1.2,
     "temp_max": 14.3,
     "temp_min": 0.1,
     "humidity": 87,
@@ -13,6 +13,6 @@
     "clouds": 24,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
     "moon_icon": "moon1.png",
-    "time": "04:30:30",
-    "last_update": "04:30:30"
+    "time": "04:45:26",
+    "last_update": "04:45:26"
 }
