@@ -408,7 +408,6 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    // Η ΔΙΟΡΘΩΣΗ ΠΟΥ ΕΙΠΕΣ: "έκτο πασκάλ" και "Κελσίου"
     const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
@@ -418,7 +417,7 @@ function speakWeather() {
 }
 
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:140px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
     </div>
     <style>
@@ -430,7 +429,7 @@ document.body.insertAdjacentHTML('beforeend', `
 </body>
 </html>
     <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
-    <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="Βοηθός">
+    <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="">
 </div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
