@@ -3,8 +3,8 @@ import json
 from datetime import datetime, timedelta
 
 # Συντεταγμένες για Γήλοφο
-LAT = 39.88
-LON = 21.80
+LAT = 40.58
+LON = 21.67
 
 def get_direction(degrees):
     directions = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"]
@@ -35,31 +35,37 @@ def get_moon_phase_image():
     elif phase < 0.69: return "moon3.png"
     elif phase < 0.81: return "moon6.png"
     else: return "moon1.png"
+
 def get_model_alert():
     try:
-        # Ζητάμε το 3ήμερο από GFS και ECMWF
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
+        # Ζητάμε πρόγνωση 3 ημερών από GFS και ECMWF
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum,precipitation_probability_max&timezone=auto&models=gfs_seamless,ecmwf_ifs"
         res = requests.get(url).json()
         
-        # index 2 είναι η Κυριακή (αν σήμερα είναι Παρασκευή)
-        # index 3 είναι η Δευτέρα
         precip_gfs = res['daily']['precipitation_sum_gfs_seamless']
         precip_ecmwf = res['daily']['precipitation_sum_ecmwf_ifs']
+        prob_gfs = res['daily']['precipitation_probability_max_gfs_seamless']
         dates = res['daily']['time']
         
-        days_gr = {"Monday": "ΔΕΥΤΕΡΑ", "Tuesday": "ΤΡΙΤΗ", "Wednesday": "ΤΕΤΑΡΤΗ", 
-                   "Thursday": "ΠΕΜΠΤΗ", "Friday": "ΠΑΡΑΣΚΕΥΗ", "Saturday": "ΣΑΒΒΑΤΟ", "Sunday": "ΚΥΡΙΑΚΗ"}
+        days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
 
-        for i in range(1, 4):  # Ελέγχουμε τις επόμενες 3 ημέρες
-            if precip_gfs[i] > 1.0 or precip_ecmwf[i] > 1.0:
+        # Ελέγχουμε τις επόμενες 3 ημέρες (ξεκινώντας από αύριο i=1)
+        for i in range(1, 4):
+            # Αν κάποιο μοντέλο δει πάνω από 1.5mm βροχή ή μεγάλη πιθανότητα
+            if precip_gfs[i] > 1.5 or precip_ecmwf[i] > 1.5:
                 dt = datetime.strptime(dates[i], "%Y-%m-%d")
-                day_name = days_gr.get(dt.strftime("%A"), dt.strftime("%A"))
-                model_name = "GFS" if precip_gfs[i] > precip_ecmwf[i] else "ECMWF"
-                return f"ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΑΝΑΜΕΝΕΤΑΙ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name}."
+                day_name = days_gr[dt.weekday()]
+                
+                status = "ΒΡΟΧΕΣ"
+                if precip_gfs[i] > 5 or precip_ecmwf[i] > 5:
+                    status = "ΒΡΟΧΕΣ & ΚΑΤΑΙΓΙΔΕΣ"
+                
+                return f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name} ΜΕ {status}"
         
         return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
     except:
-        return "ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΕΔΟΜΕΝΑ"
+        return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+
 def get_weather():
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
@@ -77,14 +83,12 @@ def get_weather():
         temp = data['temperature_2m']
         precip = data['precipitation']
         hum = data['relative_humidity_2m']
-        # Υπολογισμός πίεσης στη στάθμη της θάλασσας για Γήλοφο
-        pres_sea = data['surface_pressure'] + 103 
+        pres_sea = data['surface_pressure'] + 103 # Διόρθωση για υψόμετρο Γηλόφου
         wind_spd = data['wind_speed_10m']
         wind_gust = data.get('wind_gusts_10m', 0)
         wind_deg = data['wind_direction_10m']
         clouds = data['cloud_cover']
         
-        # Πληροφορίες Ανέμου: Μοίρες, Κατεύθυνση και Μποφόρ
         wind_cardinal = get_direction(wind_deg)
         bft = get_beaufort(wind_spd)
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
@@ -94,13 +98,12 @@ def get_weather():
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
-        # --- ΛΟΓΙΚΗ ΠΡΟΓΝΩΣΗΣ - ΤΕΛΙΚΗ ---
+        # Λογική τρέχουσας κατάστασης (κίτρινα γράμματα)
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
             else: weather_type = "ΒΡΟΧΗ 💧"
         elif clouds <= 20: 
-            # Προτεραιότητα στον καθαρό ουρανό
             weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌" if is_night else "ΗΛΙΟΦΑΝΕΙΑ ☀️"
         elif pres_sea < 1004:
             weather_type = "ΚΑΚΟΚΑΙΡΙΑ ⚠️"
@@ -140,4 +143,3 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
-
