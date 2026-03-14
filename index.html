@@ -373,11 +373,10 @@ function speakWeather() {
     window.speechSynthesis.cancel();
 
     // Προσπαθούμε να βρούμε τις τιμές με κάθε δυνατό τρόπο
-    const t = document.getElementById('temp')?.innerText || document.querySelector('.temp-value')?.innerText || "---";
-    const h = document.getElementById('hum')?.innerText || document.querySelector('.humidity-value')?.innerText || "---";
-    const w = document.getElementById('windSpeed')?.innerText || document.querySelector('.wind-value')?.innerText || "---";
-    const p = document.getElementById('press')?.innerText || document.querySelector('.pressure-value')?.innerText || "---";
-    
+    const t = document.body.innerText.match(/(\d+\.?\d*)\s*°/)?.[1] || "---";
+    const h = document.body.innerText.match(/(\d+)\s*%/)?.[1] || "---";
+    const w = document.body.innerText.match(/(\d+\.?\d*)\s*km\/h/)?.[1] || "---";
+    const p = document.body.innerText.match(/(\d+)\s*hPa/)?.[1] || "---";
     // Εδώ ελέγχουμε αν υπάρχει η λέξη ΞΑΣΤΕΡΙΑ στην οθόνη
     const sky = document.body.innerText.includes('ΞΑΣΤΕΡΙΑ') ? 'Ξαστεριά και αίθριος καιρός' : 'Καθαρός ουρανός';
 
