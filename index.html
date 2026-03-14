@@ -370,20 +370,20 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     let currentWeatherData = {}; 
 
 function speakWeather() {
-    if (!currentWeatherData || !currentWeatherData.temperature_2m) {
-        alert("Τα δεδομένα δεν έχουν φορτώσει ακόμα!");
-        return;
-    }
-
-    const temp = currentWeatherData.temperature_2m;
-    const hum = currentWeatherData.relative_humidity_2m;
-    const wind = currentWeatherData.wind_speed_10m;
+    // Παίρνουμε τις τιμές απευθείας από τα στοιχεία της σελίδας
+    const temp = document.getElementById('temp').innerText;
+    const hum = document.getElementById('hum').innerText;
+    const wind = document.getElementById('windSpeed').innerText;
 
     const text = `Γεια σας από τον Γήλοφο. Η θερμοκρασία είναι ${temp} βαθμοί. Η υγρασία είναι ${hum} τοις εκατό. Ο άνεμος πνέει με ${wind} χιλιόμετρα την ώρα. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance();
     msg.text = text;
     msg.lang = 'el-GR';
+    msg.rate = 0.9; 
+
+    // Καθαρισμός και ομιλία
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
 }
 }
