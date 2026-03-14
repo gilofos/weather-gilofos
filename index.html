@@ -350,7 +350,7 @@ if (parseFloat(data.pressure) < 1004) {
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${spot.lat}&longitude=${spot.lon}&current=temperature_2m,weather_code&timezone=auto`);
                 const data = await res.json();
-                
+                currentWeatherData = data.current;
                 const tempEl = document.getElementById(`map-temp-${spot.id}`);
                 const iconEl = document.getElementById(`map-icon-${spot.id}`);
                 
@@ -367,8 +367,30 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     }
     updateMapSpots();
     setInterval(updateMapSpots, 600000);
+    let currentWeatherData = {}; 
+
+function speakWeather() {
+    if (!currentWeatherData || !currentWeatherData.temperature_2m) {
+        alert("Τα δεδομένα δεν έχουν φορτώσει ακόμα!");
+        return;
+    }
+
+    const temp = currentWeatherData.temperature_2m;
+    const hum = currentWeatherData.relative_humidity_2m;
+    const wind = currentWeatherData.wind_speed_10m;
+
+    const text = `Γεια σας από τον Γήλοφο. Η θερμοκρασία είναι ${temp} βαθμοί. Η υγρασία είναι ${hum} τοις εκατό. Ο άνεμος πνέει με ${wind} χιλιόμετρα την ώρα. Καλή σας συνέχεια!`;
+
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = text;
+    msg.lang = 'el-GR';
+    window.speechSynthesis.speak(msg);
+}
+}
 </script>
-    
+    <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
+    <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="Βοηθός">
+</div>
     <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
         <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
         <p style="margin: 5px 0 0 0; font-size: 1.2em; color: #000;"><strong>Developed by Achilleas Kotsiras</strong></p>
