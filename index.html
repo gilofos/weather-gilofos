@@ -371,16 +371,24 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 
 function speakWeather() {
     window.speechSynthesis.cancel();
+    const ολη_η_σελιδα = document.body.innerText;
+    
+    const getVal = (regex) => {
+        const match = ολη_η_σελιδα.match(regex);
+        if (match) {
+            return match[1].replace('.', ',');
+        }
+        return "---";
+    };
 
-    // Προσπαθούμε να βρούμε τις τιμές με κάθε δυνατό τρόπο
-    const t = document.body.innerText.match(/(\d+\.?\d*)\s*°/)?.[1] || "---";
-    const h = document.body.innerText.match(/(\d+)\s*%/)?.[1] || "---";
-    const w = document.body.innerText.match(/(\d+\.?\d*)\s*km\/h/)?.[1] || "---";
-    const p = document.body.innerText.match(/(\d+)\s*hPa/)?.[1] || "---";
-    // Εδώ ελέγχουμε αν υπάρχει η λέξη ΞΑΣΤΕΡΙΑ στην οθόνη
-    const sky = document.body.innerText.includes('ΞΑΣΤΕΡΙΑ') ? 'Ξαστεριά και αίθριος καιρός' : 'Καθαρός ουρανός';
+    const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
+    const h = getVal(/(\d+)\s*%/);
+    const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
+    const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
+    
+    const sky = ολη_η_σελιδα.includes('ΞΑΣΤΕΡΙΑ') ? 'Ξαστεριά και αίθριος καιρός' : 'Καθαρός ουρανός';
 
-    const text = `Τώρα στον Γήλοφο είναι ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p}. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
+    const text = `Γεια σας. Τώρα στον Γήλοφο είναι ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτοπασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
