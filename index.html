@@ -371,21 +371,25 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 
 function speakWeather() {
     window.speechSynthesis.cancel();
-    
-    // Παίρνουμε τις τιμές από την οθόνη
-    const t = document.getElementById('temp')?.innerText || "---";
-    const h = document.getElementById('hum')?.innerText || "---";
-    const w = document.getElementById('windSpeed')?.innerText || "---";
 
-    const text = `Γεια σας από τον Γήλοφο. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Καλή σας συνέχεια!`;
+    // Προσπαθούμε να βρούμε τις τιμές με κάθε δυνατό τρόπο
+    const t = document.getElementById('temp')?.innerText || document.querySelector('.temp-value')?.innerText || "---";
+    const h = document.getElementById('hum')?.innerText || document.querySelector('.humidity-value')?.innerText || "---";
+    const w = document.getElementById('windSpeed')?.innerText || document.querySelector('.wind-value')?.innerText || "---";
+    const p = document.getElementById('press')?.innerText || document.querySelector('.pressure-value')?.innerText || "---";
+    
+    // Εδώ ελέγχουμε αν υπάρχει η λέξη ΞΑΣΤΕΡΙΑ στην οθόνη
+    const sky = document.body.innerText.includes('ΞΑΣΤΕΡΙΑ') ? 'Ξαστεριά και αίθριος καιρός' : 'Καθαρός ουρανός';
+
+    const text = `Τώρα στον Γήλοφο είναι ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p}. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
-    msg.rate = 0.9;
+    msg.rate = 0.85;
     window.speechSynthesis.speak(msg);
 }
 
-// Εμφάνιση του ρομπότ στην οθόνη
+// Εμφάνιση του ρομπότ
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:80px; cursor:pointer; z-index:9999;">
         <img src="assistant_logo.jpg" style="width:100%; border-radius:15px; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" alt="Βοηθός">
@@ -394,7 +398,6 @@ document.body.insertAdjacentHTML('beforeend', `
 </script>
 </body>
 </html>
-</script>
     <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
     <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="Βοηθός">
 </div>
