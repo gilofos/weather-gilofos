@@ -373,16 +373,19 @@ function speakWeather() {
     window.speechSynthesis.cancel();
     const info = document.body.innerText;
     
+    // Ημερομηνία και Ώρα
     const τωρα = new Date();
     const ημερα = τωρα.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
     let ωρα = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
+    
+    // Μετατροπή σε 12ωρο (το 20 γίνεται 8)
     if (ωρα > 12) ωρα = ωρα - 12;
     if (ωρα === 0) ωρα = 12;
 
     const getVal = (regex) => {
         const m = info.match(regex);
-        // Αντικαθιστούμε την τελεία με τη λέξη "κόμμα" για να την ακούς σίγουρα
+        // Προσθήκη της λέξης "κόμμα" για σιγουριά
         return m ? m[1].replace('.', ' κόμμα ') : "---";
     };
 
@@ -391,29 +394,33 @@ function speakWeather() {
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    // ΕΔΩ ΒΡΙΣΚΕΙ ΤΗΝ ΠΡΑΓΜΑΤΙΚΗ ΚΑΤΑΣΤΑΣΗ (π.χ. Λίγα σύννεφα, Ξαστεριά κτλ)
-    // Ψάχνει τη λέξη που βρίσκεται ανάμεσα στα εικονίδια ή τους τίτλους
-    const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΣΥΝΝΕΦΙΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
-    const sky = skyMatch ? skyMatch[0].toLowerCase() : "καλές καιρικές συνθήκες";
+    // Εδώ βρίσκει την πραγματική κατάσταση από την οθόνη
+    const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
+    const sky = skyMatch ? skyMatch[0].toLowerCase() : "καλές συνθήκες";
 
-    // Το κείμενο χωρίς το "Ο καιρός είναι"
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${ημερα} και η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${ημερα} και η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτό... Πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
-    const male = voices.find(v => v.name.includes('Stefanos') || v.name.includes('Greek'));
-    if (male) msg.voice = male;
+    
+    // Επιλογή εναλλακτικού ομιλητή για να μην μπουκώνει
+    const newVoice = voices.find(v => (v.name.includes('Nestoras') || v.name.includes('Greek')) && !v.name.includes('Stefanos'));
+    if (newVoice) msg.voice = newVoice;
 
     msg.lang = 'el-GR';
     msg.rate = 0.8; 
     window.speechSynthesis.speak(msg);
 }
 
-// Εμφάνιση του ρομπότ
+// Εμφάνιση του κουμπιού (140px για να φαίνεται καλά)
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:80px; cursor:pointer; z-index:9999;">
-        <img src="assistant_logo.jpg" style="width:100%; border-radius:15px; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" alt="Βοηθός">
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:140px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="Βοηθός">
     </div>
+    <style>
+        #weather-assistant:hover { transform: scale(1.1); }
+        #weather-assistant:active { transform: scale(0.9); }
+    </style>
 `);
 </script>
 </body>
