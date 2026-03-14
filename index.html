@@ -370,23 +370,30 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     let currentWeatherData = {}; 
 
 function speakWeather() {
-    // Παίρνουμε τις τιμές απευθείας από τα στοιχεία της σελίδας
-    const temp = document.getElementById('temp').innerText;
-    const hum = document.getElementById('hum').innerText;
-    const wind = document.getElementById('windSpeed').innerText;
-
-    const text = `Γεια σας από τον Γήλοφο. Η θερμοκρασία είναι ${temp} βαθμοί. Η υγρασία είναι ${hum} τοις εκατό. Ο άνεμος πνέει με ${wind} χιλιόμετρα την ώρα. Καλή σας συνέχεια!`;
-
-    const msg = new SpeechSynthesisUtterance();
-    msg.text = text;
-    msg.lang = 'el-GR';
-    msg.rate = 0.9; 
-
-    // Καθαρισμός και ομιλία
     window.speechSynthesis.cancel();
+    
+    // Παίρνουμε τις τιμές από την οθόνη
+    const t = document.getElementById('temp')?.innerText || "---";
+    const h = document.getElementById('hum')?.innerText || "---";
+    const w = document.getElementById('windSpeed')?.innerText || "---";
+
+    const text = `Γεια σας από τον Γήλοφο. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Καλή σας συνέχεια!`;
+
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'el-GR';
+    msg.rate = 0.9;
     window.speechSynthesis.speak(msg);
 }
-}
+
+// Εμφάνιση του ρομπότ στην οθόνη
+document.body.insertAdjacentHTML('beforeend', `
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:80px; cursor:pointer; z-index:9999;">
+        <img src="assistant_logo.jpg" style="width:100%; border-radius:15px; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" alt="Βοηθός">
+    </div>
+`);
+</script>
+</body>
+</html>
 </script>
     <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
     <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="Βοηθός">
