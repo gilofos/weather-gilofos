@@ -1,5 +1,5 @@
 {
-    "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
+    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΡΙΤΗ ΜΕ ΒΡΟΧΕΣ",
     "temperature": 9.6,
     "temp_max": 14.1,
     "temp_min": 0.2,
@@ -13,6 +13,6 @@
     "clouds": 19,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
     "moon_icon": "moon1.png",
-    "time": "19:15:28",
-    "last_update": "19:15:28"
+    "time": "19:24:00",
+    "last_update": "19:24:00"
 }
