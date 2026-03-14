@@ -373,14 +373,20 @@ function speakWeather() {
     window.speechSynthesis.cancel();
     const info = document.body.innerText;
     
-    // Αυτόματοι υπολογισμοί για ημερομηνία και ώρα
+    // Υπολογισμός ώρας (12ωρο) και λεπτών
     const τωρα = new Date();
     const ημερα = τωρα.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
-    const ωρα = τωρα.getHours();
+    let ωρα = τωρα.getHours();
+    const λεπτα = τωρα.getMinutes();
     
+    // Μετατροπή από 24ωρο σε 12ωρο (το 20 γίνεται 8)
+    if (ωρα > 12) ωρα = ωρα - 12;
+    if (ωρα === 0) ωρα = 12;
+
     const getVal = (regex) => {
         const m = info.match(regex);
-        return m ? m[1].replace('.', ',') : "---";
+        // Προσθήκη κενού μετά το κόμμα για να το προφέρει σωστά
+        return m ? m[1].replace('.', ', ') : "---";
     };
 
     const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
@@ -389,17 +395,17 @@ function speakWeather() {
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
     const sky = info.includes('ΞΑΣΤΕΡΙΑ') ? 'Ξαστεριά και αίθριος καιρός' : 'Καθαρός ουρανός';
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${ημερα} και η ώρα είναι ${ωρα} το βράδυ. Ο καιρός τώρα είναι ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτο-πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
+    // Κείμενο με διορθωμένο το "εκτο πασκάλ" και την ώρα
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${ημερα} και η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Ο καιρός τώρα είναι ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     
-    // Προσπάθεια για ανδρική φωνή
     const voices = window.speechSynthesis.getVoices();
     const male = voices.find(v => v.name.includes('Stefanos') || v.name.includes('Greek'));
     if (male) msg.voice = male;
 
     msg.lang = 'el-GR';
-    msg.rate = 0.85;
+    msg.rate = 0.8; // Λίγο πιο αργά για καθαρή προφορά
     window.speechSynthesis.speak(msg);
 }
 
