@@ -369,8 +369,22 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     setInterval(updateMapSpots, 600000);
     let currentWeatherData = {}; 
 
+// Δημιουργία της λίστας φωνών παγκόσμια
+let synth = window.speechSynthesis;
+let voices = [];
+
+function populateVoices() {
+    voices = synth.getVoices();
+}
+
+// Αυτό βοηθάει τους browsers στα κινητά να "δουν" τις φωνές έγκαιρα
+populateVoices();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+}
+
 function speakWeather() {
-    window.speechSynthesis.cancel();
+    synth.cancel();
     const info = document.body.innerText;
     
     const τωρα = new Date();
@@ -382,10 +396,16 @@ function speakWeather() {
     const onomaMina = μηνες[τωρα.getMonth()];
     const etos = τωρα.getFullYear();
     
-    let ωρα = τωρα.getHours();
+    let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
-    if (ωρα > 12) ωρα = ωρα - 12;
-    if (ωρα === 0) ωρα = 12;
+    
+    let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : "το βράδυ";
+    let ωραDisplay = ωραRaw;
+    if (ωραDisplay > 12) ωραDisplay = ωραDisplay - 12;
+    if (ωραDisplay === 0) ωραDisplay = 12;
+
+    let lekshOra = ωραDisplay;
+    if (ωραDisplay === 1) lekshOra = "μία";
 
     const getVal = (regex) => {
         const m = info.match(regex);
@@ -408,24 +428,22 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή σας συνέχεια!`;
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     
-    // Η ΛΥΣΗ ΓΙΑ ΤΑ ΚΙΝΗΤΑ: Ψάχνουμε τη σωστή ελληνική φωνή
-    const voices = window.speechSynthesis.getVoices();
-    const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
+    // Πιο "επιθετική" αναζήτηση ελληνικής φωνής
+    if (voices.length === 0) voices = synth.getVoices();
+    let greekVoice = voices.find(v => v.lang === 'el-GR' || v.lang.startsWith('el'));
+    
     if (greekVoice) {
         msg.voice = greekVoice;
     }
     
     msg.lang = 'el-GR';
     msg.rate = 0.75; 
-    window.speechSynthesis.speak(msg);
+    synth.speak(msg);
 }
-
-// Προ-φόρτωση φωνών για τα κινητά
-window.speechSynthesis.getVoices();
 
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
