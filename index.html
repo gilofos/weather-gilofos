@@ -408,8 +408,8 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    // Το κείμενο με τη νέα σου προσθήκη
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή σας συνέχεια!`;
+    // ΕΔΩ Η ΑΛΛΑΓΗ: Βάλαμε τελείες για να τα πει πιο αργά στο τέλος
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτοπασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
@@ -417,7 +417,6 @@ function speakWeather() {
     window.speechSynthesis.speak(msg);
 }
 
-// Εμφάνιση του ΜΕΓΑΛΟΥ ρομπότ (width:180px)
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
