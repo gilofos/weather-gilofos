@@ -57,9 +57,9 @@ def get_model_alert():
                 model_name = "GFS" if precip_gfs[i] > precip_ecmwf[i] else "ECMWF"
                 return f"ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΑΝΑΜΕΝΕΤΑΙ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name}."
         
-        return "ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ ΒΑΣΕΙ ΜΟΝΤΕΛΩΝ GFS & ECMWF: ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
     except:
-        return "ΠΡΟΓΝΩΣΗ ΕΠΟΜΕΝΩΝ ΗΜΕΡΩΝ: ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΕΔΟΜΕΝΑ"
+        return "ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΕΔΟΜΕΝΑ"
 def get_weather():
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
