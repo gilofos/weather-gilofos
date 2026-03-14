@@ -373,7 +373,6 @@ function speakWeather() {
     window.speechSynthesis.cancel();
     const info = document.body.innerText;
     
-    // Χειροκίνητη Ημερομηνία για να μην κάνει λάθη
     const τωρα = new Date();
     const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
     const μηνες = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
@@ -398,7 +397,6 @@ function speakWeather() {
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    // Φωνητική διόρθωση για τον καιρό
     const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
     let sky = "καλές συνθήκες";
     if (skyMatch) {
@@ -410,8 +408,8 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    // Το κείμενο με το ΕΤΟΣ και το ΕΚΤΟ-ΠΑΣΚΑΛ
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} εκτο-πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
+    // Η ΔΙΟΡΘΩΣΗ ΠΟΥ ΕΙΠΕΣ: "έκτο πασκάλ" και "Κελσίου"
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${ωρα} και ${λεπτα} το βράδυ. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
@@ -419,7 +417,6 @@ function speakWeather() {
     window.speechSynthesis.speak(msg);
 }
 
-// Εμφάνιση του νέου ρομπότ χωρίς τη λέξη βοηθός
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:140px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
