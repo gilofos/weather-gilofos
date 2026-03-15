@@ -371,7 +371,10 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 
 function speakWeather() {
     window.speechSynthesis.cancel();
-    const info = document.body.innerText;
+    
+    // Παίρνουμε το κείμενο και το περιορίζουμε στην αρχή για να μη διαβάζει προβλέψεις
+    const fullInfo = document.body.innerText;
+    const info = fullInfo.substring(0, 1000); 
     
     const τωρα = new Date();
     const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
@@ -385,9 +388,11 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
-    let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : (ωραRaw >= 20 ? "το βράδυ" : (ωραRaw >= 12 ? "το απόγευμα" : "το πρωί"));
-    let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
+    // Διόρθωση περιόδων ημέρας
+    let periodos = (ωραRaw >= 5 && ωραRaw < 12) ? "το πρωί" : (ωραRaw >= 12 && ωραRaw < 17) ? "το μεσημέρι" : (ωραRaw >= 17 && ωραRaw < 21) ? "το απόγευμα" : "το βράδυ";
+    if (ωραRaw >= 0 && ωραRaw < 5) periodos = "τα ξημερώματα";
 
+    let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
     else if (ωραDisplay === 2) lekshOra = "δύο";
@@ -404,26 +409,31 @@ function speakWeather() {
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
+    // ΔΙΟΡΘΩΜΕΝΗ ΑΝΑΖΗΤΗΣΗ ΚΑΙΡΟΥ (Προσθήκη Ηλιοφάνειας & Περιορισμός)
+    const limitedUpper = info.toUpperCase();
+    const skyMatch = limitedUpper.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/);
+    
     let sky = "καλές συνθήκες";
     if (skyMatch) {
         const s = skyMatch[0];
-        if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
+        if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'ηλιοφάνεια';
+        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
         else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
         else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
+        else if (s === 'ΒΡΟΧΗ') sky = 'βροχή';
         else sky = s.toLowerCase();
     }
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
-    msg.rate = 0.85; 
+    msg.rate = 0.88; 
 
     const startSpeaking = () => {
         const voices = window.speechSynthesis.getVoices();
-        const greekVoice = voices.find(v => v.lang.includes('el'));
+        const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
         if (greekVoice) msg.voice = greekVoice;
         window.speechSynthesis.speak(msg);
     };
@@ -436,7 +446,7 @@ function speakWeather() {
 }
 
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:150px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
     </div>
     <style>
@@ -444,9 +454,6 @@ document.body.insertAdjacentHTML('beforeend', `
         #weather-assistant:active { transform: scale(0.9); }
     </style>
 `);
-</script>
-</body>
-</html>
     <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
     <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="">
 </div>
