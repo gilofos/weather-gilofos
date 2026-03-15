@@ -379,12 +379,13 @@ function speakWeather() {
     
     // ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΜΕΤΑΤΡΟΠΗ ΑΡΙΘΜΩΝ ΣΕ ΘΗΛΥΚΑ (ΚΑΙ ΔΕΚΑΔΙΚΑ)
     const toFemale = (numStr) => {
-        let parts = numStr.split(/[.,]/); // Σπάμε τον αριθμό στο κόμμα
+        if (!numStr) return "---";
+        let parts = numStr.split(/[.,]/); 
         let fixedParts = parts.map(p => {
             let n = p.trim();
-            if (n === "1") return "μία";
-            if (n === "3") return "τρεις";
-            if (n === "4") return "τέσσερις";
+            if (n === "1" || n === "01") return "μία";
+            if (n === "3" || n === "03") return "τρεις";
+            if (n === "4" || n === "04") return "τέσσερις";
             if (n === "13") return "δεκατρείς";
             if (n === "14") return "δεκατέσσερις";
             return n;
@@ -394,19 +395,17 @@ function speakWeather() {
 
     const getVal = (regex) => {
         let m = info.match(regex);
-        if (!m) return "---";
-        // Καθαρίζουμε το νούμερο και το στέλνουμε για μετατροπή σε θηλυκό
-        let cleanNum = m[1].replace(',', '.'); 
-        return toFemale(cleanNum);
+        if (!m || !m[1]) return "---";
+        return toFemale(m[1]);
     };
 
-    // Μετρήσεις
+    // Μετρήσεις από τη σελίδα
     const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
     const h = getVal(/(\d+)\s*%/);
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    // Ώρα και Λεπτά (Θηλυκά)
+    // Ώρα και Λεπτά
     let ωραRaw = τωρα.getHours();
     let λεπταRaw = τωρα.getMinutes();
     let lekshOra = toFemale(String(ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw)));
@@ -424,7 +423,7 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    const text = `... Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Καλή συνέχεια!`;
+    const text = `... Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πασκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
@@ -442,9 +441,13 @@ function speakWeather() {
 }
 
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999;">
-        <img src="assistant_robot.png" style="width:100%;" alt="Ρομποτάκι">
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="Ρομποτάκι">
     </div>
+    <style>
+        #weather-assistant:hover { transform: scale(1.1); }
+        #weather-assistant:active { transform: scale(0.9); }
+    </style>
 `);
     </script>
 </body>
