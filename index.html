@@ -371,8 +371,7 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 
 function speakWeather() {
     window.speechSynthesis.cancel();
-    const fullInfo = document.body.innerText;
-    const info = fullInfo.substring(0, 1000); 
+    const info = document.body.innerText;
     
     const τωρα = new Date();
     const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
@@ -386,15 +385,19 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
-    let periodos = (ωραRaw >= 5 && ωραRaw < 12) ? "το πρωί" : (ωραRaw >= 12 && ωραRaw < 17) ? "το μεσημέρι" : (ωραRaw >= 17 && ωραRaw < 21) ? "το απόγευμα" : "το βράδυ";
-    if (ωραRaw >= 0 && ωραRaw < 5) periodos = "τα ξημερώματα";
-
+    let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : (ωραRaw >= 20 ? "το βράδυ" : (ωραRaw >= 12 ? "το απόγευμα" : "το πρωί"));
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
-    let lekshOra = (ωραDisplay === 1) ? "μία" : (ωραDisplay === 2) ? "δύο" : (ωραDisplay === 3) ? "τρεις" : (ωραDisplay === 4) ? "τέσσερις" : ωραDisplay;
 
+    let lekshOra = ωραDisplay;
+    if (ωραDisplay === 1) lekshOra = "μία";
+    else if (ωραDisplay === 2) lekshOra = "δύο";
+    else if (ωραDisplay === 3) lekshOra = "τρεις";
+    else if (ωραDisplay === 4) lekshOra = "τέσσερις";
+
+    // ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΚΑΘΑΡΑ ΝΟΥΜΕΡΑ
     const getVal = (regex) => {
         const m = info.match(regex);
-        return m ? m[1].replace('.', ' κόμμα ') : "---";
+        return m ? m[0].replace(/[^\d.,-]/g, '').replace('.', ' κόμμα ') : "---";
     };
 
     const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
@@ -402,38 +405,48 @@ function speakWeather() {
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    const limitedUpper = info.toUpperCase();
-    const skyMatch = limitedUpper.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/);
-    
+    const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
     let sky = "καλές συνθήκες";
     if (skyMatch) {
         const s = skyMatch[0];
-        if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'ηλιοφάνεια';
-        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
+        if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
         else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
         else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
-        else if (s === 'ΒΡΟΧΗ') sky = 'βροχή';
         else sky = s.toLowerCase();
     }
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
-    msg.rate = 0.88; 
-    const voices = window.speechSynthesis.getVoices();
-    const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
-    if (greekVoice) msg.voice = greekVoice;
-    window.speechSynthesis.speak(msg);
+    msg.rate = 0.85; 
+
+    // ΕΠΙΛΟΓΗ ΦΩΝΗΣ ΚΑΙ ΕΚΦΩΝΗΣΗ (ΜΕ ΑΝΑΜΟΝΗ ΓΙΑ ANDROID)
+    const startSpeaking = () => {
+        const voices = window.speechSynthesis.getVoices();
+        const greekVoice = voices.find(v => v.lang.includes('el'));
+        if (greekVoice) msg.voice = greekVoice;
+        window.speechSynthesis.speak(msg);
+    };
+
+    if (window.speechSynthesis.getVoices().length !== 0) {
+        startSpeaking();
+    } else {
+        window.speechSynthesis.onvoiceschanged = startSpeaking;
+    }
 }
 
-if(!document.getElementById('weather-assistant')){
-    document.body.insertAdjacentHTML('beforeend', `
-        <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:150px; cursor:pointer; z-index:9999;">
-            <img src="assistant_robot.png" style="width:100%;" alt="Ρομποτάκι">
-        </div>
-    `);
+// ΕΜΦΑΝΙΣΗ ΡΟΜΠΟΤ
+document.body.insertAdjacentHTML('beforeend', `
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
+    </div>
+    <style>
+        #weather-assistant:hover { transform: scale(1.1); }
+        #weather-assistant:active { transform: scale(0.9); }
+    </style>
+`);
     </script>
 </body>
 </html>
