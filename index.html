@@ -385,24 +385,23 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
-    // Καθορισμός περιόδου
     let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : (ωραRaw >= 20 ? "το βράδυ" : (ωραRaw >= 12 ? "το απόγευμα" : "το πρωί"));
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
 
-    // Διορθώσεις για θηλυκά
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
     else if (ωραDisplay === 2) lekshOra = "δύο";
     else if (ωραDisplay === 3) lekshOra = "τρεις";
     else if (ωραDisplay === 4) lekshOra = "τέσσερις";
 
+    // ΔΙΟΡΘΩΜΕΝΗ ΣΥΝΑΡΤΗΣΗ: Παίρνει μόνο τον αριθμό
     const getVal = (regex) => {
         const m = info.match(regex);
-        return m ? m[0].replace('.', ' κόμμα ') : "---";
+        return m ? m[1].replace('.', ' κόμμα ') : "---";
     };
 
     const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
-    const h = getVal(/(\d+)\s*%/);
+    const h = getVal(/(\d+)\s*%/); // Παίρνει π.χ. το 50
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
@@ -417,27 +416,20 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
+    // Εδώ προσθέτουμε το "τοις εκατό" χειροκίνητα για να το πει σωστά
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Καλή σας συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
-    
-    // ΡΥΘΜΙΣΕΙΣ ΓΙΑ ΑΝΔΡΙΚΗ ΦΩΝΗ ΠΑΝΤΟΥ:
-    msg.pitch = 0.6; // Χαμηλός τόνος για να ακούγεται ανδρική η φωνή
-    msg.rate = 0.85; // Ταχύτητα ομιλίας
+    msg.rate = 0.85; 
 
     const startSpeaking = () => {
         const voices = window.speechSynthesis.getVoices();
-        // Βρίσκουμε την ελληνική φωνή (τη "Φωνή 1" που έχει το κινητό σου)
         const greekVoice = voices.find(v => v.lang.includes('el'));
-        
-        if (greekVoice) {
-            msg.voice = greekVoice;
-        }
+        if (greekVoice) msg.voice = greekVoice;
         window.speechSynthesis.speak(msg);
     };
 
-    // Έλεγχος για Android (αναμονή για φόρτωση φωνών)
     if (window.speechSynthesis.getVoices().length !== 0) {
         startSpeaking();
     } else {
@@ -445,7 +437,6 @@ function speakWeather() {
     }
 }
 
-// Προσθήκη του HTML στοιχείου (Ρομποτάκι)
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
