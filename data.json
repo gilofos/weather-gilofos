@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΡΙΤΗ ΜΕ ΒΡΟΧΕΣ & ΚΑΤΑΙΓΙΔΕΣ",
-    "temperature": 5.7,
+    "temperature": 5.5,
     "temp_max": 14.2,
     "temp_min": 0.2,
-    "humidity": 78,
-    "pressure": 1027.8,
+    "humidity": 79,
+    "pressure": 1028.0,
     "wind_speed": 1.0,
-    "wind_gust": 4.0,
+    "wind_gust": 3.2,
     "wind_dir": 45,
     "wind_text": "45° ΒΑ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 14,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
     "moon_icon": "moon1.png",
-    "time": "22:29:14",
-    "last_update": "22:29:14"
+    "time": "22:30:31",
+    "last_update": "22:30:31"
 }
