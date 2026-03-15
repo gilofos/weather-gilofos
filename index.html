@@ -405,14 +405,18 @@ function speakWeather() {
     const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
+    // ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟΝ ΚΑΙΡΟ (ΗΛΙΟΣ / ΒΡΟΧΗ)
+    const skyMatch = info.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/i);
     let sky = "καλές συνθήκες";
     if (skyMatch) {
-        const s = skyMatch[0];
-        if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
+        const s = skyMatch[0].toUpperCase();
+        if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
+        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύννεφα';
         else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
         else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
+        else if (s === 'ΒΡΟΧΗ') sky = 'βροχή';
+        else if (s === 'ΚΑΤΑΙΓΙΔΑ') sky = 'καταιγίδα';
         else sky = s.toLowerCase();
     }
 
@@ -422,7 +426,6 @@ function speakWeather() {
     msg.lang = 'el-GR';
     msg.rate = 0.85; 
 
-    // ΕΠΙΛΟΓΗ ΦΩΝΗΣ ΚΑΙ ΕΚΦΩΝΗΣΗ (ΜΕ ΑΝΑΜΟΝΗ ΓΙΑ ANDROID)
     const startSpeaking = () => {
         const voices = window.speechSynthesis.getVoices();
         const greekVoice = voices.find(v => v.lang.includes('el'));
@@ -437,7 +440,6 @@ function speakWeather() {
     }
 }
 
-// ΕΜΦΑΝΙΣΗ ΡΟΜΠΟΤ
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
