@@ -5,14 +5,14 @@
     "temp_min": 0.2,
     "humidity": 35,
     "pressure": 1025.0,
-    "wind_speed": 5.0,
-    "wind_gust": 13.3,
-    "wind_dir": 30,
-    "wind_text": "30° ΒΑ (1 Μπφ)",
+    "wind_speed": 5.3,
+    "wind_gust": 13.7,
+    "wind_dir": 28,
+    "wind_text": "28° ΒΑ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 1,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
     "moon_icon": "moon1.png",
-    "time": "15:15:24",
-    "last_update": "15:15:24"
+    "time": "15:30:29",
+    "last_update": "15:30:29"
 }
