@@ -369,43 +369,22 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     setInterval(updateMapSpots, 600000);
     let currentWeatherData = {}; 
 
-let synth = window.speechSynthesis;
-let voices = [];
-
-function populateVoices() {
-    voices = synth.getVoices();
-}
-
-if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoices;
-}
-
 function speakWeather() {
-    synth.cancel();
-    
-    // ΑΝΑΓΚΑΣΤΙΚΟ ΞΑΝΑΦΟΡΤΩΜΑ ΦΩΝΩΝ ΤΗ ΣΤΙΓΜΗ ΤΟΥ ΚΛΙΚ
-    voices = synth.getVoices();
+    const synth = window.speechSynthesis;
+    synth.cancel(); 
     
     const info = document.body.innerText;
     const τωρα = new Date();
-    const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
-    const μηνες = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
-    
-    const onomaMeras = μερες[τωρα.getDay()];
-    const arithmosMeras = τωρα.getDate();
-    const onomaMina = μηνες[τωρα.getMonth()];
-    const etos = τωρα.getFullYear();
     
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
-    
     let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : "το βράδυ";
-    let ωραDisplay = ωραRaw;
-    if (ωραDisplay > 12) ωραDisplay = ωραDisplay - 12;
-    if (ωραDisplay === 0) ωραDisplay = 12;
-
+    let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
+    
+    // Διόρθωση για να λέει "δύο" και "μία" σωστά
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
+    if (ωραDisplay === 2) lekshOra = "δύο";
 
     const getVal = (regex) => {
         const m = info.match(regex);
@@ -418,41 +397,34 @@ function speakWeather() {
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
     const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
-    let sky = "καλές συνθήκες";
-    if (skyMatch) {
-        const s = skyMatch[0];
-        if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
-        else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
-        else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
-        else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
-        else sky = s.toLowerCase();
-    }
+    let sky = skyMatch ? skyMatch[0].toLowerCase().replace('ξαστερια', 'ξαστεριά').replace('συννεφια', 'συννεφιά') : "καλές συνθήκες";
 
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή σας συνέχεια!`;
+    // Το κείμενο που θα εκφωνηθεί
+    const text = `Γεια σας από το Γήλοφο. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία ${h} τοις εκατό. Η πίεση ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     
-    // ΕΠΙΒΟΛΗ ΕΛΛΗΝΙΚΗΣ ΦΩΝΗΣ
-    let greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
+    // Η ΣΥΝΤΑΓΗ ΓΙΑ ΤΟΝ ΚΙΝΕΖΟ
+    msg.lang = 'el-GR'; // Επιβολή ελληνικής γλώσσας
+    msg.rate = 0.75;    // Αργή ταχύτητα
+    msg.pitch = 1.0;    // Κανονικός τόνος
+    
+    // Προσπάθεια να βρει την ελληνική φωνή στο σύστημα
+    const voices = synth.getVoices();
+    const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
     if (greekVoice) {
         msg.voice = greekVoice;
-    } else {
-        // Αν δεν τη βρει, προσπαθούμε ξανά με πιο απλό τρόπο
-        msg.lang = 'el-GR';
     }
-    
-    msg.rate = 0.75; 
+
+    // Εκκίνηση
     synth.speak(msg);
 }
 
+// Εικονίδιο Ρομπότ
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
-        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:150px; cursor:pointer; z-index:9999;">
+        <img src="assistant_robot.png" style="width:100%;" alt="Assistant">
     </div>
-    <style>
-        #weather-assistant:hover { transform: scale(1.1); }
-        #weather-assistant:active { transform: scale(0.9); }
-    </style>
 `);
 </script>
 </body>
