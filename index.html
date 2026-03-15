@@ -415,7 +415,7 @@ function speakWeather() {
     if (skyMatch) {
         const s = skyMatch[0].toUpperCase();
         if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-ννεφα';
+        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύν-νεφα'; // Διόρθωση για καθαρή προφορά
         else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
         else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
@@ -424,7 +424,8 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    const text = `... Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
+    // Αφαιρέθηκαν οι τελείες από την αρχή
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
@@ -435,9 +436,10 @@ function speakWeather() {
         const greekVoice = voices.find(v => v.lang.includes('el'));
         if (greekVoice) msg.voice = greekVoice;
         
+        // Χρησιμοποιούμε μόνο την καθυστέρηση αντί για τελείες
         setTimeout(() => {
             window.speechSynthesis.speak(msg);
-        }, 150);
+        }, 300); 
     };
 
     if (window.speechSynthesis.getVoices().length !== 0) {
@@ -447,7 +449,6 @@ function speakWeather() {
     }
 }
 
-// ΠΡΟΣΘΗΚΗ ΤΟΥ HTML ΚΑΙ ΤΟΥ CSS ΠΟΥ ΕΛΕΙΠΕ
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
         <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="Ρομποτάκι">
