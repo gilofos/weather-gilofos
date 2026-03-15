@@ -385,6 +385,7 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
+    // Ρύθμιση για το λαϊκό "Μεσημέρι"
     let periodos = "";
     if (ωραRaw >= 0 && ωραRaw < 4) periodos = "τα ξημερώματα";
     else if (ωραRaw >= 4 && ωραRaw < 12) periodos = "το πρωί";
@@ -415,16 +416,15 @@ function speakWeather() {
     if (skyMatch) {
         const s = skyMatch[0].toUpperCase();
         if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύν-νεφα'; // Διόρθωση για καθαρή προφορά
-        else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συννεφιά';
-        else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συννεφιά';
+        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγα σύ-νεφα'; // Διόρθωση προφοράς
+        else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συνεφιά';
+        else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συνεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
         else if (s === 'ΒΡΟΧΗ') sky = 'βροχή';
         else if (s === 'ΚΑΤΑΙΓΙΔΑ') sky = 'καταιγίδα';
         else sky = s.toLowerCase();
     }
 
-    // Αφαιρέθηκαν οι τελείες από την αρχή
     const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
@@ -436,10 +436,10 @@ function speakWeather() {
         const greekVoice = voices.find(v => v.lang.includes('el'));
         if (greekVoice) msg.voice = greekVoice;
         
-        // Χρησιμοποιούμε μόνο την καθυστέρηση αντί για τελείες
+        // Καθυστέρηση αντί για τελείες για να "ξυπνήσει" το Samsung
         setTimeout(() => {
             window.speechSynthesis.speak(msg);
-        }, 300); 
+        }, 400); 
     };
 
     if (window.speechSynthesis.getVoices().length !== 0) {
@@ -451,7 +451,7 @@ function speakWeather() {
 
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
-        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="Ρομποτάκι">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="Βοηθός Καιρού">
     </div>
     <style>
         #weather-assistant:hover { transform: scale(1.1); }
