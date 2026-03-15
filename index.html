@@ -372,16 +372,13 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
 function speakWeather() {
     window.speechSynthesis.cancel();
     const info = document.body.innerText;
-    
     const τωρα = new Date();
     const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
     const μηνες = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
     
-    // ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΜΕΤΑΤΡΟΠΗ ΣΕ ΘΗΛΥΚΑ (ΓΙΑ ΘΕΡΜΟΚΡΑΣΙΑ ΚΑΙ ΩΡΑ)
     const toFemale = (numStr) => {
         if (!numStr) return "---";
-        let parts = numStr.split(/[.,]/); 
-        let fixedParts = parts.map(p => {
+        return numStr.split(/[.,]/).map(p => {
             let n = p.trim();
             if (n === "1" || n === "01") return "μία";
             if (n === "3" || n === "03") return "τρεις";
@@ -389,70 +386,63 @@ function speakWeather() {
             if (n === "13") return "δεκατρείς";
             if (n === "14") return "δεκατέσσερις";
             return n;
-        });
-        return fixedParts.join(' κόμμα ');
+        }).join(' κόμμα ');
     };
 
-    // ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΚΑΘΑΡΑ ΝΟΥΜΕΡΑ (ΓΙΑ ΠΙΕΣΗ - ΑΡΣΕΝΙΚΑ)
-    const getValRaw = (regex) => {
-        let m = info.match(regex);
-        return m ? m[1].replace('.', ' κόμμα ') : "---";
+    const getVal = (regex, female = false) => {
+        const m = info.match(regex);
+        if (!m || !m[1]) return "---";
+        let clean = m[1].replace('.', ',');
+        return female ? toFemale(clean) : clean.replace(',', ' κόμμα ');
     };
 
-    const getValFemale = (regex) => {
-        let m = info.match(regex);
-        return m ? toFemale(m[1]) : "---";
-    };
+    const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/, true);
+    const h = getVal(/(\d+)\s*%/);
+    const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
+    const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
-    // Μετρήσεις
-    const t = getValFemale(/(-?\d+[\.,]\d+|\d+)\s*°/); // Θερμοκρασία -> Θηλυκά (τρεις)
-    const h = getValRaw(/(\d+)\s*%/);                // Υγρασία -> Αρσενικά
-    const w = getValRaw(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i); // Άνεμος -> Αρσενικά
-    const p = getValRaw(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i); // Πίεση -> Αρσενικά (τέσσερα)
-
-    // Ώρα και Λεπτά (Θηλυκά)
     let ωραRaw = τωρα.getHours();
     let λεπταRaw = τωρα.getMinutes();
     let lekshOra = toFemale(String(ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw)));
     let lekshLepta = (λεπταRaw === 0) ? "ακριβώς" : toFemale(String(λεπταRaw));
-
+    
     let periodos = (ωραRaw >= 12 && ωραRaw < 15) ? "το μεσημέρι" : (ωραRaw >= 15 && ωραRaw < 20 ? "το απόγευμα" : (ωραRaw >= 4 && ωραRaw < 12 ? "το πρωί" : (ωραRaw >= 0 && ωραRaw < 4 ? "τα ξημερώματα" : "το βράδυ")));
 
     const skyMatch = info.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/i);
     let sky = "καλές συνθήκες";
     if (skyMatch) {
         const s = skyMatch[0].toUpperCase();
-        if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγη συν-νεφιά'; 
-        else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συν-νεφιά';
+        if (s.includes('ΗΛΙΟ') || s.includes('ΑΙΘΡ')) sky = 'λιακάδα και καθαρό ουρανό';
+        else if (s.includes('ΛΙΓΑ')) sky = 'λίγη συν-νεφιά';
+        else if (s.includes('ΣΥΝΝΕΦΙΑ')) sky = 'συν-νεφιά';
         else sky = s.toLowerCase();
     }
 
-    const text = `... Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
+    // ΚΑΘΑΡΟ ΚΕΙΜΕΝΟ ΧΩΡΙΣ ΤΕΛΕΙΕΣ ΣΤΗΝ ΑΡΧΗ
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
-    msg.rate = 0.85; 
+    msg.rate = 0.85;
 
     const startSpeaking = () => {
         const voices = window.speechSynthesis.getVoices();
         const greekVoice = voices.find(v => v.lang.includes('el'));
         if (greekVoice) msg.voice = greekVoice;
-        setTimeout(() => { window.speechSynthesis.speak(msg); }, 500);
+        
+        // Η παύση γίνεται εδώ (600ms) για να μην τρώει το "Γεια σας" στο κινητό
+        setTimeout(() => { window.speechSynthesis.speak(msg); }, 600);
     };
 
-    if (window.speechSynthesis.getVoices().length !== 0) { startSpeaking(); } 
-    else { window.speechSynthesis.onvoiceschanged = startSpeaking; }
+    if (window.speechSynthesis.getVoices().length !== 0) startSpeaking();
+    else window.speechSynthesis.onvoiceschanged = startSpeaking;
 }
 
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
-        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));">
     </div>
-    <style>
-        #weather-assistant:hover { transform: scale(1.1); }
-        #weather-assistant:active { transform: scale(0.9); }
-    </style>
+    <style> #weather-assistant:hover { transform: scale(1.1); } #weather-assistant:active { transform: scale(0.9); } </style>
 `);
     </script>
 </body>
