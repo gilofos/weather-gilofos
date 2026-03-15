@@ -370,8 +370,7 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     let currentWeatherData = {}; 
 
 function speakWeather() {
-    const synth = window.speechSynthesis;
-    synth.cancel(); 
+    window.speechSynthesis.cancel();
     
     const info = document.body.innerText;
     const τωρα = new Date();
@@ -381,7 +380,6 @@ function speakWeather() {
     let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : "το βράδυ";
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
     
-    // Διόρθωση για να λέει "δύο" και "μία" σωστά
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
     if (ωραDisplay === 2) lekshOra = "δύο";
@@ -393,34 +391,21 @@ function speakWeather() {
 
     const t = getVal(/(-?\d+[\.,]\d+|\d+)\s*°/);
     const h = getVal(/(\d+)\s*%/);
-    const w = getVal(/(\d+[\.,]\d+|\d+)\s*(km\/h|χλμ)/i);
     const p = getVal(/(\d{4}[\.,]\d+|\d{4})\s*(hPa|mb)/i);
 
     const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
     let sky = skyMatch ? skyMatch[0].toLowerCase().replace('ξαστερια', 'ξαστεριά').replace('συννεφια', 'συννεφιά') : "καλές συνθήκες";
 
-    // Το κείμενο που θα εκφωνηθεί
-    const text = `Γεια σας από το Γήλοφο. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί. Η υγρασία ${h} τοις εκατό. Η πίεση ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα. Καλή συνέχεια!`;
+    // Πολύ απλό κείμενο για να μην μπερδεύεται η μηχανή
+    const text = `Γεια σας. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στο Γήλοφο έχουμε ${sky}. Θερμοκρασία ${t} βαθμοί. Υγρασία ${h} τοις εκατό. Πίεση ${p} έκτο... πα-σκάλ. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'el-GR';
+    msg.rate = 0.75; 
     
-    // Η ΣΥΝΤΑΓΗ ΓΙΑ ΤΟΝ ΚΙΝΕΖΟ
-    msg.lang = 'el-GR'; // Επιβολή ελληνικής γλώσσας
-    msg.rate = 0.75;    // Αργή ταχύτητα
-    msg.pitch = 1.0;    // Κανονικός τόνος
-    
-    // Προσπάθεια να βρει την ελληνική φωνή στο σύστημα
-    const voices = synth.getVoices();
-    const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
-    if (greekVoice) {
-        msg.voice = greekVoice;
-    }
-
-    // Εκκίνηση
-    synth.speak(msg);
+    window.speechSynthesis.speak(msg);
 }
 
-// Εικονίδιο Ρομπότ
 document.body.insertAdjacentHTML('beforeend', `
     <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:150px; cursor:pointer; z-index:9999;">
         <img src="assistant_robot.png" style="width:100%;" alt="Assistant">
