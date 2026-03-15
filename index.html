@@ -385,12 +385,9 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
-    // Καθορισμός περιόδου
-    let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : "το βράδυ";
-    
+    let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : (ωραRaw >= 20 ? "το βράδυ" : (ωραRaw >= 12 ? "το απόγευμα" : "το πρωί"));
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
 
-    // Διορθώσεις για θηλυκά
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
     else if (ωραDisplay === 2) lekshOra = "δύο";
@@ -424,11 +421,11 @@ function speakWeather() {
     msg.lang = 'el-GR';
     msg.rate = 0.85; 
 
-    // Η ΑΛΛΑΓΗ ΓΙΑ ΤΟ ΚΙΝΗΤΟ: Περιμένουμε να φορτώσουν οι φωνές
     const startSpeaking = () => {
         const voices = window.speechSynthesis.getVoices();
-        // Ψάχνουμε τη φωνή Google Greek που έχει το Samsung σου
-        const greekVoice = voices.find(v => v.lang.includes('el-GR') && v.name.includes('Google')) 
+        
+        // Ψάχνουμε πρώτα για ελληνική ΑΝΔΡΙΚΗ φωνή (που περιέχει "male", "voice 2" ή "voice 3")
+        const greekVoice = voices.find(v => v.lang.includes('el') && (v.name.toLowerCase().includes('male') || v.name.includes('2') || v.name.includes('3'))) 
                            || voices.find(v => v.lang.includes('el'));
         
         if (greekVoice) {
