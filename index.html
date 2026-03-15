@@ -369,7 +369,6 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     setInterval(updateMapSpots, 600000);
     let currentWeatherData = {}; 
 
-// Δημιουργία της λίστας φωνών παγκόσμια
 let synth = window.speechSynthesis;
 let voices = [];
 
@@ -377,11 +376,13 @@ function populateVoices() {
     voices = synth.getVoices();
 }
 
-// Αυτό βοηθάει τους browsers στα κινητά να "δουν" τις φωνές έγκαιρα
 populateVoices();
 if (speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = populateVoices;
 }
+
+// ΑΥΤΗ ΕΙΝΑΙ Η ΔΙΑΦΟΡΑ: Ξαναψάχνει φωνές μετά από 2 δευτερόλεπτα για να προλάβει το κινητό
+setTimeout(populateVoices, 2000);
 
 function speakWeather() {
     synth.cancel();
@@ -432,7 +433,6 @@ function speakWeather() {
 
     const msg = new SpeechSynthesisUtterance(text);
     
-    // Πιο "επιθετική" αναζήτηση ελληνικής φωνής
     if (voices.length === 0) voices = synth.getVoices();
     let greekVoice = voices.find(v => v.lang === 'el-GR' || v.lang.startsWith('el'));
     
