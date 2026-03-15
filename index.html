@@ -385,11 +385,11 @@ function speakWeather() {
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     
-    // Η ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟ ΜΕΣΗΜΕΡΙ
+    // ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟ ΜΕΣΗΜΕΡΙ ΚΑΙ ΤΟ ΠΡΩΙ
     let periodos = "";
     if (ωραRaw >= 0 && ωραRaw < 4) periodos = "τα ξημερώματα";
     else if (ωραRaw >= 4 && ωραRaw < 12) periodos = "το πρωί";
-    else if (ωραRaw >= 12 && ωραRaw < 15) periodos = "το μεσημέρι"; // Από 12 έως 3 παρά
+    else if (ωραRaw >= 12 && ωραRaw < 15) periodos = "το μεσημέρι"; 
     else if (ωραRaw >= 15 && ωραRaw < 20) periodos = "το απόγευμα";
     else periodos = "το βράδυ";
     
@@ -425,7 +425,8 @@ function speakWeather() {
         else sky = s.toLowerCase();
     }
 
-    const text = `Γεια σας από το Γήлоφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
+    // ΠΡΟΣΘΗΚΗ ΠΑΥΣΗΣ (...) ΣΤΗΝ ΑΡΧΗ ΓΙΑ ΤΟ SAMSUNG A13
+    const text = `... Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${onomaMeras}, ${arithmosMeras} ${onomaMina} του ${etos}. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο... πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Για αύριο προβλέπεται καλός καιρός. Μπορείτε... να βλέπετε... την εξέλιξη του καιρού... στη ζωντανή δορυφορική εικόνα... και στον τοπικό χάρτη... με τα γύρω χωριά... Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
@@ -435,21 +436,12 @@ function speakWeather() {
         const voices = window.speechSynthesis.getVoices();
         const greekVoice = voices.find(v => v.lang.includes('el'));
         if (greekVoice) msg.voice = greekVoice;
-        window.speechSynthesis.speak(msg);
+        
+        // Μικρή καθυστέρηση 100ms για να προλάβει να "ανοίξει" το ηχείο του κινητού
+        setTimeout(() => {
+            window.speechSynthesis.speak(msg);
+        }, 100);
     };
-
-    if (window.speechSynthesis.getVoices().length !== 0) {
-        startSpeaking();
-    } else {
-        window.speechSynthesis.onvoiceschanged = startSpeaking;
-    }
-}
-
-document.body.insertAdjacentHTML('beforeend', `
-    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
-        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));" alt="">
-    </div>
-`);
     </script>
 </body>
 </html>
