@@ -394,11 +394,17 @@ function speakWeather() {
     
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
 
+    // ΔΙΟΡΘΩΣΗ ΓΙΑ ΘΗΛΥΚΑ (1, 3, 4, 13, 14)
     let lekshOra = ωραDisplay;
     if (ωραDisplay === 1) lekshOra = "μία";
-    else if (ωραDisplay === 2) lekshOra = "δύο";
     else if (ωραDisplay === 3) lekshOra = "τρεις";
     else if (ωραDisplay === 4) lekshOra = "τέσσερις";
+    // Εδώ είναι η νέα προσθήκη για το 13 και το 14
+    else if (ωραRaw === 13) lekshOra = "μία"; // Αν είναι 1 το μεσημέρι (13:00)
+    else if (ωραRaw === 14) lekshOra = "δύο"; // Αν είναι 2 το μεσημέρι (14:00)
+    // Αν χρησιμοποιείς 24ωρη εκφώνηση και θες 13 και 14:
+    // else if (ωραDisplay === 13) lekshOra = "δεκατρείς";
+    // else if (ωραDisplay === 14) lekshOra = "δεκατέσσερις";
 
     const getVal = (regex) => {
         const m = info.match(regex);
@@ -415,7 +421,7 @@ function speakWeather() {
     if (skyMatch) {
         const s = skyMatch[0].toUpperCase();
         if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγη συν-νεφιά'; // Η ΔΙΟΡΘΩΣΗ ΣΟΥ
+        else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγη συν-νεφιά'; 
         else if (s === 'ΣΥΝΝΕΦΙΑ') sky = 'συν-νεφιά';
         else if (s === 'ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ') sky = 'αραιή συν-νεφιά';
         else if (s === 'ΞΑΣΤΕΡΙΑ') sky = 'ξαστεριά';
@@ -434,7 +440,6 @@ function speakWeather() {
         const voices = window.speechSynthesis.getVoices();
         const greekVoice = voices.find(v => v.lang.includes('el'));
         if (greekVoice) msg.voice = greekVoice;
-        
         setTimeout(() => {
             window.speechSynthesis.speak(msg);
         }, 500); 
