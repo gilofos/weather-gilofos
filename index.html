@@ -376,18 +376,17 @@ function populateVoices() {
     voices = synth.getVoices();
 }
 
-populateVoices();
 if (speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = populateVoices;
 }
 
-// ΑΥΤΗ ΕΙΝΑΙ Η ΔΙΑΦΟΡΑ: Ξαναψάχνει φωνές μετά από 2 δευτερόλεπτα για να προλάβει το κινητό
-setTimeout(populateVoices, 2000);
-
 function speakWeather() {
     synth.cancel();
-    const info = document.body.innerText;
     
+    // ΑΝΑΓΚΑΣΤΙΚΟ ΞΑΝΑΦΟΡΤΩΜΑ ΦΩΝΩΝ ΤΗ ΣΤΙΓΜΗ ΤΟΥ ΚΛΙΚ
+    voices = synth.getVoices();
+    
+    const info = document.body.innerText;
     const τωρα = new Date();
     const μερες = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
     const μηνες = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
@@ -433,14 +432,15 @@ function speakWeather() {
 
     const msg = new SpeechSynthesisUtterance(text);
     
-    if (voices.length === 0) voices = synth.getVoices();
-    let greekVoice = voices.find(v => v.lang === 'el-GR' || v.lang.startsWith('el'));
-    
+    // ΕΠΙΒΟΛΗ ΕΛΛΗΝΙΚΗΣ ΦΩΝΗΣ
+    let greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
     if (greekVoice) {
         msg.voice = greekVoice;
+    } else {
+        // Αν δεν τη βρει, προσπαθούμε ξανά με πιο απλό τρόπο
+        msg.lang = 'el-GR';
     }
     
-    msg.lang = 'el-GR';
     msg.rate = 0.75; 
     synth.speak(msg);
 }
