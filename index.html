@@ -370,19 +370,27 @@ iconEl.innerText = getWeatherIcon(data.current.weather_code, mapIsDay);
     let currentWeatherData = {}; 
 
 function speakWeather() {
-    window.speechSynthesis.cancel();
+    const synth = window.speechSynthesis;
+    synth.cancel();
     
+    const voices = synth.getVoices();
+    // Ψάχνουμε αν υπάρχει ΕΣΤΩ ΚΑΙ ΜΙΑ ελληνική φωνή στο κινητό
+    const greekVoice = voices.find(v => v.lang.includes('el') || v.lang.includes('GR'));
+
+    // ΑΝ ΔΕΝ ΒΡΕΙ ΕΛΛΗΝΙΚΑ, ΣΤΑΜΑΤΑΕΙ ΕΔΩ ΚΑΙ ΔΕΝ ΜΙΛΑΕΙ (για να μην ακουστεί ο Κινέζος)
+    if (!greekVoice && voices.length > 0) {
+        console.log("Δεν βρέθηκε ελληνική φωνή. Η ομιλία ακυρώθηκε για αποφυγή λάθος προφοράς.");
+        return; 
+    }
+
     const info = document.body.innerText;
     const τωρα = new Date();
-    
     let ωραRaw = τωρα.getHours();
     const λεπτα = τωρα.getMinutes();
     let periodos = (ωραRaw >= 0 && ωραRaw < 4) ? "τα ξημερώματα" : "το βράδυ";
     let ωραDisplay = ωραRaw > 12 ? ωραRaw - 12 : (ωραRaw === 0 ? 12 : ωραRaw);
     
-    let lekshOra = ωραDisplay;
-    if (ωραDisplay === 1) lekshOra = "μία";
-    if (ωραDisplay === 2) lekshOra = "δύο";
+    let lekshOra = ωραDisplay === 1 ? "μία" : (ωραDisplay === 2 ? "δύο" : ωραDisplay);
 
     const getVal = (regex) => {
         const m = info.match(regex);
@@ -396,14 +404,14 @@ function speakWeather() {
     const skyMatch = info.match(/(ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ|ΑΙΘΡΙΟΣ)/i);
     let sky = skyMatch ? skyMatch[0].toLowerCase().replace('ξαστερια', 'ξαστεριά').replace('συννεφια', 'συννεφιά') : "καλές συνθήκες";
 
-    // Πολύ απλό κείμενο για να μην μπερδεύεται η μηχανή
     const text = `Γεια σας. Η ώρα είναι ${lekshOra} και ${λεπτα} ${periodos}. Στο Γήλοφο έχουμε ${sky}. Θερμοκρασία ${t} βαθμοί. Υγρασία ${h} τοις εκατό. Πίεση ${p} έκτο... πα-σκάλ. Καλή συνέχεια!`;
 
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
+    if (greekVoice) msg.voice = greekVoice;
     msg.rate = 0.75; 
     
-    window.speechSynthesis.speak(msg);
+    synth.speak(msg);
 }
 
 document.body.insertAdjacentHTML('beforeend', `
