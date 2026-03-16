@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΡΙΤΗ ΜΕ ΒΡΟΧΕΣ",
-    "temperature": 11.5,
+    "temperature": 11.9,
     "temp_max": 13.9,
     "temp_min": 0.8,
-    "humidity": 45,
-    "pressure": 1031.0,
-    "wind_speed": 4.3,
-    "wind_gust": 11.5,
-    "wind_dir": 138,
-    "wind_text": "138° ΝΑ (1 Μπφ)",
+    "humidity": 43,
+    "pressure": 1030.9,
+    "wind_speed": 4.6,
+    "wind_gust": 12.6,
+    "wind_dir": 141,
+    "wind_text": "141° ΝΑ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 1,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
     "moon_icon": "moon1.png",
-    "time": "12:00:38",
-    "last_update": "12:00:38"
+    "time": "12:15:28",
+    "last_update": "12:15:28"
 }
