@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΕΤΑΡΤΗ ΜΕ ΒΡΟΧΕΣ",
-    "temperature": 5.2,
-    "temp_max": 14.2,
-    "temp_min": 0.8,
-    "humidity": 79,
+    "temperature": 5.1,
+    "temp_max": 10.6,
+    "temp_min": 2.2,
+    "humidity": 80,
     "pressure": 1031.1,
     "wind_speed": 0.5,
-    "wind_gust": 2.2,
+    "wind_gust": 1.8,
     "wind_dir": 225,
     "wind_text": "225° ΝΔ (0 Μπφ)",
     "rain": 0.0,
-    "clouds": 95,
-    "status": "ΣΥΝΝΕΦΙΑ ☁️",
+    "clouds": 58,
+    "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
     "moon_icon": "moon1.png",
-    "time": "23:54:17",
-    "last_update": "23:54:17"
+    "time": "00:00:35",
+    "last_update": "00:00:35"
 }
