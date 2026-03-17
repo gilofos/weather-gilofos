@@ -1,18 +1,18 @@
 {
-    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΕΤΑΡΤΗ ΜΕ ΒΡΟΧΕΣ",
-    "temperature": 2.4,
+    "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
+    "temperature": 2.3,
     "temp_max": 10.2,
     "temp_min": 2.0,
-    "humidity": 88,
+    "humidity": 89,
     "pressure": 1030.8,
-    "wind_speed": 1.1,
-    "wind_gust": 2.9,
-    "wind_dir": 252,
-    "wind_text": "252° Δ (1 Μπφ)",
+    "wind_speed": 1.3,
+    "wind_gust": 3.2,
+    "wind_dir": 236,
+    "wind_text": "236° ΝΔ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 45,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️",
     "moon_icon": "moon1.png",
-    "time": "05:00:37",
-    "last_update": "05:00:37"
+    "time": "05:15:28",
+    "last_update": "05:15:28"
 }
