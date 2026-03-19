@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΠΡΟΣΟΧΗ: ΒΡΟΧΟΠΤΩΣΗ ΣΕ ΕΞΕΛΙΞΗ",
-    "temperature": 6.0,
+    "temperature": 6.1,
     "temp_max": 6.6,
     "temp_min": 3.3,
-    "humidity": 75,
-    "pressure": 1027.4,
-    "wind_speed": 9.0,
-    "wind_gust": 16.6,
-    "wind_dir": 2,
-    "wind_text": "2° Β (2 Μπφ)",
+    "humidity": 73,
+    "pressure": 1027.2,
+    "wind_speed": 9.4,
+    "wind_gust": 17.3,
+    "wind_dir": 4,
+    "wind_text": "4° Β (2 Μπφ)",
     "rain": 0.2,
     "clouds": 100,
     "status": "ΒΡΟΧΗ 💧",
     "moon_icon": "moon7.png",
-    "time": "13:35:28",
-    "last_update": "13:35:28"
+    "time": "13:45:29",
+    "last_update": "13:45:29"
 }
