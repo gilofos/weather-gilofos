@@ -3,16 +3,16 @@
     "temperature": 6.9,
     "temp_max": 7.0,
     "temp_min": 3.3,
-    "humidity": 63,
-    "pressure": 1026.7,
-    "wind_speed": 5.7,
+    "humidity": 64,
+    "pressure": 1026.8,
+    "wind_speed": 5.6,
     "wind_gust": 11.2,
-    "wind_dir": 35,
-    "wind_text": "35° ΒΑ (1 Μπφ)",
+    "wind_dir": 40,
+    "wind_text": "40° ΒΑ (1 Μπφ)",
     "rain": 0.1,
     "clouds": 100,
     "status": "ΒΡΟΧΗ 💧",
     "moon_icon": "moon7.png",
-    "time": "15:42:29",
-    "last_update": "15:42:29"
+    "time": "15:45:28",
+    "last_update": "15:45:28"
 }
