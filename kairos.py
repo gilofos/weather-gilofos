@@ -38,28 +38,34 @@ def get_moon_phase_image():
 
 def get_model_alert():
     try:
-        # Ζητάμε πρόγνωση 3 ημερών από GFS και ECMWF
+        # 1. ΕΛΕΓΧΟΣ ΓΙΑ ΤΟ ΤΩΡΑ (Προτεραιότητα στη βροχή)
+        url_now = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=precipitation,cloud_cover&timezone=auto"
+        res_now = requests.get(url_now).json()
+        current_precip = res_now['current']['precipitation']
+        current_clouds = res_now['current']['cloud_cover']
+
+        if current_precip > 0:
+            return "ΠΡΟΣΟΧΗ: ΒΡΟΧΟΠΤΩΣΗ ΣΕ ΕΞΕΛΙΞΗ"
+        
+        if current_clouds > 70:
+            return "ΣΥΝΝΕΦΙΑ / ΠΙΘΑΝΗ ΑΣΤΑΘΕΙΑ"
+
+        # 2. ΕΛΕΓΧΟΣ ΜΟΝΤΕΛΩΝ ΓΙΑ ΤΙΣ ΕΠΟΜΕΝΕΣ 3 ΗΜΕΡΕΣ
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum,precipitation_probability_max&timezone=auto&models=gfs_seamless,ecmwf_ifs"
         res = requests.get(url).json()
         
         precip_gfs = res['daily']['precipitation_sum_gfs_seamless']
         precip_ecmwf = res['daily']['precipitation_sum_ecmwf_ifs']
-        prob_gfs = res['daily']['precipitation_probability_max_gfs_seamless']
         dates = res['daily']['time']
-        
         days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
 
-        # Ελέγχουμε τις επόμενες 3 ημέρες (ξεκινώντας από αύριο i=1)
         for i in range(1, 4):
-            # Αν κάποιο μοντέλο δει πάνω από 1.5mm βροχή ή μεγάλη πιθανότητα
             if precip_gfs[i] > 1.5 or precip_ecmwf[i] > 1.5:
                 dt = datetime.strptime(dates[i], "%Y-%m-%d")
                 day_name = days_gr[dt.weekday()]
-                
                 status = "ΒΡΟΧΕΣ"
                 if precip_gfs[i] > 5 or precip_ecmwf[i] > 5:
                     status = "ΒΡΟΧΕΣ & ΚΑΤΑΙΓΙΔΕΣ"
-                
                 return f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name} ΜΕ {status}"
         
         return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
