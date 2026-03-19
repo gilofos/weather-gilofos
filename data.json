@@ -4,15 +4,15 @@
     "temp_max": 6.6,
     "temp_min": 3.3,
     "humidity": 80,
-    "pressure": 1028.2,
-    "wind_speed": 3.6,
-    "wind_gust": 7.2,
-    "wind_dir": 354,
-    "wind_text": "354° Β (1 Μπφ)",
+    "pressure": 1028.0,
+    "wind_speed": 4.7,
+    "wind_gust": 8.6,
+    "wind_dir": 356,
+    "wind_text": "356° Β (1 Μπφ)",
     "rain": 0.2,
     "clouds": 100,
     "status": "ΒΡΟΧΗ 💧",
     "moon_icon": "moon7.png",
-    "time": "12:01:15",
-    "last_update": "12:01:15"
+    "time": "12:15:25",
+    "last_update": "12:15:25"
 }
