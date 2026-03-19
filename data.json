@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΣΥΝΝΕΦΙΑ / ΠΙΘΑΝΗ ΑΣΤΑΘΕΙΑ",
-    "temperature": 3.8,
+    "temperature": 3.7,
     "temp_max": 8.4,
     "temp_min": 1.0,
     "humidity": 85,
-    "pressure": 1026.8,
-    "wind_speed": 0.4,
-    "wind_gust": 5.0,
+    "pressure": 1026.7,
+    "wind_speed": 0.7,
+    "wind_gust": 4.7,
     "wind_dir": 360,
     "wind_text": "360° Β (0 Μπφ)",
     "rain": 0.0,
     "clouds": 85,
     "status": "ΣΥΝΝΕΦΙΑ ☁️",
     "moon_icon": "moon7.png",
-    "time": "00:00:33",
-    "last_update": "00:00:33"
+    "time": "00:15:25",
+    "last_update": "00:15:25"
 }
