@@ -4,15 +4,15 @@
     "temp_max": 8.6,
     "temp_min": 0.7,
     "humidity": 43,
-    "pressure": 1025.1,
-    "wind_speed": 14.8,
-    "wind_gust": 29.9,
-    "wind_dir": 342,
-    "wind_text": "342° Β (3 Μπφ)",
+    "pressure": 1025.0,
+    "wind_speed": 14.5,
+    "wind_gust": 29.2,
+    "wind_dir": 341,
+    "wind_text": "341° Β (3 Μπφ)",
     "rain": 0.0,
     "clouds": 43,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅",
     "moon_icon": "moon7.png",
-    "time": "15:30:32",
-    "last_update": "15:30:32"
+    "time": "15:45:27",
+    "last_update": "15:45:27"
 }
