@@ -38,7 +38,6 @@ def get_moon_phase_image():
 
 def get_model_alert():
     try:
-        # 1. ΕΛΕΓΧΟΣ ΓΙΑ ΤΟ ΤΩΡΑ (Προτεραιότητα στη βροχή)
         url_now = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=precipitation,cloud_cover&timezone=auto"
         res_now = requests.get(url_now).json()
         current_precip = res_now['current']['precipitation']
@@ -46,14 +45,11 @@ def get_model_alert():
 
         if current_precip > 0:
             return "ΠΡΟΣΟΧΗ: ΒΡΟΧΟΠΤΩΣΗ ΣΕ ΕΞΕΛΙΞΗ"
-        
         if current_clouds > 70:
             return "ΣΥΝΝΕΦΙΑ / ΠΙΘΑΝΗ ΑΣΤΑΘΕΙΑ"
 
-        # 2. ΕΛΕΓΧΟΣ ΜΟΝΤΕΛΩΝ ΓΙΑ ΤΙΣ ΕΠΟΜΕΝΕΣ 3 ΗΜΕΡΕΣ
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum,precipitation_probability_max&timezone=auto&models=gfs_seamless,ecmwf_ifs"
         res = requests.get(url).json()
-        
         precip_gfs = res['daily']['precipitation_sum_gfs_seamless']
         precip_ecmwf = res['daily']['precipitation_sum_ecmwf_ifs']
         dates = res['daily']['time']
@@ -67,7 +63,6 @@ def get_model_alert():
                 if precip_gfs[i] > 5 or precip_ecmwf[i] > 5:
                     status = "ΒΡΟΧΕΣ & ΚΑΤΑΙΓΙΔΕΣ"
                 return f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {day_name} ΜΕ {status}"
-        
         return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
     except:
         return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
@@ -81,7 +76,6 @@ def get_weather():
         
         data = res_json['current']
         daily = res_json['daily']
-        
         utc_offset_sec = res_json.get('utc_offset_seconds', 7200)
         time_now_dt = datetime.utcnow() + timedelta(seconds=utc_offset_sec)
         time_now_str = time_now_dt.strftime("%H:%M:%S")
@@ -89,7 +83,7 @@ def get_weather():
         temp = data['temperature_2m']
         precip = data['precipitation']
         hum = data['relative_humidity_2m']
-        pres_sea = data['surface_pressure'] + 103 # Διόρθωση για υψόμετρο Γηλόφου
+        pres_sea = data['surface_pressure'] + 103 
         wind_spd = data['wind_speed_10m']
         wind_gust = data.get('wind_gusts_10m', 0)
         wind_deg = data['wind_direction_10m']
@@ -104,7 +98,7 @@ def get_weather():
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
-        # Λογική τρέχουσας κατάστασης (κίτρινα γράμματα)
+        # Λογική για Πλατεία (Γήλοφος)
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
@@ -119,6 +113,21 @@ def get_weather():
             weather_type = "ΛΙΓΑ ΣΥΝΝΕΦΑ ☁️" if is_night else "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅"
         else:
             weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
+
+        # --- ΝΕΟ ΤΜΗΜΑ: ΥΠΟΛΟΓΙΣΜΟΣ ΣΥΝΘΗΚΩΝ ΒΟΥΝΟΥ (1117m) ---
+        temp_peak = round(temp - 0.5, 1)
+        peak_status = ""
+        
+        if precip > 0:
+            if temp_peak <= 0.5: peak_status = "ΠΙΘΑΝΗ ΑΣΘΕΝΗ ΧΙΟΝΟΠΤΩΣΗ"
+            else: peak_status = "ΠΙΘΑΝΗ ΑΣΘΕΝΗ ΒΡΟΧΗ"
+        elif hum > 95:
+            peak_status = "ΠΙΘΑΝΗ ΟΜΙΧΛΗ"
+        elif temp_peak <= 0 and hum > 85:
+            peak_status = "ΠΙΘΑΝΗ ΠΑΧΝΗ"
+        else:
+            peak_status = "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
+        # ---------------------------------------------------
 
         weather_data = {
             "model_forecast": get_model_alert(),
@@ -136,13 +145,15 @@ def get_weather():
             "status": weather_type,
             "moon_icon": get_moon_phase_image(),
             "time": time_now_str,
-            "last_update": time_now_str
+            "last_update": time_now_str,
+            "peak_temp": temp_peak,
+            "peak_status": peak_status
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Update Success: {time_now_str} | Status: {weather_type}")
+        print(f"Update Success: {time_now_str} | Peak: {temp_peak}°C - {peak_status}")
 
     except Exception as e:
         print(f"Error: {e}")
