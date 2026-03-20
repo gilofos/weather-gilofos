@@ -1,18 +1,18 @@
 {
     "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
-    "temperature": 1.4,
+    "temperature": 1.7,
     "temp_max": 8.6,
     "temp_min": 0.7,
-    "humidity": 62,
-    "pressure": 1026.3,
-    "wind_speed": 4.1,
-    "wind_gust": 7.9,
+    "humidity": 61,
+    "pressure": 1026.4,
+    "wind_speed": 5.9,
+    "wind_gust": 10.8,
     "wind_dir": 322,
     "wind_text": "322° ΒΔ (1 Μπφ)",
     "rain": 0.0,
     "clouds": 48,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅",
     "moon_icon": "moon7.png",
-    "time": "08:00:35",
-    "last_update": "08:00:35"
+    "time": "08:15:27",
+    "last_update": "08:15:27"
 }
