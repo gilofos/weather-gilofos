@@ -6,15 +6,15 @@
     "humidity": 40,
     "pressure": 1025.3,
     "wind_speed": 7.6,
-    "wind_gust": 17.6,
+    "wind_gust": 17.3,
     "wind_dir": 357,
     "wind_text": "357° Β (2 Μπφ)",
     "rain": 0.0,
     "clouds": 57,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ ⛅",
     "moon_icon": "moon7.png",
-    "time": "15:00:35",
-    "last_update": "15:00:35",
+    "time": "15:15:27",
+    "last_update": "15:15:27",
     "peak_temp": 8.7,
     "peak_status": "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
 }
