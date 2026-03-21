@@ -203,6 +203,8 @@ document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
       document.getElementById('model-forecast-val').innerText = data.model_forecast;          
                 // Τάση Πίεσης
+                document.getElementById('vouno-temp').innerText = data.peak_temp + "°C";
+document.getElementById('vouno-status').innerText = data.peak_status;
                 let trendIcon = " →";
                 if (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) trendIcon = " ↓"; 
                 if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
