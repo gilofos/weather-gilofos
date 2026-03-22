@@ -1,9 +1,9 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΔΕΥΤΕΡΑ ΜΕ ΒΡΟΧΕΣ",
-    "temperature": 2.9,
+    "temperature": 2.8,
     "temp_max": 10.5,
     "temp_min": 2.0,
-    "humidity": 79,
+    "humidity": 80,
     "pressure": 1027.6,
     "wind_speed": 2.3,
     "wind_gust": 3.6,
@@ -13,8 +13,8 @@
     "clouds": 67,
     "status": "ΣΥΝΝΕΦΙΑ ☁️",
     "moon_icon": "moon7.png",
-    "time": "02:15:25",
-    "last_update": "02:15:25",
-    "peak_temp": 2.4,
+    "time": "02:30:29",
+    "last_update": "02:30:29",
+    "peak_temp": 2.3,
     "peak_status": "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
 }
