@@ -1,9 +1,9 @@
 {
-    "temperature": 9.9,
+    "temperature": 9.7,
     "temp_max": 14.8,
     "temp_min": 3.2,
-    "pressure": "1015.9 →",
+    "pressure": "1015.8 →",
     "status": "ΚΑΘΑΡΟΣ",
-    "wind_text": "169° Ν (2 Μπφ)",
-    "last_update": "20:13:46"
+    "wind_text": "163° Ν (2 Μπφ)",
+    "last_update": "20:15:30"
 }
