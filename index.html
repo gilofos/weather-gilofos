@@ -208,9 +208,9 @@ document.getElementById('t-min').innerText = data.temp_min;
 document.getElementById('vouno-status').innerText = data.peak_status;
                 let trendIcon = " →";
                 if (data.status && data.status.includes("ΕΠΙΔΕΙΝΩΣΗ")) trendIcon = " ↓"; 
-                if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
-                document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
-                const alertDiv = document.getElementById('weather-alert');
+               if (data.status && (data.status.includes("ΑΙΘΡΙΟΣ") || data.status.includes("ΞΑΣΤΕΡΙΑ"))) trendIcon = " ↑"; 
+document.getElementById('pres-val').innerText = data.pressure + " hPa" + trendIcon;
+const alertDiv = document.getElementById('weather-alert');
 if (parseFloat(data.pressure) < 1004) {
     alertDiv.classList.remove('hidden');
 } else {
