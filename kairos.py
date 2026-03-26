@@ -63,6 +63,7 @@ def get_weather():
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
         
+        # Πίεση στην επιφάνεια της θάλασσας
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
         # --- 1. ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
@@ -86,7 +87,7 @@ def get_weather():
                 except:
                     last_pres = pres_sea
             
-            # ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ
+            # Ευαισθησία 0.01 για να κουνιέται το βελάκι
             if pres_sea < (last_pres - 0.01):
                 arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
             elif pres_sea > (last_pres + 0.01):
@@ -99,3 +100,30 @@ def get_weather():
 
         weather_data = {
             "model_forecast": get_model_alert(),
+            "temperature": round(data['temperature_2m'], 1),
+            "temp_max": round(daily['temperature_2m_max'][0], 1),
+            "temp_min": round(daily['temperature_2m_min'][0], 1),
+            "humidity": data['relative_humidity_2m'],
+            "pressure": pres_sea, 
+            "wind_speed": data['wind_speed_10m'],
+            "wind_gust": data.get('wind_gusts_10m', 0),
+            "wind_dir": data['wind_direction_10m'],
+            "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])} ({get_beaufort(data['wind_speed_10m'])} Μπφ)",
+            "rain": data['precipitation'],
+            "clouds": data['cloud_cover'],
+            "status": arrow_status,
+            "moon_icon": get_moon_phase_image(),
+            "time": time_now,
+            "last_update": time_now,
+            "peak_temp": round(data['temperature_2m'] - 0.5, 1),
+            "peak_status": text_status
+        }
+        
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(weather_data, f, ensure_ascii=False, indent=4)
+            
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    get_weather()
