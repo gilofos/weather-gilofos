@@ -1,6 +1,6 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΠΑΡΑΣΚΕΥΗ ΜΕ ΒΡΟΧΕΣ & ΚΑΤΑΙΓΙΔΕΣ",
-    "temperature": 3.5,
+    "temperature": 3.4,
     "temp_max": 14.7,
     "temp_min": 3.4,
     "humidity": 85,
@@ -10,11 +10,11 @@
     "wind_dir": 170,
     "wind_text": "170° Ν (1 Μπφ)",
     "rain": 0.0,
-    "clouds": 5,
+    "clouds": 0,
     "status": "ΗΛΙΟΦΑΝΕΙΑ ☀️",
     "moon_icon": "moon2.png",
-    "time": "06:45:25",
-    "last_update": "06:45:25",
-    "peak_temp": 3.0,
+    "time": "07:00:36",
+    "last_update": "07:00:36",
+    "peak_temp": 2.9,
     "peak_status": "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
 }
