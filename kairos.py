@@ -65,7 +65,7 @@ def get_weather():
         
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
-        # --- 1. ΤΙ ΒΛΕΠΕΙ Η ΚΑΜΕΡΑ (ΚΕΙΜΕΝΟ) ---
+        # --- 1. ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
         if data['precipitation'] > 0:
             text_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
@@ -75,52 +75,27 @@ def get_weather():
         else:
             text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # --- 2. ΤΙ ΚΑΝΕΙ Η ΠΙΕΣΗ (ΒΕΛΑΚΙ) ---
+        # --- 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ ---
         last_p_file = "last_pressure.txt"
-        arrow_status = text_status # Προεπιλογή
+        arrow_status = text_status 
         
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
-                last_pres = float(f.read().strip())
+                try:
+                    last_pres = float(f.read().strip())
+                except:
+                    last_pres = pres_sea
             
-            # Αν η πίεση πέσει πάνω από 0.1, δείξε βελάκι κάτω (ΕΠΙΔΕΙΝΩΣΗ)
-            if pres_sea < last_pres - 0.1:
-                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
-            # Αν η πίεση ανέβει πάνω από 0.1, δείξε βελάκι πάνω (ΒΕΛΤΙΩΣΗ)
-            elif pres_sea > last_pres + 0.1:
-                arrow_status = "ΒΕΛΤΙΩΣΗ"
+            # ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ
+            if pres_sea < (last_pres - 0.01):
+                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
+            elif pres_sea > (last_pres + 0.01):
+                arrow_status = "ΒΕΛΤΙΩΣΗ"   
             else:
-                arrow_status = text_status # Σταθερότητα (Δεξιά)
+                arrow_status = text_status   
         
         with open(last_p_file, "w") as f:
             f.write(str(pres_sea))
 
         weather_data = {
             "model_forecast": get_model_alert(),
-            "temperature": round(data['temperature_2m'], 1),
-            "temp_max": round(daily['temperature_2m_max'][0], 1),
-            "temp_min": round(daily['temperature_2m_min'][0], 1),
-            "humidity": data['relative_humidity_2m'],
-            "pressure": pres_sea, 
-            "wind_speed": data['wind_speed_10m'],
-            "wind_gust": data.get('wind_gusts_10m', 0),
-            "wind_dir": data['wind_direction_10m'],
-            "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])} ({get_beaufort(data['wind_speed_10m'])} Μπφ)",
-            "rain": data['precipitation'],
-            "clouds": data['cloud_cover'],
-            "status": arrow_status,      # ΑΥΤΟ ΚΟΥΝΑΕΙ ΤΟ ΒΕΛΑΚΙ
-            "moon_icon": get_moon_phase_image(),
-            "time": time_now,
-            "last_update": time_now,
-            "peak_temp": round(data['temperature_2m'] - 0.5, 1),
-            "peak_status": text_status   # ΑΥΤΟ ΓΡΑΦΕΙ ΤΟ ΚΕΙΜΕΝΟ ΣΤΗΝ ΟΘΟΝΗ
-        }
-        
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(weather_data, f, ensure_ascii=False, indent=4)
-            
-    except Exception as e:
-        print(f"Error: {e}")
-
-if __name__ == "__main__":
-    get_weather()
