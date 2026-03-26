@@ -6,15 +6,15 @@
     "humidity": 84,
     "pressure": 1021.3,
     "wind_speed": 4.4,
-    "wind_gust": 9.4,
+    "wind_gust": 9.0,
     "wind_dir": 171,
     "wind_text": "171° Ν (1 Μπφ)",
     "rain": 0.0,
     "clouds": 5,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ 🌌",
     "moon_icon": "moon2.png",
-    "time": "06:00:36",
-    "last_update": "06:00:36",
+    "time": "06:15:27",
+    "last_update": "06:15:27",
     "peak_temp": 3.1,
     "peak_status": "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
 }
