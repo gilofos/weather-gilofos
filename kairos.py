@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-# --- ΔΙΟΡΘΩΜΕΝΕΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΑΠΟ ΤΟ ΜΟΝΤΕΛΟ (Meteociel) ---
+# --- ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΓΗΛΟΦΟΥ ---
 LAT = 39.9
 LON = 21.8
 
@@ -65,10 +65,35 @@ def get_weather():
         
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
-        # Εδώ το status για να βάζει το index.html το σωστό βελάκι
-        if data['precipitation'] > 0: weather_type = "ΕΠΙΔΕΙΝΩΣΗ"
-        elif data['cloud_cover'] <= 20: weather_type = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-        else: weather_type = "ΣΥΝΝΕΦΙΑ"
+        # --- 1. ΤΙ ΒΛΕΠΕΙ Η ΚΑΜΕΡΑ (ΚΕΙΜΕΝΟ) ---
+        if data['precipitation'] > 0:
+            text_status = "ΒΡΟΧΗ"
+        elif data['cloud_cover'] > 70:
+            text_status = "ΣΥΝΝΕΦΙΑ"
+        elif data['cloud_cover'] > 20:
+            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+        else:
+            text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+
+        # --- 2. ΤΙ ΚΑΝΕΙ Η ΠΙΕΣΗ (ΒΕΛΑΚΙ) ---
+        last_p_file = "last_pressure.txt"
+        arrow_status = text_status # Προεπιλογή
+        
+        if os.path.exists(last_p_file):
+            with open(last_p_file, "r") as f:
+                last_pres = float(f.read().strip())
+            
+            # Αν η πίεση πέσει πάνω από 0.1, δείξε βελάκι κάτω (ΕΠΙΔΕΙΝΩΣΗ)
+            if pres_sea < last_pres - 0.1:
+                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
+            # Αν η πίεση ανέβει πάνω από 0.1, δείξε βελάκι πάνω (ΒΕΛΤΙΩΣΗ)
+            elif pres_sea > last_pres + 0.1:
+                arrow_status = "ΒΕΛΤΙΩΣΗ"
+            else:
+                arrow_status = text_status # Σταθερότητα (Δεξιά)
+        
+        with open(last_p_file, "w") as f:
+            f.write(str(pres_sea))
 
         weather_data = {
             "model_forecast": get_model_alert(),
@@ -83,12 +108,12 @@ def get_weather():
             "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])} ({get_beaufort(data['wind_speed_10m'])} Μπφ)",
             "rain": data['precipitation'],
             "clouds": data['cloud_cover'],
-            "status": weather_type,
+            "status": arrow_status,      # ΑΥΤΟ ΚΟΥΝΑΕΙ ΤΟ ΒΕΛΑΚΙ
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
             "peak_temp": round(data['temperature_2m'] - 0.5, 1),
-            "peak_status": "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
+            "peak_status": text_status   # ΑΥΤΟ ΓΡΑΦΕΙ ΤΟ ΚΕΙΜΕΝΟ ΣΤΗΝ ΟΘΟΝΗ
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
