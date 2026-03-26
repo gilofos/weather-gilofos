@@ -32,14 +32,14 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Προσθέτει τα αρχεία. Αν κάποιο λείπει, δεν βγάζει σφάλμα (|| true)
+          # Προσθέτουμε τα αρχεία για να σώζονται οι αλλαγές
           git add data.json || true
           git add weather_output.png || true
+          git add last_pressure.txt || true  # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΣΩΖΕΙ ΤΗΝ ΠΙΕΣΗ
           
-          # Ελέγχει αν όντως άλλαξε κάτι πριν κάνει commit
           if git diff --quiet && git diff --staged --quiet; then
             echo "Δεν υπάρχουν αλλαγές στα δεδομένα."
           else
-            git commit -m "Ανανέωση καιρού: $(date +'%Y-%m-%d %H:%M:%S')"
+            git commit -m "Ανανέωση καιρού και τάσης: $(date +'%Y-%m-%d %H:%M:%S')"
             git push
           fi
