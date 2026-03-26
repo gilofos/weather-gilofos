@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 from datetime import datetime, timedelta
 
 # Συντεταγμένες για Γήλοφο
@@ -21,6 +22,29 @@ def get_beaufort(kmh):
     elif kmh < 50: return 6
     elif kmh < 62: return 7
     else: return 8
+
+# --- ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΤΗΣ ΠΙΕΣΗΣ ---
+def get_pressure_trend(current_pres):
+    file_path = "last_pressure.txt"
+    trend_arrow = "→" # Προεπιλογή
+    
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, "r") as f:
+                last_pres = float(f.read().strip())
+            
+            diff = current_pres - last_pres
+            if diff > 0.1: trend_arrow = "↗"
+            elif diff < -0.1: trend_arrow = "↘"
+            else: trend_arrow = "→"
+        except:
+            pass
+
+    # Αποθήκευση της νέας τιμής για την επόμενη σύγκριση
+    with open(file_path, "w") as f:
+        f.write(str(current_pres))
+    
+    return trend_arrow
 
 def get_moon_phase_image():
     diff = datetime.now() - datetime(2001, 1, 1)
@@ -93,12 +117,14 @@ def get_weather():
         bft = get_beaufort(wind_spd)
         wind_info = f"{wind_deg}° {wind_cardinal} ({bft} Μπφ)"
         
+        # Υπολογισμός τάσης πίεσης
+        pres_trend = get_pressure_trend(round(pres_sea, 1))
+        
         sunset_time = datetime.strptime(daily['sunset'][0], "%Y-%m-%dT%H:%M").time()
         sunrise_time = datetime.strptime(daily['sunrise'][0], "%Y-%m-%dT%H:%M").time()
         current_time = time_now_dt.time()
         is_night = current_time >= sunset_time or current_time <= sunrise_time
         
-        # Λογική για Πλατεία (Γήλοφος)
         if precip > 0:
             if temp <= 1.5: weather_type = "ΧΙΟΝΟΠΤΩΣΗ ❄️"
             elif temp <= 3.0: weather_type = "ΧΙΟΝΟΝΕΡΟ 🌨️"
@@ -114,7 +140,6 @@ def get_weather():
         else:
             weather_type = "ΣΥΝΝΕΦΙΑ ☁️"
 
-        # --- ΝΕΟ ΤΜΗΜΑ: ΥΠΟΛΟΓΙΣΜΟΣ ΣΥΝΘΗΚΩΝ ΒΟΥΝΟΥ (1117m) ---
         temp_peak = round(temp - 0.5, 1)
         peak_status = ""
         
@@ -127,7 +152,6 @@ def get_weather():
             peak_status = "ΠΙΘΑΝΗ ΠΑΧΝΗ"
         else:
             peak_status = "ΚΑΘΑΡΟΣ ΚΑΙΡΟΣ"
-        # ---------------------------------------------------
 
         weather_data = {
             "model_forecast": get_model_alert(),
@@ -135,7 +159,7 @@ def get_weather():
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
             "humidity": hum,
-            "pressure": round(pres_sea, 1),
+            "pressure": f"{round(pres_sea, 1)} {pres_trend}", # Εδώ προστέθηκε το βελάκι
             "wind_speed": wind_spd,
             "wind_gust": wind_gust,
             "wind_dir": wind_deg,
@@ -153,7 +177,7 @@ def get_weather():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(weather_data, f, ensure_ascii=False, indent=4)
             
-        print(f"Update Success: {time_now_str} | Peak: {temp_peak}°C - {peak_status}")
+        print(f"Update Success: {time_now_str} | Pres: {pres_sea} {pres_trend}")
 
     except Exception as e:
         print(f"Error: {e}")
