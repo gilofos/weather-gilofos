@@ -454,15 +454,19 @@ function speakWeather() {
     
     let periodos = (ωραRaw >= 12 && ωραRaw < 15) ? "το μεσημέρι" : (ωραRaw >= 15 && ωραRaw < 20 ? "το απόγευμα" : (ωραRaw >= 4 && ωραRaw < 12 ? "το πρωί" : (ωραRaw >= 0 && ωραRaw < 4 ? "τα ξημερώματα" : "το βράδυ")));
 
-    const skyMatch = info.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/i);
-    let sky = "καλές συνθήκες";
-    if (skyMatch) {
-        const s = skyMatch[0].toUpperCase();
-        if (s.includes('ΗΛΙΟ') || s.includes('ΑΙΘΡ')) sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s.includes('ΛΙΓΑ')) sky = 'λίγη συν-νεφιά';
-        else if (s.includes('ΣΥΝΝΕΦΙΑ')) sky = 'συν-νεφιά';
-        else sky = s.toLowerCase();
-    }
+    const skyValue = document.getElementById('vouno-status').innerText.toUpperCase();
+let sky = "καλές συνθήκες";
+
+if (skyValue.includes('ΗΛΙΟ') || skyValue.includes('ΑΙΘΡ') || skyValue.includes('ΞΑΣΤΕΡΙΑ')) 
+    sky = 'λιακάδα και καθαρό ουρανό';
+else if (skyValue.includes('ΛΙΓΑ')) 
+    sky = 'λίγη συν-νεφιά';
+else if (skyValue.includes('ΣΥΝΝΕΦΙΑ')) 
+    sky = 'συν-νεφιά';
+else if (skyValue.includes('ΒΡΟΧΗ')) 
+    sky = 'βροχή';
+else 
+    sky = skyValue.toLowerCase();
 
     // ΚΑΘΑΡΟ ΚΕΙΜΕΝΟ ΧΩΡΙΣ ΤΕΛΕΙΕΣ ΣΤΗΝ ΑΡΧΗ
     const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Η πρόγνωση δείχνει ${info.match(/ΠΡΟΓΝΩΣΗ.*?:\s*(.*)/i)?.[1].toLowerCase() || "καλό καιρό"}. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
