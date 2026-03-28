@@ -212,7 +212,7 @@
 document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('feels-val').innerText = data.feels_like;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
-              if (data.humidity_trend) { document.getElementById('hum-trend').innerHTML = data.humidity_trend; } 
+               
       document.getElementById('model-forecast-val').innerText = data.model_forecast;
                 document.getElementById('dew-val').innerText = data.dew_point + "°C";
                 // ΕΞΥΠΝΗ ΛΕΖΑΝΤΑ ΓΗΛΟΦΟΥ
@@ -454,16 +454,15 @@ function speakWeather() {
     
     let periodos = (ωραRaw >= 12 && ωραRaw < 15) ? "το μεσημέρι" : (ωραRaw >= 15 && ωραRaw < 20 ? "το απόγευμα" : (ωραRaw >= 4 && ωραRaw < 12 ? "το πρωί" : (ωραRaw >= 0 && ωραRaw < 4 ? "τα ξημερώματα" : "το βράδυ")));
 
-let sky = "καλές συνθήκες";
-if (typeof currentWeatherData !== 'undefined' && currentWeatherData.weather_code !== undefined) {
-    const code = currentWeatherData.weather_code;
-    if (code === 0) sky = 'λιακάδα και καθαρό ουρανό';
-    else if (code >= 1 && code <= 3) sky = 'λίγη συν-νεφιά';
-    else if (code >= 45 && code <= 48) sky = 'ομίχλη';
-    else if (code >= 51 && code <= 67) sky = 'βροχή';
-    else if (code >= 71 && code <= 77) sky = 'χιόνι';
-    else sky = 'τοπικές καταιγίδες';
-}
+    const skyMatch = info.match(/(ΗΛΙΟΦΑΝΕΙΑ|ΑΙΘΡΙΟΣ|ΞΑΣΤΕΡΙΑ|ΛΙΓΑ ΣΥΝΝΕΦΑ|ΑΡΑΙΗ ΣΥΝΝΕΦΙΑ|ΣΥΝΝΕΦΙΑ|ΚΑΤΑΙΓΙΔΑ|ΒΡΟΧΗ)/i);
+    let sky = "καλές συνθήκες";
+    if (skyMatch) {
+        const s = skyMatch[0].toUpperCase();
+        if (s.includes('ΗΛΙΟ') || s.includes('ΑΙΘΡ')) sky = 'λιακάδα και καθαρό ουρανό';
+        else if (s.includes('ΛΙΓΑ')) sky = 'λίγη συν-νεφιά';
+        else if (s.includes('ΣΥΝΝΕΦΙΑ')) sky = 'συν-νεφιά';
+        else sky = s.toLowerCase();
+    }
 
     // ΚΑΘΑΡΟ ΚΕΙΜΕΝΟ ΧΩΡΙΣ ΤΕΛΕΙΕΣ ΣΤΗΝ ΑΡΧΗ
     const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο έχουμε ${sky}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Η πρόγνωση δείχνει ${info.match(/ΠΡΟΓΝΩΣΗ.*?:\s*(.*)/i)?.[1].toLowerCase() || "καλό καιρό"}. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
@@ -506,49 +505,4 @@ document.body.insertAdjacentHTML('beforeend', `
 </p>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
