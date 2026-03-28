@@ -74,16 +74,13 @@ def get_weather():
         feels_like = round(feels_like, 1)
 
         # --- 2. ΠΛΗΡΟΦΟΡΙΕΣ ΑΝΕΜΟΥ ---
-        # Χρησιμοποιούμε τη συνάρτηση get_direction που έχεις στη γραμμή 10
         wd_txt = get_direction(data['wind_direction_10m'])
         wind_info = f"{wd_txt} {V} km/h"
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
         
-        # Πίεση στην επιφάνεια της θάλασσας
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
-        # --- 1. ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
         if data['precipitation'] > 0:
             text_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
@@ -93,12 +90,12 @@ def get_weather():
         else:
             text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # --- 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ ---
         last_p_file = "last_pressure.txt"
         arrow_status = text_status 
+        
         # --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
         last_h_file = "last_humidity.txt"
-        hum_trend = "→"
+        hum_trend = "→" # ΔΙΟΡΘΩΣΗ: ΠΟΤΕ ΚΕΝΟ
 
         if os.path.exists(last_h_file):
             with open(last_h_file, "r") as f:
@@ -115,6 +112,7 @@ def get_weather():
         
         with open(last_h_file, "w") as f:
             f.write(str(RH))
+
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
                 try:
@@ -122,7 +120,6 @@ def get_weather():
                 except:
                     last_pres = pres_sea
             
-            # Ευαισθησία 0.01 για να κουνιέται το βελάκι
             if pres_sea < (last_pres - 0.01):
                 arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
             elif pres_sea > (last_pres + 0.01):
