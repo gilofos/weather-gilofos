@@ -60,6 +60,23 @@ def get_weather():
         
         data = res_json['current']
         daily = res_json['daily']
+        # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ ΑΙΣΘΗΣΗΣ (FEELS LIKE) ---
+        T = data['temperature_2m']
+        V = data['wind_speed_10m']
+        RH = data['relative_humidity_2m']
+
+        if T <= 15 and V > 4.8:
+            feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
+        elif T >= 25:
+            feels_like = 0.5 * (T + 61.0 + ((T - 68.0) * 1.2) + (RH * 0.094))
+        else:
+            feels_like = T
+        feels_like = round(feels_like, 1)
+
+        # --- 2. ΠΛΗΡΟΦΟΡΙΕΣ ΑΝΕΜΟΥ ---
+        # Χρησιμοποιούμε τη συνάρτηση get_direction που έχεις στη γραμμή 10
+        wd_txt = get_direction(data['wind_direction_10m'])
+        wind_info = f"{wd_txt} {V} km/h"
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
         
