@@ -88,7 +88,7 @@ def get_weather():
         else:
             text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # --- 4. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΠΙΕΣΗΣ (ΒΕΛΤΙΩΣΗ/ΕΠΙΔΕΙΝΩΣΗ) ---
+        # --- 4. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΠΙΕΣΗΣ ---
         last_p_file = "last_pressure.txt"
         arrow_status = text_status 
         if os.path.exists(last_p_file):
@@ -104,9 +104,9 @@ def get_weather():
         with open(last_p_file, "w") as f:
             f.write(str(pres_sea))
         
-        # --- 5. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΥΓΡΑΣΙΑΣ (ΒΕΛΑΚΙ) ---
+        # --- 5. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
         last_h_file = "last_humidity.txt"
-        hum_trend = "→" # Ποτέ κενό για να μη σπάει το site
+        hum_trend = "→" 
         if os.path.exists(last_h_file):
             with open(last_h_file, "r") as f:
                 try:
