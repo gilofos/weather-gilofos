@@ -212,7 +212,7 @@
 document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('feels-val').innerText = data.feels_like;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
-              if (data.humidity_trend) { document.getElementById('hum-trend').innerText = data.humidity_trend; } 
+              if (data.humidity_trend) { document.getElementById('hum-trend').innerHTML = data.humidity_trend; } 
       document.getElementById('model-forecast-val').innerText = data.model_forecast;
                 document.getElementById('dew-val').innerText = data.dew_point + "°C";
                 // ΕΞΥΠΝΗ ΛΕΖΑΝΤΑ ΓΗΛΟΦΟΥ
