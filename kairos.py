@@ -134,7 +134,9 @@ def get_weather():
             "time": time_now,
             "last_update": time_now,
             "peak_temp": round(data['temperature_2m'] - 0.5, 1),
-            "peak_status": text_status
+            "peak_status": text_status,
+            "feels_like": feels_like,
+            "wind_info": wind_info
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
