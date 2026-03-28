@@ -89,7 +89,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <div class="card p-6 md:p-7 text-center border-b-8 border-cyan-500">
     <p class="text-[10px] font-black text-cyan-400 tracking-[0.3em] mb-2 uppercase">ΥΓΡΑΣΙΑ</p>
-    <h3 id="hum-val" class="text-4xl font-black">--%</h3>
+    <h3 id="hum-val" class="text-4xl font-black">--% <span id="hum-trend" class="text-2xl ml-1"></span></h3>
     
     <div class="mt-4 pt-2 border-t border-white/5">
         <p class="text-[8px] font-black text-white/40 tracking-[0.2em] uppercase">ΣΗΜΕΙΟ ΔΡΟΣΟΥ</p>
@@ -212,6 +212,7 @@
 document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('feels-val').innerText = data.feels_like;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
+                document.getElementById('hum-trend').innerText = data.humidity_trend;
       document.getElementById('model-forecast-val').innerText = data.model_forecast;
                 document.getElementById('dew-val').innerText = data.dew_point + "°C";
                 // ΕΞΥΠΝΗ ΛΕΖΑΝΤΑ ΓΗΛΟΦΟΥ
