@@ -54,7 +54,6 @@ def get_weather():
         V = data['wind_speed_10m']
         RH = data['relative_humidity_2m']
 
-        # --- ΑΙΣΘΗΣΗ ---
         if T <= 15 and V > 4.8:
             feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
         elif T >= 25:
@@ -63,29 +62,29 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
+        # ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ
         if data['precipitation'] > 0:
-            current_text = "ΒΡΟΧΗ"
+            text_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
-            current_text = "ΣΥΝΝΕΦΙΑ"
+            text_status = "ΣΥΝΝΕΦΙΑ"
         elif data['cloud_cover'] > 20:
-            current_text = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
         else:
-            current_text = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # --- ΛΟΓΙΚΗ ΤΑΣΗΣ ΠΙΕΣΗΣ ---
+        # ΛΟΓΙΚΗ ΤΑΣΗΣ
         last_p_file = "last_pressure.txt"
         pres_sea = round(data['surface_pressure'] + 103, 1)
-        display_status = current_text 
+        arrow_status = text_status 
 
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
                 try:
                     last_pres = float(f.read().strip())
-                    if pres_sea < (last_pres - 0.05):
-                        display_status = "ΕΠΙΔΕΙΝΩΣΗ"
-                    elif pres_sea > (last_pres + 0.05):
-                        display_status = "ΒΕΛΤΙΩΣΗ"
+                    if pres_sea < (last_pres - 0.01):
+                        arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
+                    elif pres_sea > (last_pres + 0.01):
+                        arrow_status = "ΒΕΛΤΙΩΣΗ"    
                 except: pass
         
         with open(last_p_file, "w") as f:
@@ -105,15 +104,17 @@ def get_weather():
             "wind_speed": V,
             "wind_gust": data.get('wind_gusts_10m', 0),
             "wind_dir": data['wind_direction_10m'],
-            "wind_text": f"{get_direction(data['wind_direction_10m'])} {V} km/h",
+            "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])}",
             "rain": data['precipitation'],
             "clouds": data['cloud_cover'],
-            "status": display_status,
-            "peak_status": current_text, 
+            "status": arrow_status,
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
-            "feels_like": feels_like
+            "peak_temp": round(T - 0.5, 1),
+            "peak_status": text_status,
+            "feels_like": feels_like,
+            "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h"
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
