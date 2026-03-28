@@ -458,10 +458,11 @@ function speakWeather() {
     let sky = "καλές συνθήκες";
     if (skyMatch) {
         const s = skyMatch[0].toUpperCase();
-        if (s.includes('ΗΛΙΟ') || s.includes('ΑΙΘΡ')) sky = 'λιακάδα και καθαρό ουρανό';
-        else if (s.includes('ΛΙΓΑ')) sky = 'λίγη συν-νεφιά';
-        else if (s.includes('ΣΥΝΝΕΦΙΑ')) sky = 'συν-νεφιά';
-        else sky = s.toLowerCase();
+if (s === 'ΗΛΙΟΦΑΝΕΙΑ' || s === 'ΑΙΘΡΙΟΣ') sky = 'λιακάδα και καθαρό ουρανό';
+else if (s === 'ΛΙΓΑ ΣΥΝΝΕΦΑ') sky = 'λίγη συννεφιά';
+else if (s === 'ΣΥΝΝΕΦΙΑ' || s === 'ΝΕΦΕΛΩΔΗΣ') sky = 'συννεφιά';
+else if (s === 'ΒΡΟΧΗ') sky = 'βροχή';
+else sky = s.toLowerCase();
     }
 
     // ΚΑΘΑΡΟ ΚΕΙΜΕΝΟ ΧΩΡΙΣ ΤΕΛΕΙΕΣ ΣΤΗΝ ΑΡΧΗ
