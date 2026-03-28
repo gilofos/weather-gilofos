@@ -98,7 +98,7 @@ def get_weather():
         arrow_status = text_status 
         # --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
         last_h_file = "last_humidity.txt"
-        hum_trend = "" 
+        hum_trend = "→"
 
         if os.path.exists(last_h_file):
             with open(last_h_file, "r") as f:
