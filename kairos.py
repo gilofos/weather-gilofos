@@ -12,17 +12,6 @@ def get_direction(degrees):
     idx = int((degrees + 22.5) / 45) % 8
     return directions[idx]
 
-def get_beaufort(kmh):
-    if kmh < 1: return 0
-    elif kmh < 6: return 1
-    elif kmh < 12: return 2
-    elif kmh < 20: return 3
-    elif kmh < 29: return 4
-    elif kmh < 39: return 5
-    elif kmh < 50: return 6
-    elif kmh < 62: return 7
-    else: return 8
-
 def get_moon_phase_image():
     diff = datetime.now() - datetime(2001, 1, 1)
     days = diff.days + diff.seconds / 86400
@@ -60,11 +49,12 @@ def get_weather():
         
         data = res_json['current']
         daily = res_json['daily']
-        # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ ΑΙΣΘΗΣΗΣ (FEELS LIKE) ---
+        
         T = data['temperature_2m']
         V = data['wind_speed_10m']
         RH = data['relative_humidity_2m']
 
+        # --- ΑΙΣΘΗΣΗ ---
         if T <= 15 and V > 4.8:
             feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
         elif T >= 25:
@@ -73,89 +63,57 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- 2. ΠΛΗΡΟΦΟΡΙΕΣ ΑΝΕΜΟΥ ---
-        # Χρησιμοποιούμε τη συνάρτηση get_direction που έχεις στη γραμμή 10
-        wd_txt = get_direction(data['wind_direction_10m'])
-        wind_info = f"{wd_txt} {V} km/h"
-        utc_offset = res_json.get('utc_offset_seconds', 7200)
-        time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
-        
-        # Πίεση στην επιφάνεια της θάλασσας
-        pres_sea = round(data['surface_pressure'] + 103, 1)
-        
-        # --- 1. ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
+        # --- ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ ---
         if data['precipitation'] > 0:
-            text_status = "ΒΡΟΧΗ"
+            current_text = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
-            text_status = "ΣΥΝΝΕΦΙΑ"
+            current_text = "ΣΥΝΝΕΦΙΑ"
         elif data['cloud_cover'] > 20:
-            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+            current_text = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
         else:
-            text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            current_text = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # --- 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ ---
+        # --- ΛΟΓΙΚΗ ΤΑΣΗΣ ΠΙΕΣΗΣ ---
         last_p_file = "last_pressure.txt"
-        arrow_status = text_status 
-        # --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
-        last_h_file = "last_humidity.txt"
-        hum_trend = "" 
+        pres_sea = round(data['surface_pressure'] + 103, 1)
+        display_status = current_text 
 
-        if os.path.exists(last_h_file):
-            with open(last_h_file, "r") as f:
-                try:
-                    last_hum = float(f.read().strip())
-                    if RH > last_hum:
-                        hum_trend = "↑"
-                    elif RH < last_hum:
-                        hum_trend = "↓"
-                    else:
-                        hum_trend = "→"
-                except:
-                    hum_trend = "→"
-        
-        with open(last_h_file, "w") as f:
-            f.write(str(RH))
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
                 try:
                     last_pres = float(f.read().strip())
-                except:
-                    last_pres = pres_sea
-            
-            # Ευαισθησία 0.01 για να κουνιέται το βελάκι
-            if pres_sea < (last_pres - 0.01):
-                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
-            elif pres_sea > (last_pres + 0.01):
-                arrow_status = "ΒΕΛΤΙΩΣΗ"   
-            else:
-                arrow_status = text_status   
+                    if pres_sea < (last_pres - 0.05):
+                        display_status = "ΕΠΙΔΕΙΝΩΣΗ"
+                    elif pres_sea > (last_pres + 0.05):
+                        display_status = "ΒΕΛΤΙΩΣΗ"
+                except: pass
         
         with open(last_p_file, "w") as f:
             f.write(str(pres_sea))
 
+        utc_offset = res_json.get('utc_offset_seconds', 7200)
+        time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
+
         weather_data = {
             "model_forecast": get_model_alert(),
-            "temperature": round(data['temperature_2m'], 1),
+            "temperature": round(T, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
-            "humidity": data['relative_humidity_2m'],
-            "humidity_trend": hum_trend,
+            "humidity": RH,
             "pressure": pres_sea,
-            "dew_point": round(data['temperature_2m'] - ((100 - data['relative_humidity_2m']) / 5), 1),
-            "wind_speed": data['wind_speed_10m'],
+            "dew_point": round(T - ((100 - RH) / 5), 1),
+            "wind_speed": V,
             "wind_gust": data.get('wind_gusts_10m', 0),
             "wind_dir": data['wind_direction_10m'],
-            "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])} ({get_beaufort(data['wind_speed_10m'])} Μπφ)",
+            "wind_text": f"{get_direction(data['wind_direction_10m'])} {V} km/h",
             "rain": data['precipitation'],
             "clouds": data['cloud_cover'],
-            "status": arrow_status,
+            "status": display_status,
+            "peak_status": current_text, 
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
-            "peak_temp": round(data['temperature_2m'] - 0.5, 1),
-            "peak_status": text_status,
-            "feels_like": feels_like,
-            "wind_info": wind_info
+            "feels_like": feels_like
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
