@@ -96,7 +96,25 @@ def get_weather():
         # --- 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ ΒΕΛΑΚΙ ---
         last_p_file = "last_pressure.txt"
         arrow_status = text_status 
+        # --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
+        last_h_file = "last_humidity.txt"
+        hum_trend = "" 
+
+        if os.path.exists(last_h_file):
+            with open(last_h_file, "r") as f:
+                try:
+                    last_hum = float(f.read().strip())
+                    if RH > last_hum:
+                        hum_trend = "↑"
+                    elif RH < last_hum:
+                        hum_trend = "↓"
+                    else:
+                        hum_trend = "→"
+                except:
+                    hum_trend = "→"
         
+        with open(last_h_file, "w") as f:
+            f.write(str(RH))
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
                 try:
@@ -121,6 +139,7 @@ def get_weather():
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
             "humidity": data['relative_humidity_2m'],
+            "humidity_trend": hum_trend,
             "pressure": pres_sea,
             "dew_point": round(data['temperature_2m'] - ((100 - data['relative_humidity_2m']) / 5), 1),
             "wind_speed": data['wind_speed_10m'],
