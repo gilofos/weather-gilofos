@@ -12,10 +12,10 @@
     "wind_text": "317° ΒΔ (2 Μπφ)",
     "rain": 0.1,
     "clouds": 100,
-    "status": "ΕΠΙΔΕΙΝΩΣΗ",
+    "status": "ΒΡΟΧΗ",
     "moon_icon": "moon5.png",
-    "time": "13:30:31",
-    "last_update": "13:30:31",
+    "time": "13:41:56",
+    "last_update": "13:41:56",
     "peak_temp": 8.7,
     "peak_status": "ΒΡΟΧΗ"
 }
