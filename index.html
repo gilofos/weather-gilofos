@@ -90,7 +90,8 @@
     
     <div class="mt-4 pt-2 border-t border-white/5">
         <p class="text-[8px] font-black text-white/40 tracking-[0.2em] uppercase">ΣΗΜΕΙΟ ΔΡΟΣΟΥ</p>
-        <h4 id="dew-val" class="text-xl font-black text-cyan-200">--°C</h4>
+<h4 id="dew-val" class="text-xl font-black text-cyan-200">--°C</h4>
+<div id="dew-status" class="text-[9px] font-black uppercase tracking-widest mt-1 italic text-slate-500">ΑΝΑΜΟΝΗ...</div>
     </div>
 </div>
             <div class="card p-6 md:p-7 text-center border-b-8 border-emerald-500">
@@ -209,6 +210,24 @@ document.getElementById('t-min').innerText = data.temp_min;
                 document.getElementById('hum-val').innerText = data.humidity + "%";
       document.getElementById('model-forecast-val').innerText = data.model_forecast;
                 document.getElementById('dew-val').innerText = data.dew_point + "°C";
+                // ΕΞΥΠΝΗ ΛΕΖΑΝΤΑ ΓΗΛΟΦΟΥ
+                const dVal = parseFloat(data.dew_point);
+                const tVal = parseFloat(data.temperature);
+                const diff = Math.abs(tVal - dVal);
+                const dStat = document.getElementById('dew-status');
+
+                if (dStat) {
+                    if (diff <= 1.5) {
+                        dStat.innerText = "⚠️ ΠΙΘΑΝΗ ΟΜΙΧΛΗ";
+                        dStat.className = "text-[9px] font-black text-yellow-400 animate-pulse mt-1";
+                    } else if (dVal <= 0) {
+                        dStat.innerText = "❄️ ΣΤΕΓΝΟΣ ΧΙΟΝΙΑΣ";
+                        dStat.className = "text-[9px] font-black text-blue-400 mt-1 uppercase";
+                    } else {
+                        dStat.innerText = "☀️ ΚΑΘΑΡΟΣ ΑΕΡΑΣ";
+                        dStat.className = "text-[9px] font-bold text-slate-500 mt-1 uppercase";
+                    }
+                }
                 // Τάση Πίεσης
                 document.getElementById('vouno-temp').innerText = data.peak_temp + "°C";
 document.getElementById('vouno-status').innerText = data.peak_status;
