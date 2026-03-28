@@ -11,11 +11,11 @@
     "wind_dir": 318,
     "wind_text": "318° ΒΔ (2 Μπφ)",
     "rain": 0.1,
-    "clouds": 100,
-    "status": "ΕΠΙΔΕΙΝΩΣΗ",
+    "clouds": 77,
+    "status": "ΒΡΟΧΗ",
     "moon_icon": "moon5.png",
-    "time": "13:45:25",
-    "last_update": "13:45:25",
+    "time": "13:58:25",
+    "last_update": "13:58:25",
     "peak_temp": 8.7,
     "peak_status": "ΒΡΟΧΗ"
 }
