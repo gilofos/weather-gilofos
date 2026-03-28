@@ -60,11 +60,11 @@ def get_weather():
         
         data = res_json['current']
         daily = res_json['daily']
+        
         # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ ΑΙΣΘΗΣΗΣ (FEELS LIKE) ---
         T = data['temperature_2m']
         V = data['wind_speed_10m']
         RH = data['relative_humidity_2m']
-
         if T <= 15 and V > 4.8:
             feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
         elif T >= 25:
@@ -73,14 +73,12 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- 2. ΠΛΗΡΟΦΟΡΙΕΣ ΑΝΕΜΟΥ ---
-        wd_txt = get_direction(data['wind_direction_10m'])
-        wind_info = f"{wd_txt} {V} km/h"
+        # --- 2. ΩΡΑ ΚΑΙ ΠΙΕΣΗ ---
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
-        
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
+        # --- 3. ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ (BASE) ---
         if data['precipitation'] > 0:
             text_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
@@ -90,13 +88,25 @@ def get_weather():
         else:
             text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
+        # --- 4. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΠΙΕΣΗΣ (ΒΕΛΤΙΩΣΗ/ΕΠΙΔΕΙΝΩΣΗ) ---
         last_p_file = "last_pressure.txt"
         arrow_status = text_status 
+        if os.path.exists(last_p_file):
+            with open(last_p_file, "r") as f:
+                try:
+                    last_pres = float(f.read().strip())
+                    if pres_sea < (last_pres - 0.01):
+                        arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
+                    elif pres_sea > (last_pres + 0.01):
+                        arrow_status = "ΒΕΛΤΙΩΣΗ"   
+                except:
+                    pass
+        with open(last_p_file, "w") as f:
+            f.write(str(pres_sea))
         
-        # --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΤΑΣΗ ΥΓΡΑΣΙΑΣ ---
+        # --- 5. ΛΟΓΙΚΗ ΓΙΑ ΤΑΣΗ ΥΓΡΑΣΙΑΣ (ΒΕΛΑΚΙ) ---
         last_h_file = "last_humidity.txt"
-        hum_trend = "→" # ΔΙΟΡΘΩΣΗ: ΠΟΤΕ ΚΕΝΟ
-
+        hum_trend = "→" # Ποτέ κενό για να μη σπάει το site
         if os.path.exists(last_h_file):
             with open(last_h_file, "r") as f:
                 try:
@@ -105,30 +115,10 @@ def get_weather():
                         hum_trend = "↑"
                     elif RH < last_hum:
                         hum_trend = "↓"
-                    else:
-                        hum_trend = "→"
                 except:
-                    hum_trend = "→"
-        
+                    pass
         with open(last_h_file, "w") as f:
             f.write(str(RH))
-
-        if os.path.exists(last_p_file):
-            with open(last_p_file, "r") as f:
-                try:
-                    last_pres = float(f.read().strip())
-                except:
-                    last_pres = pres_sea
-            
-            if pres_sea < (last_pres - 0.01):
-                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
-            elif pres_sea > (last_pres + 0.01):
-                arrow_status = "ΒΕΛΤΙΩΣΗ"   
-            else:
-                arrow_status = text_status   
-        
-        with open(last_p_file, "w") as f:
-            f.write(str(pres_sea))
 
         weather_data = {
             "model_forecast": get_model_alert(),
@@ -152,7 +142,7 @@ def get_weather():
             "peak_temp": round(data['temperature_2m'] - 0.5, 1),
             "peak_status": text_status,
             "feels_like": feels_like,
-            "wind_info": wind_info
+            "wind_info": f"{get_direction(data['wind_direction_10m'])} {data['wind_speed_10m']} km/h"
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
