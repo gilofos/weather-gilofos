@@ -1,10 +1,10 @@
 {
     "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΡΙΤΗ",
-    "temperature": 5.4,
+    "temperature": 5.2,
     "temp_max": 12.1,
     "temp_min": 1.8,
-    "humidity": 62,
-    "pressure": 1021.3,
+    "humidity": 63,
+    "pressure": 1021.4,
     "dew_point": -2.2,
     "wind_speed": 4.1,
     "wind_gust": 18.4,
@@ -14,10 +14,10 @@
     "clouds": 0,
     "status": "ΒΕΛΤΙΩΣΗ",
     "moon_icon": "moon5.png",
-    "time": "23:00:35",
-    "last_update": "23:00:35",
-    "peak_temp": 4.9,
+    "time": "23:15:28",
+    "last_update": "23:15:28",
+    "peak_temp": 4.7,
     "peak_status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
-    "feels_like": 5.4,
+    "feels_like": 5.2,
     "wind_info": "Α 4.1 km/h"
 }
