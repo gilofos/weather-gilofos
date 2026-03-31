@@ -84,7 +84,7 @@ def get_weather():
                     if pres_sea < (last_pres - 0.01):
                         arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
                     elif pres_sea > (last_pres + 0.01):
-                        arrow_status = "ΒΕΛΤΙΩΣΗ"    
+                        arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ" 
                 except: pass
         
         with open(last_p_file, "w") as f:
