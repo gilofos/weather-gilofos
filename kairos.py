@@ -62,7 +62,7 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ
+        # --- ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ (ΒΑΣΙΚΟ) ---
         if data['precipitation'] > 0:
             text_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
@@ -72,7 +72,7 @@ def get_weather():
         else:
             text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # ΛΟΓΙΚΗ ΤΑΣΗΣ
+        # --- ΛΟΓΙΚΗ ΤΑΣΗΣ ΚΑΙ ΥΠΕΡΙΣΧΥΣΗΣ (ΔΙΚΑΙΟ ΣΥΣΤΗΜΑ) ---
         last_p_file = "last_pressure.txt"
         pres_sea = round(data['surface_pressure'] + 103, 1)
         arrow_status = text_status 
@@ -81,10 +81,12 @@ def get_weather():
             with open(last_p_file, "r") as f:
                 try:
                     last_pres = float(f.read().strip())
-                    if pres_sea < (last_pres - 0.01):
-                        arrow_status = "ΕΠΙΔΕΙΝΩΣΗ" 
-                    elif pres_sea > (last_pres + 0.01):
-                        arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ" 
+                    # Αν η πίεση ανεβαίνει, η Βελτίωση κερδίζει τη Βροχή (Δορυφόρος)
+                    if pres_sea > (last_pres + 0.01):
+                        arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
+                    # Αν η πίεση πέφτει, πάμε για Επιδείνωση
+                    elif pres_sea < (last_pres - 0.01):
+                        arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
                 except: pass
         
         with open(last_p_file, "w") as f:
