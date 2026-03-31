@@ -62,45 +62,39 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- ΚΕΙΜΕΝΟ ΚΑΤΑΣΤΑΣΗΣ (ΤΟ ΒΟΥΝΟ) ---
+        # --- ΤΟ ΦΙΛΤΡΟ ΤΗΣ ΑΛΗΘΕΙΑΣ ---
         last_p_file = "last_pressure.txt"
         pres_sea = round(data['surface_pressure'] + 103, 1)
         
-        # Αρχική λήψη από API
-        temp_status = ""
+        # 1. Βασική κατάσταση από API
         if data['precipitation'] > 0:
-            temp_status = "ΒΡΟΧΗ"
+            api_status = "ΒΡΟΧΗ"
         elif data['cloud_cover'] > 70:
-            temp_status = "ΣΥΝΝΕΦΙΑ"
+            api_status = "ΣΥΝΝΕΦΙΑ"
         elif data['cloud_cover'] > 20:
-            temp_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+            api_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
         else:
-            temp_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+            api_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        text_status = temp_status # Default
+        text_status = api_status
+        arrow_status = api_status
 
-        # ΔΙΟΡΘΩΣΗ ΓΙΑ ΝΑ ΣΥΜΦΩΝΕΙ ΤΟ ΒΟΥΝΟ ΜΕ ΤΟΝ ΔΟΡΥΦΟΡΟ
+        # 2. Έλεγχος Πίεσης (Δορυφόρος)
         if os.path.exists(last_p_file):
             with open(last_p_file, "r") as f:
                 try:
                     last_pres = float(f.read().strip())
-                    # Αν η πίεση ανεβαίνει, το API λέει βροχή αλλά ο δορυφόρος είναι καθαρός
-                    if pres_sea > (last_pres + 0.01) and temp_status == "ΒΡΟΧΗ":
-                        text_status = "ΣΥΝΝΕΦΙΑ"
-                except: pass
-
-        # --- ΛΟΓΙΚΗ ΤΑΣΗΣ (ΤΟ ΚΙΤΡΙΝΟ - ΟΠΩΣ ΗΤΑΝ) ---
-        arrow_status = text_status 
-        if os.path.exists(last_p_file):
-            with open(last_p_file, "r") as f:
-                try:
-                    last_pres = float(f.read().strip())
-                    if pres_sea > (last_pres + 0.01):
+                    
+                    # ΑΝ Η ΠΙΕΣΗ ΕΙΝΑΙ ΣΤΑΘΕΡΗ Ή ΑΝΕΒΑΙΝΕΙ -> ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ
+                    if pres_sea >= last_pres:
+                        text_status = "ΣΥΝΝΕΦΙΑ" 
                         arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
+                    
+                    # Αν η πίεση πέφτει πραγματικά
                     elif pres_sea < (last_pres - 0.01):
                         arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
                 except: pass
-        
+
         with open(last_p_file, "w") as f:
             f.write(str(pres_sea))
 
@@ -121,12 +115,12 @@ def get_weather():
             "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])}",
             "rain": data['precipitation'],
             "clouds": data['cloud_cover'],
-            "status": arrow_status, # ΤΟ ΚΙΤΡΙΝΟ
+            "status": arrow_status,      # ΚΙΤΡΙΝΗ ΕΝΔΕΙΞΗ
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
             "peak_temp": round(T - 0.5, 1),
-            "peak_status": text_status, # ΤΟ ΒΟΥΝΟ
+            "peak_status": text_status,  # ΒΟΥΝΟ
             "feels_like": feels_like,
             "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h"
         }
