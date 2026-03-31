@@ -53,7 +53,10 @@ def get_weather():
         T = data['temperature_2m']
         V = data['wind_speed_10m']
         RH = data['relative_humidity_2m']
+        RAIN = data['precipitation']
+        CLOUDS = data['cloud_cover']
 
+        # --- ΑΙΣΘΗΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ ---
         if T <= 15 and V > 4.8:
             feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
         elif T >= 25:
@@ -62,42 +65,35 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- ΤΟ ΦΙΛΤΡΟ ΤΗΣ ΑΛΗΘΕΙΑΣ ---
-        last_p_file = "last_pressure.txt"
-        pres_sea = round(data['surface_pressure'] + 103, 1)
+        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ (ΔΟΡΥΦΟΡΟΣ & ΒΟΥΝΟ) ---
+        text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+
+        # 1. Έλεγχος Υετού (Από το Γράφημα/API)
+        if RAIN > 0.4:
+            text_status = "ΒΡΟΧΗ"
+            arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
+        elif 0 < RAIN <= 0.4:
+            text_status = "ΑΣΘΕΝΗ ΒΡΟΧΗ"
+            arrow_status = "ΨΙΧΑΛΕΣ"
         
-        # 1. Βασική κατάσταση από API
-        if data['precipitation'] > 0:
-            api_status = "ΒΡΟΧΗ"
-        elif data['cloud_cover'] > 70:
-            api_status = "ΣΥΝΝΕΦΙΑ"
-        elif data['cloud_cover'] > 20:
-            api_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
-        else:
-            api_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        # 2. Έλεγχος Συννεφιάς & Ομίχλης (Βουνό)
+        elif CLOUDS > 70:
+            text_status = "ΣΥΝΝΕΦΙΑ"
+            if RH > 88:
+                text_status = "ΠΙΘΑΝΗ ΟΜΙΧΛΗ"
+            arrow_status = "ΠΡΟΣΚΑΙΡΗ ΣΥΝΝΕΦΙΑ"
+        
+        elif CLOUDS > 20:
+            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+            arrow_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
 
-        text_status = api_status
-        arrow_status = api_status
+        # 3. Η Έξυπνη "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ" (Χωρίς Βαρόμετρο)
+        # Αν δεν βρέχει τώρα, αλλά η υγρασία είναι ακόμα ψηλά (μετά από βροχή)
+        if RAIN == 0 and RH > 75 and CLOUDS < 80:
+            arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
 
-        # 2. Έλεγχος Πίεσης (Δορυφόρος)
-        if os.path.exists(last_p_file):
-            with open(last_p_file, "r") as f:
-                try:
-                    last_pres = float(f.read().strip())
-                    
-                    # ΑΝ Η ΠΙΕΣΗ ΕΙΝΑΙ ΣΤΑΘΕΡΗ Ή ΑΝΕΒΑΙΝΕΙ -> ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ
-                    if pres_sea >= last_pres:
-                        text_status = "ΣΥΝΝΕΦΙΑ" 
-                        arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
-                    
-                    # Αν η πίεση πέφτει πραγματικά
-                    elif pres_sea < (last_pres - 0.01):
-                        arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
-                except: pass
-
-        with open(last_p_file, "w") as f:
-            f.write(str(pres_sea))
-
+        pres_sea = round(data['surface_pressure'] + 103, 1)
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
 
@@ -113,13 +109,13 @@ def get_weather():
             "wind_gust": data.get('wind_gusts_10m', 0),
             "wind_dir": data['wind_direction_10m'],
             "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])}",
-            "rain": data['precipitation'],
-            "clouds": data['cloud_cover'],
+            "rain": RAIN,
+            "clouds": CLOUDS,
             "status": arrow_status,      # ΚΙΤΡΙΝΗ ΕΝΔΕΙΞΗ
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
-            "peak_temp": round(T - 0.5, 1),
+            "peak_temp": round(T, 1),
             "peak_status": text_status,  # ΒΟΥΝΟ
             "feels_like": feels_like,
             "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h"
