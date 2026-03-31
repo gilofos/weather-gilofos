@@ -12,12 +12,12 @@
     "wind_text": "90° Α",
     "rain": 0.1,
     "clouds": 99,
-    "status": "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ",
+    "status": "ΨΙΧΑΛΕΣ",
     "moon_icon": "moon4.png",
-    "time": "01:45:28",
-    "last_update": "01:45:28",
-    "peak_temp": 6.4,
-    "peak_status": "ΣΥΝΝΕΦΙΑ",
+    "time": "01:49:30",
+    "last_update": "01:49:30",
+    "peak_temp": 6.9,
+    "peak_status": "ΑΣΘΕΝΗ ΒΡΟΧΗ",
     "feels_like": 5.6,
     "wind_info": "Α 7.2 km/h"
 }
