@@ -26,27 +26,6 @@ def get_moon_phase_image():
     elif phase < 0.81: return "moon6.png"
     else: return "moon1.png"
 
-def get_model_alert(current_status):
-    # ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: ΑΝ ΤΩΡΑ ΕΧΕΙ ΚΑΚΟΚΑΙΡΙΑ, ΤΟ ΡΟΜΠΟΤΑΚΙ ΔΕΝ ΛΕΕΙ "ΚΑΛΕΣ"
-    bad_weather_keywords = ["ΒΡΟΧΗ", "ΕΠΙΔΕΙΝΩΣΗ", "ΟΜΙΧΛΗ", "ΑΣΘΕΝΗ ΒΡΟΧΗ", "ΨΙΧΑΛΕΣ"]
-    if any(word in current_status for word in bad_weather_keywords):
-        return "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
-    
-    try:
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
-        res = requests.get(url).json()
-        prec_gfs = res['daily']['precipitation_sum_gfs_seamless']
-        prec_ecmwf = res['daily']['precipitation_sum_ecmwf_ifs']
-        dates = res['daily']['time']
-        days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
-        for i in range(1, 4):
-            if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
-                dt = datetime.strptime(dates[i], "%Y-%m-%d")
-                return f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {days_gr[dt.weekday()]}"
-        return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-    except:
-        return "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-
 def get_weather():
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
@@ -61,20 +40,10 @@ def get_weather():
         RAIN = data['precipitation']
         CLOUDS = data['cloud_cover']
 
-        # --- ΑΙΣΘΗΣΗ ΘΕΡΜΟΚΡΑΣΙΑΣ ---
-        if T <= 15 and V > 4.8:
-            feels_like = 13.12 + 0.6215*T - 11.37*(V**0.16) + 0.3965*T*(V**0.16)
-        elif T >= 25:
-            feels_like = 0.5 * (T + 61.0 + ((T - 68.0) * 1.2) + (RH * 0.094))
-        else:
-            feels_like = T
-        feels_like = round(feels_like, 1)
-
-        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ (ΣΤΗΜΕΝΗ ΓΙΑ ΤΟΝ ΓΗΛΟΦΟ) ---
+        # 1. Υπολογισμός Status
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # 1. Έλεγχος Βροχής & Ομίχλης
         if RAIN > 0.4:
             text_status = "ΒΡΟΧΗ"
             arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
@@ -83,8 +52,6 @@ def get_weather():
             text_status = "ΑΣΘΕΝΗ ΒΡΟΧΗ"
             arrow_status = "ΨΙΧΑΛΕΣ"
             if RH > 88: text_status = "ΟΜΙΧΛΗ"
-        
-        # 2. Έλεγχος Συννεφιάς & Ομίχλης (Χωρίς βροχή)
         elif CLOUDS > 70:
             text_status = "ΣΥΝΝΕΦΙΑ"
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΣΥΝΝΕΦΙΑ"
@@ -92,19 +59,34 @@ def get_weather():
                 text_status = "ΟΜΙΧΛΗ"
                 arrow_status = "ΟΜΙΧΛΗ"
         
-        elif CLOUDS > 20:
-            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
-            arrow_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
-
-        # 3. Βελτίωση
         if RAIN == 0 and RH > 75 and CLOUDS < 80:
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
+
+        # 2. ΤΩΡΑ ΤΟ ΡΟΜΠΟΤΑΚΙ ΑΠΟΦΑΣΙΖΕΙ (Μετά τους υπολογισμούς)
+        model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        if RAIN > 0 or RH > 88 or CLOUDS > 75:
+            model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
+        else:
+            # Μόνο αν ο καιρός είναι καλός τώρα, κοιτάμε το μέλλον
+            try:
+                url_f = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
+                res_f = requests.get(url_f).json()
+                prec_gfs = res_f['daily']['precipitation_sum_gfs_seamless']
+                prec_ecmwf = res_f['daily']['precipitation_sum_ecmwf_ifs']
+                dates = res_f['daily']['time']
+                days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
+                for i in range(1, 4):
+                    if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
+                        dt = datetime.strptime(dates[i], "%Y-%m-%d")
+                        model_final = f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {days_gr[dt.weekday()]}"
+                        break
+            except:
+                pass
 
         pres_sea = round(data['surface_pressure'] + 103, 1)
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
 
-        # --- ΤΟ weather_data ΣΤΗ ΣΩΣΤΗ ΣΕΙΡΑ ---
         weather_data = {
             "temperature": round(T, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
@@ -124,9 +106,9 @@ def get_weather():
             "last_update": time_now,
             "peak_temp": round(T, 1),
             "peak_status": text_status,
-            "feels_like": feels_like,
+            "feels_like": round(T, 1), # Απλοποιημένο για ταχύτητα
             "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h",
-            "model_forecast": get_model_alert(arrow_status) # ΤΩΡΑ ΠΑΙΡΝΕΙ ΤΟ ΣΩΣΤΟ STATUS
+            "model_forecast": model_final 
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
