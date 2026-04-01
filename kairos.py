@@ -27,8 +27,9 @@ def get_moon_phase_image():
     else: return "moon1.png"
 
 def get_model_alert(current_status):
-    # ΑΝ Ο ΣΤΑΘΜΟΣ ΔΕΙΧΝΕΙ ΗΔΗ ΚΑΚΟΚΑΙΡΙΑ, ΤΟ ΡΟΜΠΟΤΑΚΙ ΠΡΟΕΙΔΟΠΟΙΕΙ
-    if current_status in ["ΒΡΟΧΗ", "ΕΠΙΔΕΙΝΩΣΗ", "ΟΜΙΧΛΗ", "ΑΣΘΕΝΗ ΒΡΟΧΗ"]:
+    # ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: ΑΝ ΤΩΡΑ ΕΧΕΙ ΚΑΚΟΚΑΙΡΙΑ, ΤΟ ΡΟΜΠΟΤΑΚΙ ΔΕΝ ΛΕΕΙ "ΚΑΛΕΣ"
+    bad_weather_keywords = ["ΒΡΟΧΗ", "ΕΠΙΔΕΙΝΩΣΗ", "ΟΜΙΧΛΗ", "ΑΣΘΕΝΗ ΒΡΟΧΗ", "ΨΙΧΑΛΕΣ"]
+    if any(word in current_status for word in bad_weather_keywords):
         return "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
     
     try:
@@ -69,15 +70,15 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ ---
+        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ (ΣΤΗΜΕΝΗ ΓΙΑ ΤΟΝ ΓΗΛΟΦΟ) ---
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # 1. Έλεγχος Υετού & Ομίχλης
+        # 1. Έλεγχος Βροχής & Ομίχλης
         if RAIN > 0.4:
             text_status = "ΒΡΟΧΗ"
             arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
-            if RH > 90: text_status = "ΒΡΟΧΗ & ΟΜΙΧΛΗ" # Συνδυασμός για την κάμερα
+            if RH > 90: text_status = "ΒΡΟΧΗ & ΟΜΙΧΛΗ"
         elif 0 < RAIN <= 0.4:
             text_status = "ΑΣΘΕΝΗ ΒΡΟΧΗ"
             arrow_status = "ΨΙΧΑΛΕΣ"
@@ -103,8 +104,8 @@ def get_weather():
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
 
+        # --- ΤΟ weather_data ΣΤΗ ΣΩΣΤΗ ΣΕΙΡΑ ---
         weather_data = {
-            "model_forecast": get_model_alert(arrow_status), # ΤΟ ΡΟΜΠΟΤΑΚΙ ΕΔΩ!
             "temperature": round(T, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
@@ -124,7 +125,8 @@ def get_weather():
             "peak_temp": round(T, 1),
             "peak_status": text_status,
             "feels_like": feels_like,
-            "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h"
+            "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h",
+            "model_forecast": get_model_alert(arrow_status) # ΤΩΡΑ ΠΑΙΡΝΕΙ ΤΟ ΣΩΣΤΟ STATUS
         }
         
         with open('data.json', 'w', encoding='utf-8') as f:
