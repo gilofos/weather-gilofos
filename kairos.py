@@ -40,7 +40,7 @@ def get_weather():
         RAIN = data['precipitation']
         CLOUDS = data['cloud_cover']
 
-        # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ STATUS (ΚΕΝΤΡΟ) ---
+        # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ STATUS ---
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
@@ -54,6 +54,7 @@ def get_weather():
         # --- 2. ΤΟ ΡΟΜΠΟΤΑΚΙ (model_forecast) ---
         model_final = "" 
 
+        # Αν βρέχει ή έχει ομίχλη ΤΩΡΑ, γράφει ΠΡΟΣΟΧΗ και ΤΕΛΟΣ
         if RAIN > 0.1 or RH > 85:
             model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
         else:
