@@ -62,12 +62,12 @@ def get_weather():
         if RAIN == 0 and RH > 75 and CLOUDS < 80:
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
 
-        # 2. ΤΩΡΑ ΤΟ ΡΟΜΠΟΤΑΚΙ ΑΠΟΦΑΣΙΖΕΙ (Μετά τους υπολογισμούς)
-        model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-        if RAIN > 0 or RH > 88 or CLOUDS > 75:
+        # --- ΕΔΩ ΠΕΙΡΑΞΑ ΜΟΝΟ ΤΟ ΡΟΜΠΟΤΑΚΙ ---
+        model_final = ""
+        # Αν έχουμε βροχή ή ομίχλη ΤΩΡΑ, το ρομποτάκι γράφει ΠΡΟΣΟΧΗ
+        if RAIN > 0 or RH > 87:
             model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
         else:
-            # Μόνο αν ο καιρός είναι καλός τώρα, κοιτάμε το μέλλον
             try:
                 url_f = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
                 res_f = requests.get(url_f).json()
@@ -75,13 +75,17 @@ def get_weather():
                 prec_ecmwf = res_f['daily']['precipitation_sum_ecmwf_ifs']
                 dates = res_f['daily']['time']
                 days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
+                
                 for i in range(1, 4):
                     if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
                         dt = datetime.strptime(dates[i], "%Y-%m-%d")
                         model_final = f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {days_gr[dt.weekday()]}"
                         break
+                
+                if not model_final:
+                    model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
             except:
-                pass
+                model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
         pres_sea = round(data['surface_pressure'] + 103, 1)
         utc_offset = res_json.get('utc_offset_seconds', 7200)
@@ -106,7 +110,7 @@ def get_weather():
             "last_update": time_now,
             "peak_temp": round(T, 1),
             "peak_status": text_status,
-            "feels_like": round(T, 1), # Απλοποιημένο για ταχύτητα
+            "feels_like": round(T, 1),
             "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h",
             "model_forecast": model_final 
         }
