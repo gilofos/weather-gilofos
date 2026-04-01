@@ -465,8 +465,7 @@ else sky = s.toLowerCase();
     }
 
     // ΚΑΘΑΡΟ ΚΕΙΜΕΝΟ ΧΩΡΙΣ ΤΕΛΕΙΕΣ ΣΤΗΝ ΑΡΧΗ
-    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο οι συνθήκες είναι ${document.getElementById('alert-box').innerText.toLowerCase()}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου...`;
-
+    const text = `Γεια σας από το Γήλοφο Δεσκάτης Γρεβενών. Σήμερα είναι ${μερες[τωρα.getDay()]}, ${τωρα.getDate()} ${μηνες[τωρα.getMonth()]} του ${τωρα.getFullYear()}. Η ώρα είναι ${lekshOra} και ${lekshLepta} ${periodos}. Στον Γήλοφο οι συνθήκες είναι ${document.getElementById('alert-box').innerText.toLowerCase()}. Η θερμοκρασία είναι ${t} βαθμοί Κελσίου. Η υγρασία είναι ${h} τοις εκατό. Η ατμοσφαιρική πίεση είναι ${p} έκτο πα-σκάλ. Ο άνεμος πνέει με ${w} χιλιόμετρα την ώρα. Η πρόγνωση δείχνει ${info.match(/ΠΡΟΓΝΩΣΗ.*?:\s*(.*)/i)?.[1].toLowerCase() || "καλό καιρό"}. Μπορείτε να βλέπετε την εξέλιξη του καιρού στη ζωντανή δορυφορική εικόνα και στον τοπικό χάρτη με τα γύρω χωριά. Καλή συνέχεια!`;
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'el-GR';
     msg.rate = 0.85;
