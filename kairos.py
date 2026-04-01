@@ -40,7 +40,7 @@ def get_weather():
         RAIN = data['precipitation']
         CLOUDS = data['cloud_cover']
 
-        # 1. Υπολογισμός Status
+        # --- 1. STATUS ΧΩΡΙΣ "ΚΑΛΕΣ" ΣΤΗΝ ΑΡΧΗ ---
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
@@ -62,9 +62,10 @@ def get_weather():
         if RAIN == 0 and RH > 75 and CLOUDS < 80:
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
 
-        # --- ΕΔΩ ΠΕΙΡΑΞΑ ΜΟΝΟ ΤΟ ΡΟΜΠΟΤΑΚΙ ---
-        model_final = ""
-        # Αν έχουμε βροχή ή ομίχλη ΤΩΡΑ, το ρομποτάκι γράφει ΠΡΟΣΟΧΗ
+        # --- 2. ΡΟΜΠΟΤΑΚΙ (model_forecast) - ΞΕΚΙΝΑΕΙ ΑΠΟ ΤΟ ΜΗΔΕΝ ---
+        model_final = "" # ΕΝΤΕΛΩΣ ΑΔΕΙΟ ΣΤΗΝ ΑΡΧΗ
+
+        # Αν βρέχει ή έχει ομίχλη, πάει ΚΑΤΕΥΘΕΙΑΝ στο ΠΡΟΣΟΧΗ
         if RAIN > 0 or RH > 87:
             model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
         else:
@@ -76,14 +77,12 @@ def get_weather():
                 dates = res_f['daily']['time']
                 days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
                 
+                model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ" 
                 for i in range(1, 4):
                     if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
                         dt = datetime.strptime(dates[i], "%Y-%m-%d")
                         model_final = f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {days_gr[dt.weekday()]}"
                         break
-                
-                if not model_final:
-                    model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
             except:
                 model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
