@@ -40,33 +40,26 @@ def get_weather():
         RAIN = data['precipitation']
         CLOUDS = data['cloud_cover']
 
-        # --- 1. STATUS ΧΩΡΙΣ "ΚΑΛΕΣ" ΣΤΗΝ ΑΡΧΗ ---
+        # 1. STATUS (Κέντρο οθόνης)
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        if RAIN > 0.4:
-            text_status = "ΒΡΟΧΗ"
-            arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
-            if RH > 90: text_status = "ΒΡΟΧΗ & ΟΜΙΧΛΗ"
-        elif 0 < RAIN <= 0.4:
-            text_status = "ΑΣΘΕΝΗ ΒΡΟΧΗ"
-            arrow_status = "ΨΙΧΑΛΕΣ"
-            if RH > 88: text_status = "ΟΜΙΧΛΗ"
+        if RAIN > 0.1 or RH > 87:
+            if RAIN > 0.4:
+                text_status = "ΒΡΟΧΗ"
+                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
+            else:
+                text_status = "ΟΜΙΧΛΗ"
+                arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
         elif CLOUDS > 70:
             text_status = "ΣΥΝΝΕΦΙΑ"
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΣΥΝΝΕΦΙΑ"
-            if RH > 88:
-                text_status = "ΟΜΙΧΛΗ"
-                arrow_status = "ΟΜΙΧΛΗ"
-        
-        if RAIN == 0 and RH > 75 and CLOUDS < 80:
-            arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
 
-        # --- 2. ΡΟΜΠΟΤΑΚΙ (model_forecast) - ΞΕΚΙΝΑΕΙ ΑΠΟ ΤΟ ΜΗΔΕΝ ---
-        model_final = "" # ΕΝΤΕΛΩΣ ΑΔΕΙΟ ΣΤΗΝ ΑΡΧΗ
+        # 2. ΤΟ ΡΟΜΠΟΤΑΚΙ (Πάνω μέρος) - ΤΩΡΑ ΧΩΡΙΣ "ΚΑΛΕΣ"
+        model_final = "" 
 
-        # Αν βρέχει ή έχει ομίχλη, πάει ΚΑΤΕΥΘΕΙΑΝ στο ΠΡΟΣΟΧΗ
-        if RAIN > 0 or RH > 87:
+        # Αν βρέχει ή έχει ομίχλη, γράφει ΜΟΝΟ "ΠΡΟΣΟΧΗ"
+        if RAIN > 0.1 or RH > 87:
             model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
         else:
             try:
@@ -77,6 +70,7 @@ def get_weather():
                 dates = res_f['daily']['time']
                 days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
                 
+                # Αν δεν βρει βροχή στις επόμενες μέρες, τότε και μόνο τότε λέει ΞΑΣΤΕΡΙΑ
                 model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ" 
                 for i in range(1, 4):
                     if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
