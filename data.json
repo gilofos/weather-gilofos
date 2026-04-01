@@ -1,5 +1,5 @@
 {
-    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΠΕΜΠΤΗ",
+    "model_forecast": "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ",
     "temperature": 7.2,
     "temp_max": 8.0,
     "temp_min": 6.5,
@@ -14,10 +14,10 @@
     "clouds": 100,
     "status": "ΕΠΙΔΕΙΝΩΣΗ",
     "moon_icon": "moon4.png",
-    "time": "11:30:32",
-    "last_update": "11:30:32",
+    "time": "11:32:07",
+    "last_update": "11:32:07",
     "peak_temp": 7.2,
-    "peak_status": "ΒΡΟΧΗ",
+    "peak_status": "ΒΡΟΧΗ & ΟΜΙΧΛΗ",
     "feels_like": 4.8,
     "wind_info": "Α 12.6 km/h"
 }
