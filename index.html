@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="el">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQX4NZ80NJ"></script>
@@ -484,28 +484,24 @@ else sky = s.toLowerCase();
     else window.speechSynthesis.onvoiceschanged = startSpeaking;
 }
 
-<script>
-        // ... (εδώ είναι ο υπόλοιπος κώδικας των script σου)
-
-        // Προσθήκη του Assistant Button (Ρομποτάκι)
-        document.body.insertAdjacentHTML('beforeend', `
-            <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:100px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
-                <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));">
-            </div>
-            <style> 
-                #weather-assistant:hover { transform: scale(1.1); } 
-                #weather-assistant:active { transform: scale(0.9); } 
-            </style>
-        `);
-    </script>
-
-    <div style="text-align: center; margin-top: 30px; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.4); border-radius: 2rem 2rem 0 0;">
-        <p style="margin: 0; font-size: 0.8em; text-transform: uppercase; color: #64748b; letter-spacing: 2px;">Μετεωρολογικός Σταθμός Γηλόφου</p>
-        <p style="margin: 5px 0; font-size: 1.1em; color: #f8fafc;"><strong>Developed by Achilleas Kotsiras</strong></p>
-        <p style="color: #475569; font-size: 0.75em; margin-top: 10px; max-width: 600px; margin-left: auto; margin-right: auto;">
-            Τα δεδομένα επεξεργάζονται με αλγόριθμους Python βάσει του μοντέλου ICON (DWD Open Data) και Open-Meteo API.
-        </p>
+document.body.insertAdjacentHTML('beforeend', `
+    <div id="weather-assistant" onclick="speakWeather()" style="position:fixed; bottom:20px; right:20px; width:180px; cursor:pointer; z-index:9999; transition: transform 0.3s;">
+        <img src="assistant_robot.png" style="width:100%; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.4));">
     </div>
-
+    <style> #weather-assistant:hover { transform: scale(1.1); } #weather-assistant:active { transform: scale(0.9); } </style>
+`);
+    </script>
+</body>
+</html>
+    <div id="assistant-btn" onclick="speakWeather()" style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; cursor: pointer; z-index: 1000; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));">
+    <img src="assistant_logo.jpg" style="width:100%; border-radius:15px;" alt="">
+</div>
+    <div style="text-align: center; margin-top: 30px; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #444; border-top: 2px solid #007bff; background: rgba(255,255,255,0.7);">
+        <p style="margin: 0; font-size: 0.9em; text-transform: uppercase;">Μετεωρολογικός Σταθμός Γηλόφου</p>
+        <p style="margin: 5px 0 0 0; font-size: 1.2em; color: #000;"><strong>Developed by Achilleas Kotsiras</strong></p>
+    </div>
+    <p style="text-align: center; color: #888; font-size: 0.85em; margin-top: 5px;">
+    Τα δεδομένα επεξεργάζονται με αλγόριθμους Python βάσει του μοντέλου ICON (DWD Open Data)
+</p>
 </body>
 </html>
