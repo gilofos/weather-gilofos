@@ -26,7 +26,11 @@ def get_moon_phase_image():
     elif phase < 0.81: return "moon6.png"
     else: return "moon1.png"
 
-def get_model_alert():
+def get_model_alert(current_status):
+    # ΑΝ Ο ΣΤΑΘΜΟΣ ΔΕΙΧΝΕΙ ΗΔΗ ΚΑΚΟΚΑΙΡΙΑ, ΤΟ ΡΟΜΠΟΤΑΚΙ ΠΡΟΕΙΔΟΠΟΙΕΙ
+    if current_status in ["ΒΡΟΧΗ", "ΕΠΙΔΕΙΝΩΣΗ", "ΟΜΙΧΛΗ", "ΑΣΘΕΝΗ ΒΡΟΧΗ"]:
+        return "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
+    
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
         res = requests.get(url).json()
@@ -65,31 +69,33 @@ def get_weather():
             feels_like = T
         feels_like = round(feels_like, 1)
 
-        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ (ΔΟΡΥΦΟΡΟΣ & ΒΟΥΝΟ) ---
+        # --- ΕΞΥΠΝΗ ΛΟΓΙΚΗ ---
         text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
         arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 
-        # 1. Έλεγχος Υετού (Από το Γράφημα/API)
+        # 1. Έλεγχος Υετού & Ομίχλης
         if RAIN > 0.4:
             text_status = "ΒΡΟΧΗ"
             arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
+            if RH > 90: text_status = "ΒΡΟΧΗ & ΟΜΙΧΛΗ" # Συνδυασμός για την κάμερα
         elif 0 < RAIN <= 0.4:
             text_status = "ΑΣΘΕΝΗ ΒΡΟΧΗ"
             arrow_status = "ΨΙΧΑΛΕΣ"
+            if RH > 88: text_status = "ΟΜΙΧΛΗ"
         
-        # 2. Έλεγχος Συννεφιάς & Ομίχλης (Βουνό)
+        # 2. Έλεγχος Συννεφιάς & Ομίχλης (Χωρίς βροχή)
         elif CLOUDS > 70:
             text_status = "ΣΥΝΝΕΦΙΑ"
-            if RH > 88:
-                text_status = "ΠΙΘΑΝΗ ΟΜΙΧΛΗ"
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΣΥΝΝΕΦΙΑ"
+            if RH > 88:
+                text_status = "ΟΜΙΧΛΗ"
+                arrow_status = "ΟΜΙΧΛΗ"
         
         elif CLOUDS > 20:
             text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
             arrow_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
 
-        # 3. Η Έξυπνη "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ" (Χωρίς Βαρόμετρο)
-        # Αν δεν βρέχει τώρα, αλλά η υγρασία είναι ακόμα ψηλά (μετά από βροχή)
+        # 3. Βελτίωση
         if RAIN == 0 and RH > 75 and CLOUDS < 80:
             arrow_status = "ΠΡΟΣΚΑΙΡΗ ΒΕΛΤΙΩΣΗ"
 
@@ -98,7 +104,7 @@ def get_weather():
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
 
         weather_data = {
-            "model_forecast": get_model_alert(),
+            "model_forecast": get_model_alert(arrow_status), # ΤΟ ΡΟΜΠΟΤΑΚΙ ΕΔΩ!
             "temperature": round(T, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
             "temp_min": round(daily['temperature_2m_min'][0], 1),
@@ -111,12 +117,12 @@ def get_weather():
             "wind_text": f"{data['wind_direction_10m']}° {get_direction(data['wind_direction_10m'])}",
             "rain": RAIN,
             "clouds": CLOUDS,
-            "status": arrow_status,      # ΚΙΤΡΙΝΗ ΕΝΔΕΙΞΗ
+            "status": arrow_status,
             "moon_icon": get_moon_phase_image(),
             "time": time_now,
             "last_update": time_now,
             "peak_temp": round(T, 1),
-            "peak_status": text_status,  # ΒΟΥΝΟ
+            "peak_status": text_status,
             "feels_like": feels_like,
             "wind_info": f"{get_direction(data['wind_direction_10m'])} {V} km/h"
         }
