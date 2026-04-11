@@ -28,7 +28,8 @@ def get_moon_phase_image():
 
 def get_weather():
     try:
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto"
+        # --- ΚΛΗΣΗ API ΜΕ ΤΟ ΜΟΝΤΕΛΟ ΤΟΥ WINDY (ECMWF) ---
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m,surface_pressure,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,weather_code&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto&models=ecmwf_ifs"
         res_json = requests.get(url).json()
         
         data = res_json['current']
@@ -39,46 +40,62 @@ def get_weather():
         RH = data['relative_humidity_2m']
         RAIN = data['precipitation']
         CLOUDS = data['cloud_cover']
+        W_CODE = data['weather_code'] # Ο κωδικός καιρού από το μοντέλο
 
-        # --- 1. ΥΠΟΛΟΓΙΣΜΟΣ STATUS ---
-        text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-        arrow_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
-
-        if RAIN > 0.1 or RH > 85:
-            text_status = "ΟΜΙΧΛΗ / ΒΡΟΧΗ"
-            arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
-        elif CLOUDS > 75:
+        # --- 1. ΜΕΤΑΦΡΑΣΗ ΚΑΤΑΣΤΑΣΗΣ (ΚΕΙΜΕΝΟ) ---
+        # Χρησιμοποιούμε τους κωδικούς WMO που ακολουθεί και το Windy
+        if W_CODE == 0:
+            text_status = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+        elif W_CODE in [1, 2, 3]:
+            text_status = "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+        elif W_CODE in [45, 48]:
+            text_status = "ΟΜΙΧΛΗ"
+        elif W_CODE in [51, 53, 55, 61, 63, 65]:
+            text_status = "ΒΡΟΧΗ"
+        elif W_CODE >= 80:
+            text_status = "ΚΑΤΑΙΓΙΔΑ"
+        else:
             text_status = "ΣΥΝΝΕΦΙΑ"
-            arrow_status = "ΠΡΟΣΚΑΙΡΗ ΣΥΝΝΕΦΙΑ"
+
+        # Καθορισμός του arrow_status (Πάνω δεξιά ένδειξη)
+        # Εμφανίζει ΕΠΙΔΕΙΝΩΣΗ μόνο αν το μοντέλο προβλέπει βροχή ή πολύ βαριά σύννεφα
+        if RAIN > 0.1:
+            arrow_status = "ΒΡΟΧΗ"
+        elif CLOUDS > 75:
+            arrow_status = "ΕΠΙΔΕΙΝΩΣΗ"
+        else:
+            arrow_status = text_status
 
         # --- 2. ΤΟ ΡΟΜΠΟΤΑΚΙ (model_forecast) ---
         model_final = "" 
-
-        # Αν βρέχει ή έχει ομίχλη ΤΩΡΑ, γράφει ΠΡΟΣΟΧΗ και ΤΕΛΟΣ
-        if RAIN > 0.1 or RH > 85:
+        if RAIN > 0.1 or RH > 92:
             model_final = "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
         else:
             try:
-                url_f = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=gfs_seamless,ecmwf_ifs"
+                # Πρόγνωση 3 ημερών από το Ευρωπαϊκό μοντέλο
+                url_f = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&daily=precipitation_sum&timezone=auto&models=ecmwf_ifs"
                 res_f = requests.get(url_f).json()
-                prec_gfs = res_f['daily']['precipitation_sum_gfs_seamless']
-                prec_ecmwf = res_f['daily']['precipitation_sum_ecmwf_ifs']
+                prec_ecmwf = res_f['daily']['precipitation_sum']
                 dates = res_f['daily']['time']
                 days_gr = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑΡΑΣΚΕΥΗ", "ΣΑΒΒΑΤΟ", "ΚΥΡΙΑΚΗ"]
                 
-                model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+                model_final = text_status
                 for i in range(1, 4):
-                    if prec_gfs[i] > 1.5 or prec_ecmwf[i] > 1.5:
+                    if prec_ecmwf[i] > 1.5:
                         dt = datetime.strptime(dates[i], "%Y-%m-%d")
                         model_final = f"ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ {days_gr[dt.weekday()]}"
                         break
             except:
-                model_final = "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
+                model_final = text_status
 
+        # Υπολογισμός πίεσης στη στάθμη της θάλασσας
         pres_sea = round(data['surface_pressure'] + 103, 1)
+        
+        # Ώρα ενημέρωσης
         utc_offset = res_json.get('utc_offset_seconds', 7200)
         time_now = (datetime.utcnow() + timedelta(seconds=utc_offset)).strftime("%H:%M:%S")
 
+        # Συγκέντρωση όλων των δεδομένων για το data.json
         weather_data = {
             "temperature": round(T, 1),
             "temp_max": round(daily['temperature_2m_max'][0], 1),
