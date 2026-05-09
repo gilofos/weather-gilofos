@@ -5,7 +5,7 @@
     "humidity": 89,
     "pressure": 1028.3,
     "dew_point": 11.6,
-    "wind_speed": 0.5,
+    "wind_speed": 0.9,
     "wind_gust": 7.6,
     "wind_dir": 270,
     "wind_text": "270° Δ",
@@ -13,11 +13,11 @@
     "clouds": 17,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "moon_icon": "moon6.png",
-    "time": "21:30:35",
-    "last_update": "21:30:35",
+    "time": "21:32:13",
+    "last_update": "21:32:13",
     "peak_temp": 13.8,
     "peak_status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "feels_like": 13.8,
-    "wind_info": "Δ 0.5 km/h",
+    "wind_info": "Δ 0.9 km/h",
     "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 }
