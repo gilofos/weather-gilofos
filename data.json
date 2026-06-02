@@ -10,14 +10,14 @@
     "wind_dir": 271,
     "wind_text": "271° Δ",
     "rain": 0.0,
-    "clouds": 23,
-    "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
+    "clouds": 8,
+    "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "moon_icon": "moon3.png",
-    "time": "21:45:33",
-    "last_update": "21:45:33",
+    "time": "21:54:25",
+    "last_update": "21:54:25",
     "peak_temp": 18.5,
-    "peak_status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
+    "peak_status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "feels_like": 18.5,
     "wind_info": "Δ 12.4 km/h",
-    "model_forecast": "ΛΙΓΑ ΣΥΝΝΕΦΑ"
+    "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 }
