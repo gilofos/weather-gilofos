@@ -1,7 +1,7 @@
 {
     "temperature": 19.5,
-    "temp_max": 26.2,
-    "temp_min": 19.0,
+    "temp_max": 23.6,
+    "temp_min": 18.4,
     "humidity": 84,
     "pressure": 1030.6,
     "dew_point": 16.3,
@@ -10,14 +10,14 @@
     "wind_dir": 198,
     "wind_text": "198° Ν",
     "rain": 0.0,
-    "clouds": 28,
+    "clouds": 30,
     "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
     "moon_icon": "moon2.png",
-    "time": "23:45:41",
-    "last_update": "23:45:41",
+    "time": "00:01:11",
+    "last_update": "00:01:11",
     "peak_temp": 19.5,
     "peak_status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
     "feels_like": 19.5,
     "wind_info": "Ν 0.6 km/h",
-    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΤΕΤΑΡΤΗ"
+    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΠΕΜΠΤΗ"
 }
