@@ -1,10 +1,10 @@
 {
     "temperature": 18.5,
-    "temp_max": 23.5,
-    "temp_min": 16.0,
-    "humidity": 87,
-    "pressure": 1031.7,
-    "dew_point": 15.9,
+    "temp_max": 26.1,
+    "temp_min": 17.9,
+    "humidity": 85,
+    "pressure": 1031.9,
+    "dew_point": 15.5,
     "wind_speed": 1.8,
     "wind_gust": 5.0,
     "wind_dir": 270,
@@ -13,11 +13,11 @@
     "clouds": 1,
     "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "moon_icon": "moon5.png",
-    "time": "23:45:40",
-    "last_update": "23:45:40",
+    "time": "00:00:55",
+    "last_update": "00:00:55",
     "peak_temp": 18.5,
     "peak_status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "feels_like": 18.5,
     "wind_info": "Δ 1.8 km/h",
-    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΠΑΡΑΣΚΕΥΗ"
+    "model_forecast": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ"
 }
