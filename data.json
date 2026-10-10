@@ -1,8 +1,8 @@
 {
-    "temperature": 15.6,
+    "temperature": 15.4,
     "temp_max": 23.4,
     "temp_min": 14.7,
-    "humidity": 92,
+    "humidity": 93,
     "pressure": 1027.4,
     "dew_point": 14.0,
     "wind_speed": 6.6,
@@ -10,14 +10,14 @@
     "wind_dir": 111,
     "wind_text": "111° Α",
     "rain": 0.0,
-    "clouds": 25,
-    "status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
+    "clouds": 16,
+    "status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
     "moon_icon": "moon1.png",
-    "time": "21:15:35",
-    "last_update": "21:15:35",
-    "peak_temp": 15.6,
-    "peak_status": "ΛΙΓΑ ΣΥΝΝΕΦΑ",
-    "feels_like": 15.6,
+    "time": "21:30:42",
+    "last_update": "21:30:42",
+    "peak_temp": 15.4,
+    "peak_status": "ΞΑΣΤΕΡΙΑ.ΑΙΘΡΙΟΣ",
+    "feels_like": 15.4,
     "wind_info": "Α 6.6 km/h",
-    "model_forecast": "ΠΙΘΑΝΗ ΕΠΙΔΕΙΝΩΣΗ ΑΠΟ ΚΥΡΙΑΚΗ"
+    "model_forecast": "ΠΡΟΣΟΧΗ: ΦΑΙΝΟΜΕΝΑ ΣΕ ΕΞΕΛΙΞΗ"
 }
